@@ -2,6 +2,8 @@ import React from 'react';
 import { Heart, Users, CheckCircle } from 'lucide-react';
 import Footer from '../components/Footer';
 const About = () => {
+    const [showPhilosophy, setShowPhilosophy] = React.useState(false);
+
     return (
         <div className="bg-base-100">
 
@@ -42,7 +44,7 @@ const About = () => {
                     </div>
 
                     <div className="w-full md:w-1/2 space-y-6">
-                        <h2 className="text-4xl font-serif font-semibold text-bloom-dark">
+                        <h2 className="text-4xl font-serif font-semibold text-bloom-secondary">
                             Our Story
                         </h2>
 
@@ -58,17 +60,47 @@ const About = () => {
                             the rain.
                         </p>
 
-                        <button className="btn btn-outline border-bloom-primary 
-              text-bloom-primary hover:bg-bloom-primary hover:text-white 
-              rounded-full px-10 tracking-wide">
-                            Read Our Philosophy
+                        <button
+                            onClick={() => setShowPhilosophy(!showPhilosophy)}
+                            className={`btn btn-outline border-bloom-primary 
+              text-bloom-secondary hover:bg-bloom-primary hover:text-white 
+              rounded-full px-10 tracking-wide transition-all duration-300 ${showPhilosophy ? 'bg-bloom-primary text-white' : ''}`}>
+                            {showPhilosophy ? 'Close Philosophy' : 'Read Our Philosophy'}
                         </button>
+
+                        {/* Philosophy Content */}
+                        <div className={`overflow-hidden transition-all duration-500 ease-in-out ${showPhilosophy ? 'max-h-[1000px] opacity-100 mt-8' : 'max-h-0 opacity-0'}`}>
+                            <div className="bg-white/60 backdrop-blur-sm p-8 rounded-3xl border border-bloom-secondary/20 shadow-sm space-y-6">
+                                <div>
+                                    <h3 className="text-xl font-serif font-semibold text-bloom-dark mb-2">The Challenge</h3>
+                                    <p className="text-bloom-muted leading-relaxed">
+                                        Mental health challenges often develop gradually, with early warning signs like mood fluctuations or sleep disturbances.
+                                        However, stigma and limited access to resources often delay support until symptoms become severe.
+                                        Existing solutions are largely reactive, intervening only when it's too late.
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <h3 className="text-xl font-serif font-semibold text-bloom-dark mb-2">Our Objective</h3>
+                                    <p className="text-bloom-muted leading-relaxed mb-4">
+                                        We are building a <strong>preventive, technology-driven platform</strong> that:
+                                    </p>
+                                    <ul className="space-y-2 text-bloom-muted list-disc pl-5">
+                                        <li>Detects early risk signals using AI-driven analysis</li>
+                                        <li>Provides accessible, non-judgmental support</li>
+                                        <li>Enables early intervention before conditions escalate</li>
+                                        <li>Offers personalized insights and coping strategies</li>
+                                        <li>Ensures privacy, transparency, and ethical AI usage</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>
 
             {/* Mission & Values */}
-            <section className="py-24 bg-bloom-cream/60">
+            <section className="py-24 bg-bloom-cream/90">
                 <div className="max-w-7xl mx-auto px-4 md:px-8">
                     <div className="text-center mb-16">
                         <h2 className="text-4xl font-serif font-semibold text-bloom-dark mb-4">
@@ -90,7 +122,7 @@ const About = () => {
                                     <Heart size={30} />
                                 </div>
                             </div>
-                            <h3 className="text-xl font-serif font-semibold mb-4">
+                            <h3 className="text-xl font-serif font-semibold mb-4 text-bloom-secondary">
                                 Compassion First
                             </h3>
                             <p className="text-bloom-muted">
@@ -101,13 +133,13 @@ const About = () => {
 
                         {/* Card 2 */}
                         <div className="bg-white rounded-3xl p-8 text-center shadow-soft
-              hover:-translate-y-1 transition-all duration-300 border-t-4 border-bloom-secondary">
+              hover:-translate-y-1 transition-all duration-300 border-t-4 border-bloom-primary">
                             <div className="flex justify-center mb-6">
-                                <div className="p-5 bg-bloom-secondary/30 rounded-full text-bloom-primary">
+                                <div className="p-5 bg-bloom-primary/10 rounded-full text-bloom-primary">
                                     <Users size={30} />
                                 </div>
                             </div>
-                            <h3 className="text-xl font-serif font-semibold mb-4">
+                            <h3 className="text-xl font-serif font-semibold mb-4 text-bloom-secondary">
                                 Community Focused
                             </h3>
                             <p className="text-bloom-muted">
@@ -118,13 +150,13 @@ const About = () => {
 
                         {/* Card 3 */}
                         <div className="bg-white rounded-3xl p-8 text-center shadow-soft
-              hover:-translate-y-1 transition-all duration-300 border-t-4 border-bloom-primary/40">
+              hover:-translate-y-1 transition-all duration-300 border-t-4 border-bloom-primary">
                             <div className="flex justify-center mb-6">
                                 <div className="p-5 bg-bloom-primary/10 rounded-full text-bloom-primary">
                                     <CheckCircle size={30} />
                                 </div>
                             </div>
-                            <h3 className="text-xl font-serif font-semibold mb-4">
+                            <h3 className="text-xl font-serif font-semibold mb-4 text-bloom-secondary">
                                 Trusted Care
                             </h3>
                             <p className="text-bloom-muted">
@@ -137,23 +169,44 @@ const About = () => {
                 </div>
             </section>
 
-            {/* CTA */}
-            <section className="py-28 bg-bloom-primary text-white text-center">
-                <div className="max-w-4xl mx-auto px-4">
-                    <h2 className="text-4xl font-serif font-semibold mb-6">
-                        Ready to start your journey?
-                    </h2>
-                    <p className="mb-10 text-lg opacity-90">
-                        Take the first step toward a calmer mind.
-                        We’re here to listen.
-                    </p>
-                    <button className="btn bg-white/10 border border-white/40 
-            hover:bg-white/20 text-white px-12 rounded-full backdrop-blur-md">
+            {/* Contact Section */}
+            <section className="py-20">
+                <div className="max-w-4xl mx-auto px-4 text-center">
+                    <h2 className="text-3xl font-serif font-medium text-bloom-secondary mb-12">
                         Contact Us
-                    </button>
+                    </h2>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 text-left">
+                        {/* Location 1 */}
+                        <div className="space-y-4 p-6 rounded-2xl bg-white/50 backdrop-blur-sm">
+                            <h3 className="text-xl font-medium text-bloom-primary">Main Clinic</h3>
+                            <div className="space-y-2 text-bloom-muted">
+                                <p>123 Serenity Avenue, Suite 100</p>
+                                <p>New York, NY 10012</p>
+                                <p className="pt-2 hover:text-bloom-primary transition-colors cursor-pointer">hello@soulsync.com</p>
+                                <p className="hover:text-bloom-primary transition-colors cursor-pointer">+1 (555) 123-4567</p>
+                            </div>
+                        </div>
+
+                        {/* Location 2 */}
+                        <div className="space-y-4 p-6 rounded-2xl bg-white/50 backdrop-blur-sm">
+                            <h3 className="text-xl font-medium text-bloom-primary">Wellness Center</h3>
+                            <div className="space-y-2 text-bloom-muted">
+                                <p>456 Blossom Lane, Floor 2</p>
+                                <p>Brooklyn, NY 11201</p>
+                                <p className="pt-2 hover:text-bloom-primary transition-colors cursor-pointer">wellness@soulsync.com</p>
+                                <p className="hover:text-bloom-primary transition-colors cursor-pointer">+1 (555) 987-6543</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-16 pt-8 border-t border-bloom-muted/20">
+                        <p className="text-bloom-muted text-sm font-medium">
+                            © {new Date().getFullYear()} SoulSync. All rights reserved.
+                        </p>
+                    </div>
                 </div>
             </section>
-            <Footer />
         </div>
     );
 };

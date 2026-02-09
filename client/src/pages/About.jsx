@@ -1,6 +1,6 @@
 import React from 'react';
 import { Heart, Users, CheckCircle } from 'lucide-react';
-
+import Footer from '../components/Footer';
 const About = () => {
     return (
         <div className="bg-base-100">
@@ -153,7 +153,7 @@ const About = () => {
                     </button>
                 </div>
             </section>
-
+            <Footer />
         </div>
     );
 };

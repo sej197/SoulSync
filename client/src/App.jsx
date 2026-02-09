@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+
 import About from './pages/About';
 // Placeholder for Home if it doesn't exist yet, or use About as default for now to show progress
 const Home = () => (
@@ -33,7 +33,6 @@ function App() {
             <Route path="/insights" element={<Insights />} />
           </Routes>
         </main>
-        <Footer />
       </div>
     </Router>
   )

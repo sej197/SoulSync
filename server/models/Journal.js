@@ -5,7 +5,7 @@ const journalEntrySchema = new mongoose.Schema({
     date: String,
     text: String,
     time: String,
-    huggingface_score: Number
+    score: Number
 })
 
 export default mongoose.model("JournalEntry", journalEntrySchema);

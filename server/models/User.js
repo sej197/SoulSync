@@ -6,6 +6,8 @@ const userSchema = new mongoose.Schema(
   {
     gender: String,
     contact: String,
+    email: { type: String, unique: true, required: true },
+    age: Number,
     username: { type: String, unique: true },
     emergency_contacts: [String],
     communities: [String],
@@ -15,6 +17,7 @@ const userSchema = new mongoose.Schema(
     status: { type: String, default: "active" },
     dailyQuizzes: [dailyQuizSchema],
     journals: [journalEntrySchema], 
+    //episodes
   }
 );
 

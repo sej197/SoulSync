@@ -24,6 +24,46 @@ const riskScoreSchema = new mongoose.Schema({
         type: Number, 
         default: null 
     },
+
+    stress_quiz_score: {
+        type: Number,
+        default: null
+    },
+    
+    stress_quiz_date: {
+        type: String,
+        default: null
+    },
+
+    sleep_quiz_score: {
+        type: Number,
+        default: null
+    },
+
+    sleep_quiz_date: {
+        type: String,
+        default: null
+    },
+
+    depression_quiz_score: {
+        type: Number,   
+        default: null
+    },
+
+    depression_quiz_date: {
+        type: String,
+        default: null
+    },
+
+    anxiety_quiz_score: {
+        type: Number,
+        default: null
+    },
+    
+    anxiety_quiz_date: {
+        type: String,
+        default: null
+    },
     
     overall_score: { 
         type: Number, 

@@ -1,0 +1,42 @@
+.chatList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+
+    hr {
+        border: none;
+        height: 2px;
+        background-color: #ddd;
+        opacity: 0.1;
+        border-radius: 5px;
+        margin: 20px 0;
+    }
+
+    .title {
+        font-weight: 600;
+        font-size: 10px;
+        margin-bottom: 10px;
+    }
+
+    .list {
+        display: flex;
+        flex-direction: column;
+        overflow: scroll;
+    }
+
+    a {
+        padding: 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background-color: #272338;
+            color: white;
+        }
+    }
+
+
+
+}

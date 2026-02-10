@@ -30,16 +30,18 @@ const Navbar = () => {
                         <li><Link to="/daily-quiz">Daily Quiz</Link></li>
                         <li><Link to="/insights">Insights</Link></li>
                         <li><Link to="/about">About Us</Link></li>
+                        <li><Link to="/chatbot">Chatbot</Link></li>
                     </ul>
                 </div>
                 <Link to="/" className="btn btn-ghost text-xl font-serif text-bloom-primary">SoulSync</Link>
             </div>
             <div className="navbar-center hidden lg:flex">
-                <ul className={`menu menu-horizontal px-1 font-medium transition-colors duration-300 ${isScrolled ? 'text-gray-600' : 'text-bloom-secondary'}`}>
+                <ul className={`menu menu-horizontal px-1 font-medium whitespace-nowrap flex-nowrap transition-colors duration-300 ${isScrolled ? 'text-gray-600' : 'text-bloom-secondary'}`}>
                     <li><Link to="/community-chat">Community Chat</Link></li>
                     <li><Link to="/daily-quiz">Daily Quiz</Link></li>
                     <li><Link to="/insights">Insights</Link></li>
                     <li><Link to="/about">About Us</Link></li>
+                    <li><Link to="/chatbot">Chatbot</Link></li>
                 </ul>
             </div>
             <div className="navbar-end">

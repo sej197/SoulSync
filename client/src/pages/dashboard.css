@@ -5,10 +5,13 @@
     height: 100%;
 }
 
-.menu {
-    flex: none;
-    width: 280px;
-    padding: 20px;
+.menus {
+    flex: 1;
+    background-color: #1a1a2e;
+}
+
+.content {
+    flex: 3;
 }
 
 .formContainer {
@@ -87,7 +90,7 @@
     padding: 30px;
     width: 200px;
     height: 200px;
-    background-color: #2c2c3e;
+    background-color: #292942;
     border-radius: 20px;
     cursor: pointer;
     transition: transform 0.2s, background-color 0.3s;

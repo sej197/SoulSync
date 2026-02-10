@@ -19,7 +19,7 @@ const Navbar = () => {
     }, []);
 
     return (
-        <div className={`navbar sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-base-100/90 backdrop-blur-md border-b border-gray-100' : 'bg-transparent'}`}>
+        <div className={`navbar sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-base-100/70 backdrop-blur-md border-b border-gray-100' : 'bg-bloom-neutral'}`}>
             <div className="navbar-start">
                 <div className="dropdown">
                     <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">

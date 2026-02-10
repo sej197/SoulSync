@@ -1,0 +1,76 @@
+{
+  "quizType": "stress",
+  "questions": [
+    {
+      "id": 1,
+      "type": "single_choice",
+      "question": "How stressed did you feel today?",
+      "options": ["Very low", "Low", "Moderate", "High", "Extreme"]
+    },
+    {
+      "id": 2,
+      "type": "multiple_choice",
+      "question": "Main stress sources:",
+      "options": [
+        "Work or studies",
+        "Family",
+        "Money",
+        "Health",
+        "Time pressure"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "single_choice",
+      "question": "Did you feel overwhelmed?",
+      "options": ["No", "Sometimes", "Yes"]
+    },
+    {
+      "id": 4,
+      "type": "single_choice",
+      "question": "Did stress affect your focus?",
+      "options": ["No", "A little", "Yes"]
+    },
+    {
+      "id": 5,
+      "type": "multiple_choice",
+      "question": "Physical signs of stress:",
+      "options": [
+        "Headache",
+        "Muscle tension",
+        "Stomach issues",
+        "Fatigue",
+        "None"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "paragraph",
+      "question": "What was the most stressful moment today?"
+    },
+    {
+      "id": 7,
+      "type": "single_choice",
+      "question": "Did you take a break to relax?",
+      "options": ["Yes", "A short one", "No"]
+    },
+    {
+      "id": 8,
+      "type": "single_choice",
+      "question": "How well did you handle stress?",
+      "options": ["Very well", "Okay", "Struggled"]
+    },
+    {
+      "id": 9,
+      "type": "one_line",
+      "question": "One thing that could reduce your stress tomorrow:"
+    },
+    {
+      "id": 10,
+      "type": "single_choice",
+      "question": "Stress impact on mood:",
+      "options": ["None", "Slight", "Moderate", "Severe"]
+    }
+  ]
+}
+

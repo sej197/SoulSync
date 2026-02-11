@@ -1,7 +1,7 @@
 .dashboard-layout {
     display: flex;
     gap: 50px;
-    padding-top: 20px;
+    padding-top: 0.5px;
     height: 100%;
 }
 

@@ -1,18 +1,22 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import { MessageSquarePlus, History, Heart, ArrowRight } from 'lucide-react';
 import './dashboard.css';
-import ChatbotList from '../components/ChatbotList';
+import ChatbotList from '../components/chatbot/ChatbotList';
 
 export default function BotDashboard() {
+    const location = useLocation();
+    const isMainDashboard = location.pathname === "/chatbot";
+
     return (
-        <>
-            <div className='dashboard-layout'>
-                <div className="menus">
-                    <ChatbotList />
-                </div>
-                <div className="content">
+        <div className='dashboard-layout'>
+            <div className="menus">
+                <ChatbotList />
+            </div>
+
+            <div className="content">
+                {isMainDashboard && (
                     <div className="texts">
-                        <span className="title">AI CHATBOT</span>
+                        <span className="title">SYNC AI - your personal chatbot</span>
                         <div className="cards">
                             <div className="options">
                                 <MessageSquarePlus className="icon" />
@@ -34,9 +38,9 @@ export default function BotDashboard() {
                             </button>
                         </div>
                     </div>
-                    <Outlet />
-                </div>
+                )}
+                <Outlet />
             </div>
-        </>
+        </div>
     );
 }

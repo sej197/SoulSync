@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import BotDashboard from './pages/BotDashboard';
 import About from './pages/About';
+import ChatPage from './components/chatbot/ChatPage';
 
 const Home = () => (
   <div className="hero min-h-screen bg-bloom-cream">
@@ -31,7 +32,10 @@ function App() {
             <Route path="/community-chat" element={<CommunityChat />} />
             <Route path="/daily-quiz" element={<DailyQuiz />} />
             <Route path="/insights" element={<Insights />} />
-            <Route path="/chatbot" element={<BotDashboard />} />
+            <Route path="/chatbot" element={<BotDashboard />}>
+              <Route path=":id" element={<ChatPage />} />
+              <Route path="new" element={<ChatPage />} />
+            </Route>
           </Routes>
         </main>
       </div>

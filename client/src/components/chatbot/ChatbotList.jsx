@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import "./chatbotlist.css";
+import "./chatbotlist.css"
+
 export default function ChatbotList() {
     return (
         <div className="chatList">
@@ -8,7 +9,7 @@ export default function ChatbotList() {
             <hr />
             <span className="title">RECENT CHATS</span>
             <div className="list">
-                <Link to="/chatbot/1">Chat 1</Link>
+                <Link to="/chatbot/1">chat 1</Link>
                 {/*<Link to="/chatbot/2">Chat 2</Link>
                 <Link to="/chatbot/3">Chat 3</Link>
                 <Link to="/chatbot/4">Chat 4</Link>

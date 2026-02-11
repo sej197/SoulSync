@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.13.4",
     "daisyui": "^5.5.18",
+    "imagekitio-react": "^4.3.0",
     "lucide-react": "^0.563.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

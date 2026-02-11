@@ -1,10 +1,16 @@
 import { ArrowUp, Paperclip } from "lucide-react";
 import "./newprompt.css";
+import { useEffect, useRef } from "react";
 
 export default function Newprompt() {
+    const endRef = useRef(null);
+    useEffect(() => {
+        endRef.current.scrollIntoView({ behavior: "smooth" });
+    }, []);
     return (
         <>
-            <div className="endChat"></div>
+            <div className="endChat" ref={endRef}>
+            </div>
             <div className="newprompt">
                 <div className="new-form">
                     <label htmlFor="file" className="file-label">

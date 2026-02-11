@@ -10,6 +10,7 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
+    gap: 2rem;
 }
 
 .chat {
@@ -19,7 +20,9 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    padding-bottom: 2rem;
 }
+
 
 .message {
     padding: 20px;

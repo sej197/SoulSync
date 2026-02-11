@@ -18,6 +18,26 @@ const userSchema = new mongoose.Schema(
     dailyQuizzes: [dailyQuizSchema],
     journals: [journalEntrySchema], 
     //episodes
+
+    insights_cache: {
+        last_updated: { type: Date, default: null },
+        
+        // Current risk (with decay if needed)
+        current_risk: {
+            score: { type: Number, default: 50 },
+            level: { type: String, default: 'MODERATE' },
+            last_data_date: { type: String, default: null }
+        },
+        
+        // Quick stats
+        total_days_tracked: { type: Number, default: 0 },
+        current_streak: { type: Number, default: 0 },
+        longest_streak: { type: Number, default: 0 },
+        
+        // Episode info
+        active_episode: { type: Boolean, default: false },
+        total_episodes: { type: Number, default: 0 }
+    }
   }
 );
 

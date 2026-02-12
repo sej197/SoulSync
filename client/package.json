@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "axios": "^1.13.4",
     "daisyui": "^5.5.18",
     "imagekitio-react": "^4.3.0",

@@ -58,10 +58,21 @@
     font-size: 14px;
 }
 
-.new-form button,
-.new-form label {
+.new-form button {
     border-radius: 50%;
     background-color: #605e68;
+    border: none;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: white;
+}
+
+.new-form label {
+    border-radius: 50%;
+    background-color: transparent;
     border: none;
     padding: 8px;
     display: flex;

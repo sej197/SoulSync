@@ -1,6 +1,6 @@
-const DailyQuiz = require("../models/DailyQuiz");
+import  DailyQuiz from "../models/DailyQuiz.js"
 
-exports.submitDailyQuiz = async(req, res) =>{
+const submitDailyQuiz = async(req, res) =>{
     try {
         const{userId, answers} = req.body;
         const optionScores = {
@@ -148,3 +148,4 @@ exports.submitDailyQuiz = async(req, res) =>{
         res.status(500).json({error:error.message})
     }
 }
+export default submitDailyQuiz

@@ -6,7 +6,7 @@
       "category": "mental_health",
       "type": "single_choice",
       "question": "How are you feeling right now?",
-      "options": ["Very good", "Okay", "Neutral", "Low", "Very low"]
+      "options": ["Very good", "Okay", "Neutral", "Feeling Low", "Very low"]
     },
     {
       "id": 2,
@@ -20,7 +20,7 @@
         "Felt overwhelmed",
         "Felt hopeful",
         "Nothing specific"
-      ]
+      ] 
     },
     {
       "id": 3,
@@ -53,7 +53,7 @@
       "category": "stress",
       "type": "single_choice",
       "question": "How intense was your stress today?",
-      "options": ["Very low", "Low", "Moderate", "High", "Extreme"]
+      "options": ["Low", "Moderate", "High", "Extreme"]
     },
     {
       "id": 7,

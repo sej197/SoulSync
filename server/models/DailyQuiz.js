@@ -55,10 +55,7 @@ const dailyQuizSchema = new mongoose.Schema({
     finalScore:{
         type:Number
     }, 
-    moodLevel:{
-        type:String,
-        enum: ["LOW", "MODERATE", "HIGH"],
-    }
+    
    
 
 }, {timestamps: true});

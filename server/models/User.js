@@ -1,22 +1,21 @@
 import mongoose from "mongoose";
-import dailyQuizSchema from "./DailyQuiz.js";
-import journalEntrySchema from "./Journal.js";
 
 const userSchema = new mongoose.Schema(
   {
-    gender: String,
-    contact: String,
+    gender: { type: String, required: true },
+    contact: { type: String, required: true ,match: [/^\d{10}$/, "Contact must be 10 digits"]},
     email: { type: String, unique: true, required: true },
     age: Number,
+    admin: {type: Boolean, default: false},
     username: { type: String, unique: true },
-    emergency_contacts: [String],
+    emergency_contacts: { type: [String], required: true },
     communities: [String],
     badges: [String],
     streak: { type: Number, default: 0 },
     password: { type: String, required: true },
     status: { type: String, default: "active" },
-    dailyQuizzes: [dailyQuizSchema],
-    journals: [journalEntrySchema], 
+    dailyQuizzes: [{type: mongoose.Schema.Types.ObjectId, ref: "DailyQuiz"}],
+    journals: [{type: mongoose.Schema.Types.ObjectId, ref: "Journal"}], 
     //episodes
 
     insights_cache: {

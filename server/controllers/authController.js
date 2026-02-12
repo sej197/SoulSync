@@ -3,9 +3,9 @@ import jwt from "jsonwebtoken";
 import User from "../models/User.js"
 
 const register = async(req, res) => {
-    const {username, email, password} = req.body;
+    const {username, email, password, gender, emergency_contacts, contact} = req.body;
 
-    if(!username || !email || !password){
+    if(!username || !email || !password || !gender || !contact || !emergency_contacts){
         return res.status(400).json({
             message: "Please fill all the fields!"
         });
@@ -24,14 +24,17 @@ const register = async(req, res) => {
         const user = new User({
             username,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            gender,
+            contact,
+            emergency_contacts
         });
         await user.save();
 
         const token = jwt.sign(
             {id: user._id},
             process.env.JWT_SECRET,
-            {expiryIn: '2h'}
+            {expiresIn: '2h'}
         );
 
         res.cookie('token', token, {
@@ -77,7 +80,7 @@ const login = async(req, res) => {
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET,
-            { expiresIn: '2h' }
+            {expiresIn: '2h'}
         );
 
         res.cookie('token', token, {

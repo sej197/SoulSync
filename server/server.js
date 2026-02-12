@@ -1,10 +1,30 @@
 import express from "express";
+import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
+import connectDB from "./config/db.js";
+import cors from "cors";
+import riskRoutes from "./routes/riskRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
-const port = process.env.PORT || 5000;
+dotenv.config();
+
 const app = express();
+const PORT = process.env.PORT || 5000;
 
-app.listen(port, () => console.log(`Server running on port ${port}`));
+//middlewares
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true
+}));
+app.use(express.json());
+app.use(cookieParser());
 
-app.get("/api/upload", (req, res) => {
-    res.json({ message: "Hello World!" });
+//routes
+app.use("/api/auth", authRoutes);
+app.use("/api/risk", riskRoutes);
+
+connectDB().then(() => {
+    app.listen(PORT, () => {
+        console.log(`Server started at port ${PORT}`)
+    });
 });

@@ -1,15 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
-
+import BotDashboard from './pages/BotDashboard';
 import About from './pages/About';
-// Placeholder for Home if it doesn't exist yet, or use About as default for now to show progress
+import ChatPage from './components/chatbot/ChatPage';
+
 const Home = () => (
   <div className="hero min-h-screen bg-bloom-cream">
     <div className="hero-content text-center">
       <div className="max-w-md">
         <h1 className="text-5xl font-bold font-serif text-bloom-green">SoulSync</h1>
         <p className="py-6 text-gray-600">Your journey to mental wellness starts here.</p>
-        <button className="btn bg-bloom-green text-white border-none hover:bg-green-700">Get Started</button>
+        <button className="btn bg-bloom-primary text-white border-none hover:bg-purple-700">Get Started</button>
       </div>
     </div>
   </div>
@@ -31,6 +32,10 @@ function App() {
             <Route path="/community-chat" element={<CommunityChat />} />
             <Route path="/daily-quiz" element={<DailyQuiz />} />
             <Route path="/insights" element={<Insights />} />
+            <Route path="/chatbot" element={<BotDashboard />}>
+              <Route path=":id" element={<ChatPage />} />
+              <Route path="new" element={<ChatPage />} />
+            </Route>
           </Routes>
         </main>
       </div>

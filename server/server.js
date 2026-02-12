@@ -1,6 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
 import connectDB from "./config/db.js"
+import riskRoutes from "./routes/riskRoutes.js"
 import cookieParser from cookie-parser;
 import authRoutes from "./routes/authRoutes.js"
 
@@ -11,6 +12,8 @@ const PORT = process.env.PORT || 5000;
 
 //middlewares
 app.use(express.json());
+
+app.use("/api/risk", riskRoutes);
 app.use(cookieParser());
 
 //routes

@@ -53,24 +53,6 @@ const Login = () => {
           <p className="text-bloom-muted">Sign in to continue your journey</p>
         </div>
 
-        <button
-          type="button"
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:bg-gray-50 text-bloom-dark py-3 px-4 rounded-xl transition-all duration-200 mb-6 font-medium"
-        >
-          <img
-            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-            alt="Google"
-            className="w-5 h-5"
-          />
-          Sign in with Google
-        </button>
-
-        <div className="flex items-center gap-4 mb-6">
-          <div className="h-px bg-gray-200 flex-1"></div>
-          <span className="text-gray-400 text-sm">or email</span>
-          <div className="h-px bg-gray-200 flex-1"></div>
-        </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>

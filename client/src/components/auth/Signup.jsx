@@ -31,10 +31,7 @@ const Signup = () => {
     }));
   };
 
-  const handleGoogleSignup = () => {
-    // TODO: Connection to backend OAuth
-    console.log('Google signup clicked');
-  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -83,26 +80,6 @@ const Signup = () => {
         <div className="text-center mb-8">
           <h2 className="text-3xl font-serif font-bold text-bloom-primary mb-2">Create Account</h2>
           <p className="text-bloom-muted">Start your mindfulness journey today</p>
-        </div>
-
-        
-        <button
-          type="button"
-          onClick={handleGoogleSignup}
-          className="w-full flex items-center justify-center gap-3 bg-white border border-gray-200 hover:bg-gray-50 text-bloom-dark py-3 px-4 rounded-xl transition-all duration-200 mb-6 font-medium"
-        >
-          <img
-            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
-            alt="Google"
-            className="w-5 h-5"
-          />
-          Sign up with Google
-        </button>
-
-        <div className="flex items-center gap-4 mb-6">
-          <div className="h-px bg-gray-200 flex-1"></div>
-          <span className="text-gray-400 text-sm">or email</span>
-          <div className="h-px bg-gray-200 flex-1"></div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 bg-bloom-cream/10 p-6 rounded-xl border border-slate-400/20">

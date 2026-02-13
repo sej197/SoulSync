@@ -6,7 +6,7 @@
       "category": "mental_health",
       "type": "single_choice",
       "question": "How are you feeling right now?",
-      "options": ["Very good", "Okay", "Neutral", "Low", "Very low"]
+      "options": ["Very good", "Okay", "Neutral", "Feeling Low", "Very low"]
     },
     {
       "id": 2,
@@ -24,18 +24,6 @@
     },
     {
       "id": 3,
-      "category": "mental_health",
-      "type": "one_line",
-      "question": "What was the strongest emotion you felt today and why?"
-    },
-    {
-      "id": 4,
-      "category": "mental_health",
-      "type": "paragraph",
-      "question": "Did anything today affect your mood positively or negatively?"
-    },
-    {
-      "id": 5,
       "category": "stress",
       "type": "multiple_choice",
       "question": "What caused stress today?",
@@ -49,21 +37,21 @@
       ]
     },
     {
-      "id": 6,
+      "id": 4,
       "category": "stress",
       "type": "single_choice",
       "question": "How intense was your stress today?",
-      "options": ["Very low", "Low", "Moderate", "High", "Extreme"]
+      "options": ["Low", "Moderate", "High", "Extreme"]
     },
     {
-      "id": 7,
+      "id": 5,
       "category": "sleep",
       "type": "single_choice",
       "question": "How was your sleep last night?",
       "options": ["Very restful", "Okay", "Poor", "Very poor"]
     },
     {
-      "id": 8,
+      "id": 6,
       "category": "sleep",
       "type": "multiple_choice",
       "question": "How was your energy level today?",
@@ -76,27 +64,21 @@
       ]
     },
     {
-      "id": 9,
+      "id": 7,
       "category": "family",
       "type": "single_choice",
       "question": "How were things at home today?",
       "options": ["Supportive", "Normal", "Some tension", "Very stressful"]
     },
     {
-      "id": 10,
-      "category": "family",
-      "type": "one_line",
-      "question": "Did any family interaction impact how you felt today?"
-    },
-    {
-      "id": 11,
+      "id": 8,
       "category": "college_job",
       "type": "single_choice",
       "question": "How did you feel about college/work today?",
       "options": ["Motivated", "Neutral", "Slightly stressed", "Very stressed"]
     },
     {
-      "id": 12,
+      "id": 9,
       "category": "college_job",
       "type": "multiple_choice",
       "question": "How was your workload today?",
@@ -108,39 +90,21 @@
       ]
     },
     {
-      "id": 13,
-      "category": "college_job",
-      "type": "one_line",
-      "question": "What was the most challenging part of today’s work or studies?"
-    },
-    {
-      "id": 14,
+      "id": 10,
       "category": "social",
       "type": "single_choice",
       "question": "How connected did you feel to others today?",
       "options": ["Very connected", "Somewhat connected", "Neutral", "Isolated"]
     },
     {
-      "id": 15,
-      "category": "reflection",
-      "type": "one_line",
-      "question": "What is one small thing you did well today?"
-    },
-    {
-      "id": 16,
-      "category": "reflection",
-      "type": "paragraph",
-      "question": "What would you like to do differently tomorrow?"
-    },
-    {
-      "id": 17,
+      "id": 11,
       "category": "safety",
       "type": "single_choice",
       "question": "Did you feel emotionally overwhelmed today?",
       "options": ["No", "A little", "A lot"]
     },
     {
-      "id": 18,
+      "id": 12,
       "category": "coping",
       "type": "multiple_choice",
       "question": "When feeling low, what usually helps you?",
@@ -151,7 +115,12 @@
         "Writing or journaling",
         "Nothing helped today"
       ]
+    },
+    {
+      "id": 13,
+      "category": "mental_health",
+      "type": "paragraph",
+      "question": "Briefly describe how your overall mood was today."
     }
   ]
 }
-

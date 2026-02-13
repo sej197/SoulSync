@@ -1,17 +1,31 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import authapi from '../lib/authapi';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext.jsx';
 
 const Navbar = () => {
+    const navigate = useNavigate();
+    const { setUser, setIsLoggedIn } = useContext(AuthContext);
+
+    //logout function
+    const handleLogout = async () => {
+        try {
+            await authapi.post("/logout");
+            setUser(null);
+            setIsLoggedIn(false);
+            navigate("/login", { replace: true });
+        }catch(error) {
+            console.error("Logout failed", error);
+        }
+    };
+
     const [isScrolled, setIsScrolled] = React.useState(false);
 
     React.useEffect(() => {
         const handleScroll = () => {
-            if (window.scrollY > 0) {
-                setIsScrolled(true);
-            } else {
-                setIsScrolled(false);
-            }
+            setIsScrolled(window.scrollY > 0);
         };
 
         window.addEventListener('scroll', handleScroll);
@@ -19,31 +33,63 @@ const Navbar = () => {
     }, []);
 
     return (
-        <div className={`navbar sticky top-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-base-100/90 backdrop-blur-md border-b border-gray-100' : 'bg-transparent'}`}>
+        <div
+            style={!isScrolled ? { backgroundColor: '#1a1a2e' } : {}}
+            className={`navbar sticky top-0 z-50 transition-all duration-300 ${isScrolled
+                ? 'bg-base-100/70 backdrop-blur-md border-b border-gray-100'
+                : ''
+                }`}
+        >
+            {/* LEFT SIDE */}
             <div className="navbar-start">
                 <div className="dropdown">
-                    <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
+                    <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" />
+                        </svg>
                     </div>
+
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                         <li><Link to="/community-chat">Community Chat</Link></li>
                         <li><Link to="/daily-quiz">Daily Quiz</Link></li>
                         <li><Link to="/insights">Insights</Link></li>
                         <li><Link to="/about">About Us</Link></li>
+                        <li><Link to="/chatbot">Chatbot</Link></li>
                     </ul>
                 </div>
-                <Link to="/" className="btn btn-ghost text-xl font-serif text-bloom-primary">SoulSync</Link>
+
+                <Link
+                    to="/"
+                    className={`btn btn-ghost text-xl font-serif ${isScrolled ? 'text-bloom-primary' : 'text-bloom-primary'
+                        }`}
+                >
+                    SoulSync
+                </Link>
             </div>
+
+            {/* CENTER MENU */}
             <div className="navbar-center hidden lg:flex">
-                <ul className={`menu menu-horizontal px-1 font-medium transition-colors duration-300 ${isScrolled ? 'text-gray-600' : 'text-bloom-secondary'}`}>
+                <ul
+                    className={`menu menu-horizontal px-1 font-medium whitespace-nowrap flex-nowrap transition-colors duration-300 ${isScrolled ? 'text-gray-600' : 'text-white'
+                        }`}
+                >
                     <li><Link to="/community-chat">Community Chat</Link></li>
                     <li><Link to="/daily-quiz">Daily Quiz</Link></li>
                     <li><Link to="/insights">Insights</Link></li>
                     <li><Link to="/about">About Us</Link></li>
+                    <li><Link to="/chatbot">Chatbot</Link></li>
                 </ul>
             </div>
+
+            {/* RIGHT SIDE */}
             <div className="navbar-end">
-                <button className={`btn btn-ghost transition-colors duration-300 hover:text-bloom-secondary ${isScrolled ? 'text-gray-600' : 'text-bloom-primary'}`}>Logout</button>
+                <button
+                    className={`btn btn-ghost transition-colors duration-300 hover:text-bloom-primary ${isScrolled ? 'text-gray-600' : 'text-white'
+                        }`}
+                    onClick = {handleLogout}
+                >
+                    Logout
+                </button>
             </div>
         </div>
     );

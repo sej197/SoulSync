@@ -25,17 +25,21 @@
 .formContainer {
     margin-top: auto;
     padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
     width: 100%;
     max-width: 600px;
-    background-color: transparent;
+    position: relative;
+    /* needed for absolute button */
+}
+
+.formContainer form {
+    display: flex;
+    width: 100%;
 }
 
 .formContainer input {
     flex: 1;
-    padding: 15px 20px;
+    padding: 15px 50px 15px 20px;
+    /* extra right padding for button */
     border-radius: 30px;
     border: 1px solid #3d3d5c;
     background-color: #1a1a2e;
@@ -45,6 +49,11 @@
 }
 
 .sendButton {
+    position: absolute;
+    right: 30px;
+    /* inside input */
+    top: 50%;
+    transform: translateY(-50%);
     background-color: #35314d;
     color: white;
     border: none;

@@ -24,6 +24,9 @@ export default function Newprompt() {
                 parts: [{ text: "I'm doing well, thank you!" }],
             },
         ],
+        generationConfig: {
+
+        }
     });
 
     useEffect(() => {
@@ -53,9 +56,10 @@ export default function Newprompt() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (!ques) return;
+        const text = e.target.text.value;
+        if (!text) return;
 
-        await add(ques);
+        add(text);
     };
 
     return (

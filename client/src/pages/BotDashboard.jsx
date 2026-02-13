@@ -7,6 +7,23 @@ export default function BotDashboard() {
     const location = useLocation();
     const isMainDashboard = location.pathname === "/chatbot";
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const text = e.target.text.value;
+        if (!text) return;
+
+        const response = await fetch("http://localhost:5000/api/chats", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ text })
+        });
+
+        const data = await response.json();
+        console.log("New chat created:", data.chatId);
+        e.target.reset();
+    };
+
     return (
         <div className='dashboard-layout'>
             <div className="menus">
@@ -32,16 +49,20 @@ export default function BotDashboard() {
                             </div>
                         </div>
                         <div className="formContainer">
-                            <input type="text" placeholder="Ask me anything!" />
-                            <button className="sendButton">
-                                <ArrowRight size={20} />
-                            </button>
+                            <form onSubmit={handleSubmit}>
+                                <input
+                                    type="text"
+                                    name="text"
+                                    placeholder="Ask me anything!"
+                                />
+                                <button className="sendButton">
+                                    <ArrowRight size={20} />
+                                </button>
+                            </form>
                         </div>
                     </div>
                 )}
                 <Outlet />
-                {!isMainDashboard}
-
             </div>
         </div>
     );

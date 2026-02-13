@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js"
+import Risk from "../models/RiskScore.js";
 import welcomeEmail from "../emails/welcomeEmail.js";
 import transporter from "../config/nodemailer.js";
 
@@ -32,6 +33,11 @@ const register = async(req, res) => {
             emergency_contacts
         });
         await user.save();
+
+        const risk = new Risk({
+            user: user._id
+        });
+        await risk.save();
 
         const token = jwt.sign(
             {id: user._id},

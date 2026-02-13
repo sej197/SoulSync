@@ -1,11 +1,8 @@
+import mongoose from "mongoose";
 const riskScoreSchema = new mongoose.Schema({
     user: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: "User", 
-        required: true 
-    },
-    date: { 
-        type: String,
         required: true 
     },
     
@@ -73,7 +70,6 @@ const riskScoreSchema = new mongoose.Schema({
     risk_level: { 
         type: String, 
         enum: ['LOW', 'MODERATE', 'HIGH', 'CRITICAL'],
-        required: true 
     },
 
     top_factors: [{ 
@@ -105,4 +101,4 @@ const riskScoreSchema = new mongoose.Schema({
 
 riskScoreSchema.index({ user: 1, date: 1 }, { unique: true });
 
-const RiskScore = mongoose.model("RiskScore", riskScoreSchema);
+export default mongoose.model("RiskScore", riskScoreSchema);

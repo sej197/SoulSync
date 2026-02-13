@@ -40,15 +40,15 @@ const getRecommendations = (factors) => {
         recs.push("Maintain a consistent sleep schedule and create a restful environment.");
     }
     return recs;
-}
-    
+}    
 
 export const calculateOverallRisk = async (req, res) => {
     const { userId } = req.params;
 
     console.log("User ID:", userId);
 
-    // const risk = await Risk.findOne({ user: userId });
+    const risk = await Risk.findOne({ user: userId });
+    console.log("Risk data:", risk);
     // const scores = {
     //     depression_quiz_score: risk.depression_quiz_score ?? 0,
     //     anxiety_quiz_score: risk.anxiety_quiz_score ?? 0,
@@ -91,6 +91,11 @@ export const calculateOverallRisk = async (req, res) => {
             recommendations
         }
     });
+
 }
 
-
+export const weeklyInsights = async (req, res) => {
+    const { userId } = req.params;
+    
+    
+}

@@ -11,20 +11,15 @@ const authenticator = async () => {
         const response = await fetch("http://localhost:5000/api/upload");
         const data = await response.json();
         const { signature, expire, token } = data;
-
-        return {
-            signature,
-            expire,
-            token,
-        };
+        return { signature, expire, token };
     } catch (error) {
         throw new Error("Failed to get authentication parameters");
     }
 };
 
-const Uploads = ({ setImg }) => {
-
+const Uploads = ({ setImg, setChat }) => {
     const ikUploadRef = useRef(null);
+
     const onError = (err) => {
         console.log("Error", err);
         setImg(prev => ({ ...prev, error: "Upload failed", isLoading: false }));
@@ -37,15 +32,33 @@ const Uploads = ({ setImg }) => {
             dbData: res,
             isLoading: false
         }));
+        setChat(prev => prev.map(msg => msg.isPreview ? { ...msg, img: res, isPreview: false } : msg));
     };
 
     const onUploadProgress = (progress) => {
         console.log("Progress", progress);
     };
 
-    const onUploadStart = () => {
-        console.log("Upload started");
-        setImg(prev => ({ ...prev, isLoading: true }));
+    const onUploadStart = (evt) => {
+        const file = evt.target.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            const base64Data = reader.result;
+
+            setImg(prev => ({
+                ...prev,
+                isLoading: true,
+                aiData: { inlineData: { data: base64Data, mimeType: file.type } }
+            }));
+
+            setChat(prev => [
+                ...prev,
+                { type: "user", text: "", img: { filePath: base64Data }, isPreview: true }
+            ]);
+        };
+
+        reader.readAsDataURL(file);
     };
 
     return (
@@ -64,9 +77,9 @@ const Uploads = ({ setImg }) => {
                 style={{ display: "none" }}
                 ref={ikUploadRef}
             />
-            {<label onClick={() => ikUploadRef.current.click()} className="file-label">
+            <label onClick={() => ikUploadRef.current.click()} className="file-label">
                 <Paperclip size={25} className="icon" />
-            </label>}
+            </label>
         </IKContext>
     );
 };

@@ -40,7 +40,7 @@ export default function BotDashboard() {
                     </div>
                 )}
                 <Outlet />
-                {!isMainDashboard && <div>Chat Page Loading...</div>}
+                {!isMainDashboard}
 
             </div>
         </div>

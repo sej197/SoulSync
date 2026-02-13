@@ -1,4 +1,4 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const safetySetting = [
     {
@@ -11,6 +11,8 @@ const safetySetting = [
     }
 ]
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_PUBLIC_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash", safetySettings: safetySetting });
-
+const model = genAI.getGenerativeModel({
+    model: "models/gemini-2.5-pro",
+    safetySettings: safetySetting
+});
 export default model;

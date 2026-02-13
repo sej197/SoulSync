@@ -5,7 +5,7 @@ import welcomeEmail from "../emails/welcomeEmail.js";
 import transporter from "../config/nodemailer.js";
 
 const register = async(req, res) => {
-    const {username, email, password, gender, emergency_contacts, contact} = req.body;
+    const {username, email, password, gender, emergency_contacts, contact, age} = req.body;
 
     if(!username || !email || !password || !gender || !contact || !emergency_contacts){
         return res.status(400).json({
@@ -29,7 +29,8 @@ const register = async(req, res) => {
             password: hashedPassword,
             gender,
             contact,
-            emergency_contacts
+            emergency_contacts,
+            age
         });
         await user.save();
 

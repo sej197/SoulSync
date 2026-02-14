@@ -8,6 +8,9 @@ import ChatPage from './components/chatbot/ChatPage';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
+import Settings from './pages/Settings';
 
 const Home = () => (
   <div className="hero min-h-screen bg-bloom-cream">
@@ -29,10 +32,10 @@ function App() {
   return (
     <Router>
       <Routes>
-        
+
         <Route element={<AuthLayout><Login /></AuthLayout>} path="/login" />
         <Route element={<AuthLayout><Signup /></AuthLayout>} path="/signup" />
-        
+
         <Route
           element={
             <div className="min-h-screen flex flex-col font-sans bg-base-100">
@@ -48,6 +51,9 @@ function App() {
                   <Route path="/community-chat" element={<ProtectedRoute><CommunityChat /></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
                   <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+                  <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 </Routes>
               </main>
               <Footer />

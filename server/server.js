@@ -8,8 +8,9 @@ import riskRoutes from "./routes/riskRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import userAuth from "./middleware/authmiddleware.js";
 import UserChat from "./models/Botuserchat.js";
-import Chat from "./models/botchat.js"; // your chat model
+import Chat from "./models/botchat.js";
 
+import dailyQuizRoutes from "./routes/dailyQuizRoutes.js"
 dotenv.config();
 
 const app = express();
@@ -34,6 +35,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/risk", riskRoutes);
 
 // Connect DB & start server
+app.use("/api/quiz", dailyQuizRoutes)
 connectDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server started at port ${PORT}`);

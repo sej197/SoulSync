@@ -1,7 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import authapi from '../lib/authapi';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext.jsx';
 
 const Navbar = () => {
+    const navigate = useNavigate();
+    const { setUser, setIsLoggedIn } = useContext(AuthContext);
+
+    //logout function
+    const handleLogout = async () => {
+        try {
+            await authapi.post("/logout");
+            setUser(null);
+            setIsLoggedIn(false);
+            navigate("/login", { replace: true });
+        }catch(error) {
+            console.error("Logout failed", error);
+        }
+    };
+
     const [isScrolled, setIsScrolled] = React.useState(false);
 
     React.useEffect(() => {
@@ -67,6 +86,7 @@ const Navbar = () => {
                 <button
                     className={`btn btn-ghost transition-colors duration-300 hover:text-bloom-primary ${isScrolled ? 'text-gray-600' : 'text-white'
                         }`}
+                    onClick = {handleLogout}
                 >
                     Logout
                 </button>

@@ -14,6 +14,7 @@
   "description": "",
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -21,9 +22,7 @@
     "express": "^5.2.1",
     "imagekit": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
-    "mongodb": "^7.1.0",
-    "mongoose": "^9.2.1",
-    "node-fetch": "^3.3.2",
+    "mongoose": "^9.1.6",
     "nodemailer": "^8.0.1",
     "nodemon": "^3.1.11"
   }

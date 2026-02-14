@@ -100,3 +100,17 @@ app.post("/api/chats", userAuth, async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 });
+
+app.get("/api/userchats", userAuth, async (req, res) => {
+    const userId = req.userId;
+    try {
+        const userChat = await UserChat.findOne({ userId });
+        if (!userChat) {
+            return res.status(200).json({ chats: [] });
+        }
+        res.status(200).json({ chats: userChat.chats });
+    } catch (error) {
+        console.error("Error fetching user chats:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}); 

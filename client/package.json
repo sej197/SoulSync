@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@tanstack/react-query": "^5.90.21",
     "axios": "^1.13.4",
     "daisyui": "^5.5.18",
     "imagekitio-react": "^4.3.0",

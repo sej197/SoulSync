@@ -2,32 +2,49 @@ import { Outlet, useLocation } from 'react-router-dom';
 import { MessageSquarePlus, History, Heart, ArrowRight } from 'lucide-react';
 import './dashboard.css';
 import ChatbotList from '../components/chatbot/ChatbotList';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function BotDashboard() {
     const location = useLocation();
     const isMainDashboard = location.pathname === "/chatbot";
 
-    const handleSubmit = async (e) => {
+    const queryClient = useQueryClient();
+
+    const { data: chatsData, isLoading, error } = useQuery(['userChats'], async () => {
+        const res = await fetch('http://localhost:5000/api/user-chats', { credentials: 'include' });
+        if (!res.ok) throw new Error('Failed to fetch chats');
+        return res.json();
+    });
+
+    const createChatMutation = useMutation(
+        async (text) => {
+            const res = await fetch('http://localhost:5000/api/chats', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ text })
+            });
+            if (!res.ok) throw new Error('Failed to create chat');
+            return res.json();
+        },
+        {
+            onSuccess: () => queryClient.invalidateQueries(['userChats']), // Refresh chat list
+        }
+    );
+
+    const handleSubmit = (e) => {
         e.preventDefault();
         const text = e.target.text.value;
         if (!text) return;
 
-        const response = await fetch("http://localhost:5000/api/chats", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            credentials: "include",
-            body: JSON.stringify({ text })
-        });
-
-        const data = await response.json();
-        console.log("New chat created:", data.chatId);
+        createChatMutation.mutate(text);
         e.target.reset();
     };
 
     return (
         <div className='dashboard-layout'>
             <div className="menus">
-                <ChatbotList />
+                <ChatbotList chats={chatsData?.chats || []} />
             </div>
 
             <div className="content">

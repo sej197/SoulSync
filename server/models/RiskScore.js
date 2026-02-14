@@ -7,7 +7,7 @@ const riskScoreSchema = new mongoose.Schema({
     },
     date: {
         type: String, // Format: YYYY-MM-DD
-        required: true
+        
     },
     journal_score: { 
         type: Number, default: null 

@@ -10,6 +10,11 @@ import Signup from './components/auth/Signup';
 import Insights from './pages/Insights';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Home from './pages/Home';
+import Profile from './pages/Profile';
+import EditProfile from './pages/EditProfile';
+import Settings from './pages/Settings';
+
+
 
 const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Community Chat Coming Soon</div>;
 const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
@@ -19,10 +24,10 @@ function App() {
   return (
     <Router>
       <Routes>
-        
+
         <Route element={<AuthLayout><Login /></AuthLayout>} path="/login" />
         <Route element={<AuthLayout><Signup /></AuthLayout>} path="/signup" />
-        
+
         <Route
           element={
             <div className="min-h-screen flex flex-col font-sans bg-base-100">
@@ -38,6 +43,10 @@ function App() {
                   <Route path="/community-chat" element={<ProtectedRoute><CommunityChat /></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
                   <Route path="/insights" element={<Insights />} />
+                  <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
+                  <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                  <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+                  <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 </Routes>
               </main>
               <Footer />

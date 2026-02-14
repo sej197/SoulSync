@@ -15,7 +15,6 @@ const userAuth = async(req, res, next) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         if(decoded.id){
             req.userId = decoded.id;
-            return next();
         }else{
             if(req.path == '/is-authenticated'){
                 return next();
@@ -28,11 +27,12 @@ const userAuth = async(req, res, next) => {
         if(req.path == '/is-authenticated'){
             return next();
         }
-        console.error("Error in authentication", error);
+        console.log("JWT ERROR:", error.message);
         res.status(401).json({
             message: "Unauthorized : Invalid token"
         });
     }
+    next();
 
 }
 

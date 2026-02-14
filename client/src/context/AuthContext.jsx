@@ -7,6 +7,7 @@ export const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const getAuthStatus = async () => {
     try{
@@ -21,6 +22,8 @@ export const AuthProvider = ({ children }) => {
     }catch(error){
         console.error("Error fetching auth status", error);
         toast.error("Error fetching authentication status");
+    }finally{
+        setLoading(false);
     }
   }
 
@@ -33,7 +36,8 @@ export const AuthProvider = ({ children }) => {
         setUser,
         isLoggedIn,
         setIsLoggedIn,
-        getAuthStatus
+        getAuthStatus,
+        loading
     }
     return (
         <AuthContext.Provider value={value}>

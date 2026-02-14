@@ -16,10 +16,6 @@ const Login = () => {
 
   const navigate = useNavigate();
   
-  const handleGoogleLogin = () => {
-    // TODO: Connection to backend OAuth
-    console.log('Google login clicked');
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +42,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bloom-cream text-bloom-dark font-sans px-4">
+    <div className="min-h-screen flex items-center justify-center bg-bloom-cream text-bloom-primary font-sans px-4">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-soft">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-serif font-bold text-bloom-primary mb-2">Welcome Back</h2>
@@ -56,7 +52,7 @@ const Login = () => {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-bloom-dark mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-bloom-primary mb-1.5">Email</label>
             <input
               type="email"
               value={email}
@@ -69,7 +65,7 @@ const Login = () => {
 
           <div>
 
-          <label className="block text-sm font-medium mb-1.5">
+          <label className="block text-sm font-medium text-bloom-primary mb-1.5">
           Password
           </label>
 
@@ -103,7 +99,7 @@ const Login = () => {
 
         <p className="text-center mt-8 text-bloom-muted text-sm">
           Don't have an account?{' '}
-          <Link to="/signup" className="text-bloom-primary font-medium hover:text-bloom-dark transition-colors">
+          <Link to="/signup" className="text-bloom-primary font-medium hover:text-bloom-primary transition-colors">
             Create account
           </Link>
         </p>

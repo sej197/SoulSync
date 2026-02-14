@@ -36,6 +36,19 @@ export default {
           "base-100": "#ebd8d8ff",
           "head": "#1a1a2e",
         },
+        "bloom-dark": {
+          "primary": "#c896f4",
+          "secondary": "#4a3b52",
+          "accent": "#2F2F35",
+          "neutral": "#ebd8d8",
+          "base-100": "#1a1a1a", // Deep dark background
+          "base-200": "#252525", // Slightly lighter for cards
+          "base-content": "#ebd8d8", // Light text
+          "info": "#3ABFF8",
+          "success": "#36D399",
+          "warning": "#FBBD23",
+          "error": "#F87272",
+        },
       },
     ],
   },

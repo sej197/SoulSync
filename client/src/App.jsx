@@ -14,17 +14,7 @@ import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Settings from './pages/Settings';
 
-const Home = () => (
-  <div className="hero min-h-screen bg-bloom-cream">
-    <div className="hero-content text-center">
-      <div className="max-w-md">
-        <h1 className="text-5xl font-bold font-serif text-bloom-primary">SoulSync</h1>
-        <p className="py-6 text-gray-600 text-lg">Your journey to mental wellness starts here.</p>
-        <a href="/login" className="btn bg-bloom-primary text-white border-none hover:bg-bloom-primary/90">Get Started</a>
-      </div>
-    </div>
-  </div>
-);
+
 
 const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Community Chat Coming Soon</div>;
 const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;

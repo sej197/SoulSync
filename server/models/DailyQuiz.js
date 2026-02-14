@@ -50,7 +50,8 @@ const dailyQuizSchema = new mongoose.Schema({
         stressScore: { type: Number, default: 0 },
         sleepScore: { type: Number, default: 0 },
         socialScore: { type: Number, default: 0 },
-        reflectionScore: { type: Number, default: 0 }
+        reflectionScore: { type: Number, default: 0 },
+        paragraphScore: { type: Number, default: 0 }
     },
     finalScore:{
         type:Number

@@ -1,0 +1,126 @@
+{
+  "quizType": "daily_checkin",
+  "questions": [
+    {
+      "id": 1,
+      "category": "mental_health",
+      "type": "single_choice",
+      "question": "How are you feeling right now?",
+      "options": ["Very good", "Okay", "Neutral", "Feeling Low", "Very low"]
+    },
+    {
+      "id": 2,
+      "category": "mental_health",
+      "type": "multiple_choice",
+      "question": "What best describes today?",
+      "options": [
+        "Felt anxious",
+        "Felt tired or unmotivated",
+        "Felt calm",
+        "Felt overwhelmed",
+        "Felt hopeful",
+        "Nothing specific"
+      ]
+    },
+    {
+      "id": 3,
+      "category": "stress",
+      "type": "multiple_choice",
+      "question": "What caused stress today?",
+      "options": [
+        "College or work",
+        "Family expectations",
+        "Social interactions",
+        "Health concerns",
+        "Financial worries",
+        "No major stress"
+      ]
+    },
+    {
+      "id": 4,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "How intense was your stress today?",
+      "options": ["Low", "Moderate", "High", "Extreme"]
+    },
+    {
+      "id": 5,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How was your sleep last night?",
+      "options": ["Very restful", "Okay", "Poor", "Very poor"]
+    },
+    {
+      "id": 6,
+      "category": "sleep",
+      "type": "multiple_choice",
+      "question": "How was your energy level today?",
+      "options": [
+        "Very energetic",
+        "Normal energy",
+        "Low energy",
+        "Very tired",
+        "Difficulty focusing"
+      ]
+    },
+    {
+      "id": 7,
+      "category": "family",
+      "type": "single_choice",
+      "question": "How were things at home today?",
+      "options": ["Supportive", "Normal", "Some tension", "Very stressful"]
+    },
+    {
+      "id": 8,
+      "category": "college_job",
+      "type": "single_choice",
+      "question": "How did you feel about college/work today?",
+      "options": ["Motivated", "Neutral", "Slightly stressed", "Very stressed"]
+    },
+    {
+      "id": 9,
+      "category": "college_job",
+      "type": "multiple_choice",
+      "question": "How was your workload today?",
+      "options": [
+        "Manageable",
+        "Heavy but okay",
+        "Overwhelming",
+        "Could not keep up"
+      ]
+    },
+    {
+      "id": 10,
+      "category": "social",
+      "type": "single_choice",
+      "question": "How connected did you feel to others today?",
+      "options": ["Very connected", "Somewhat connected", "Neutral", "Isolated"]
+    },
+    {
+      "id": 11,
+      "category": "safety",
+      "type": "single_choice",
+      "question": "Did you feel emotionally overwhelmed today?",
+      "options": ["No", "A little", "A lot"]
+    },
+    {
+      "id": 12,
+      "category": "coping",
+      "type": "multiple_choice",
+      "question": "When feeling low, what usually helps you?",
+      "options": [
+        "Talking to someone",
+        "Listening to music",
+        "Sleeping",
+        "Writing or journaling",
+        "Nothing helped today"
+      ]
+    },
+    {
+      "id": 13,
+      "category": "mental_health",
+      "type": "paragraph",
+      "question": "Briefly describe how your overall mood was today."
+    }
+  ]
+}

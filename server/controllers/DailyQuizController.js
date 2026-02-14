@@ -2,7 +2,9 @@ import DailyQuiz from "../models/DailyQuiz.js";
 
 const submitDailyQuiz = async (req, res) => {
   try {
-    const { userId, answers } = req.body;
+     const userId = req.userId; 
+
+    const { answers } = req.body; 
 
     const optionScores = {
       // feelings
@@ -193,15 +195,15 @@ const submitDailyQuiz = async (req, res) => {
         sleepScore: sleep,
         socialScore: social,
         reflectionScore: reflection,
-        
+        paragraphScore: paragraphScore,
       },
       finalScore,
     });
 
     res.status(201).json({
       message: "quiz submitted successfully",
-      finalScore,
-      paragraphScore   
+      // finalScore,
+      // paragraphScore   
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

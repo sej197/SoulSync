@@ -8,7 +8,7 @@ import ChatPage from './components/chatbot/ChatPage';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
 import ProtectedRoute from './components/auth/ProtectedRoute';
-
+import DailyQuiz from './components/quiz/DailyQuiz';
 const Home = () => (
   <div className="hero min-h-screen bg-bloom-cream">
     <div className="hero-content text-center">
@@ -22,7 +22,7 @@ const Home = () => (
 );
 
 const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Community Chat Coming Soon</div>;
-const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
+// const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
 const Insights = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Insights Coming Soon</div>;
 
 function App() {

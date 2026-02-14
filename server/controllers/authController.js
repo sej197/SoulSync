@@ -176,7 +176,7 @@ const isAuthenticated = async(req, res) => {
 }
 
 const updateProfile = async(req, res) => { 
-    const {username, age, contact, emergency_contacts} = req.body;
+    const {username, age, contact, emergency_contacts, gender} = req.body;
     try{
         if(!req.userId){
             return res.status(401).json({
@@ -194,6 +194,7 @@ const updateProfile = async(req, res) => {
         if(age) updates.age = age;
         if(contact) updates.contact = contact;
         if(emergency_contacts) updates.emergency_contacts = emergency_contacts;
+        if(gender) updates.gender = gender;
 
         const updatedUser = await User.findByIdAndUpdate(req.userId, updates, {new: true}).select('-password');
 

@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js"
-import Risk from "../models/RiskScore.js";
+import RiskScore from "../models/RiskScore.js";
 import welcomeEmail from "../emails/welcomeEmail.js";
 import transporter from "../config/nodemailer.js";
 
@@ -35,10 +35,11 @@ const register = async(req, res) => {
         });
         await user.save();
 
-        const risk = new Risk({
+        const risk = new RiskScore({
             user: user._id
         });
         await risk.save();
+        console.log("User and risk score initialized successfully", risk);
 
         const token = jwt.sign(
             {id: user._id},

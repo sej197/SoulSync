@@ -187,6 +187,7 @@ const submitDailyQuiz = async (req, res) => {
 
     const quiz = await DailyQuiz.create({
       userId,
+      quizType:"daily",
       date: new Date(),
       answers,
       scores: {

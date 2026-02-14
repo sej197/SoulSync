@@ -30,6 +30,13 @@ const dailyQuizSchema = new mongoose.Schema({
         ref: "User",
         required: true
     },
+    // Identify quiz type
+    quizType: {
+      type: String,
+      enum: ["daily", "anxiety", "depression", "burnout", "sleep"],
+      default: "daily",
+      index: true
+    },
     date:{
         type:Date,
         required:true
@@ -60,5 +67,9 @@ const dailyQuizSchema = new mongoose.Schema({
    
 
 }, {timestamps: true});
+dailyQuizSchema.index(
+  { userId: 1, quizType: 1, date: 1 },
+  { unique: true }
+);
 dailyQuizSchema.index({userId:1, date:1}, {unique:true});
 export default mongoose.model("DailyQuiz", dailyQuizSchema);

@@ -144,8 +144,7 @@ const isAuthenticated = async(req, res) => {
             return res.json({
                 isAuthenticated: false
             });
-        }
-
+        } 
         return res.json({
             isAuthenticated: true,
             user: {
@@ -153,13 +152,63 @@ const isAuthenticated = async(req, res) => {
                 name: user.username,
                 email: user.email,
                 age: user.age,
-                badges: user.badges
+                badges: user.badges,
+                gender: user.gender,
+                contact: user.contact,
+                emergency_contacts: user.emergency_contacts,
+                communities: user.communities,
+                streak: user.streak,
+                
             }
         });
+        
     }catch(error){
         res.status(500).json({message: "Server error"});
         console.error("Error checking authentication status", error);
     }
 }
 
-export {register, logout, login, isAuthenticated};
+const updateProfile = async(req, res) => { 
+    const {username, age, contact, emergency_contacts} = req.body;
+    try{
+        if(!req.userId){
+            return res.status(401).json({
+                message: "Unauthorized"
+            });
+        }
+        const user = await User.findById(req.userId);
+        if(!user){
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        const updates = {};
+        if(username) updates.username = username;
+        if(age) updates.age = age;
+        if(contact) updates.contact = contact;
+        if(emergency_contacts) updates.emergency_contacts = emergency_contacts;
+
+        const updatedUser = await User.findByIdAndUpdate(req.userId, updates, {new: true}).select('-password');
+
+        return res.json({
+            message: "Profile updated successfully",    
+            user: {
+                id: updatedUser._id,
+                name: updatedUser.username,
+                email: updatedUser.email,
+                age: updatedUser.age,
+                badges: updatedUser.badges,
+                gender: updatedUser.gender,
+                contact: updatedUser.contact,
+                emergency_contacts: updatedUser.emergency_contacts,
+                communities: updatedUser.communities,
+                streak: updatedUser.streak,
+            }
+        });
+
+    }catch(error){
+        res.status(500).json({message: "Server error"});
+        console.error("Error updating profile", error);
+    }
+}
+export {register, logout, login, isAuthenticated, updateProfile};

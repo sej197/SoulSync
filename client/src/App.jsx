@@ -7,7 +7,9 @@ import About from './pages/About';
 import ChatPage from './components/chatbot/ChatPage';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
+import Insights from './pages/Insights';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import Home from './pages/Home';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Settings from './pages/Settings';
@@ -26,7 +28,7 @@ const Home = () => (
 
 const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Community Chat Coming Soon</div>;
 const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
-const Insights = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Insights Coming Soon</div>;
+
 
 function App() {
   return (
@@ -50,6 +52,7 @@ function App() {
                   </Route>
                   <Route path="/community-chat" element={<ProtectedRoute><CommunityChat /></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
+                  <Route path="/insights" element={<Insights />} />
                   <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                   <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />

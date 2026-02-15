@@ -5,66 +5,61 @@
       "id": 1,
       "type": "single_choice",
       "question": "How low or sad did you feel today?",
-      "options": ["Not at all", "A little", "Moderately", "Very low"]
+      "options": ["Not at all", "Slightly", "Moderately", "Very low", "Extremely low"]
     },
     {
       "id": 2,
       "type": "single_choice",
       "question": "Did you lose interest in things you usually enjoy?",
-      "options": ["No", "A little", "Yes", "Completely"]
+      "options": ["Not at all", "A little", "Somewhat", "Mostly", "Completely"]
     },
     {
       "id": 3,
       "type": "single_choice",
-      "question": "How was your energy level?",
-      "options": ["Normal", "Slightly low", "Very low", "Exhausted"]
+      "question": "How was your energy level today?",
+      "options": ["Normal", "Slightly low", "Moderate", "Low", "Very low"]
     },
     {
       "id": 4,
       "type": "single_choice",
       "question": "Did you feel hopeless about anything?",
-      "options": ["No", "Sometimes", "Often"]
+      "options": ["Not at all", "A little", "Sometimes", "Often", "Always"]
     },
     {
       "id": 5,
-      "type": "multiple_choice",
-      "question": "What did you experience today?",
-      "options": [
-        "Crying or tearful moments",
-        "Feeling empty",
-        "Difficulty concentrating",
-        "Low motivation",
-        "Negative thoughts"
-      ]
+      "type": "single_choice",
+      "question": "How much difficulty did you have concentrating?",
+      "options": ["None", "Slight", "Moderate", "High", "Very high"]
     },
     {
       "id": 6,
       "type": "single_choice",
       "question": "Did you feel like isolating yourself?",
-      "options": ["No", "A little", "Yes"]
+      "options": ["Not at all", "Slightly", "Somewhat", "Mostly", "Completely"]
     },
     {
       "id": 7,
-      "type": "paragraph",
-      "question": "What thoughts or events affected your mood the most today?"
+      "type": "single_choice",
+      "question": "How motivated did you feel today?",
+      "options": ["Very motivated", "Somewhat motivated", "Neutral", "Low motivation", "No motivation"]
     },
     {
       "id": 8,
       "type": "single_choice",
       "question": "How hopeful did you feel about tomorrow?",
-      "options": ["Hopeful", "Neutral", "Low hope"]
+      "options": ["Very hopeful", "Somewhat hopeful", "Neutral", "Low hope", "No hope at all"]
     },
     {
       "id": 9,
-      "type": "one_line",
-      "question": "What felt hardest to do today?"
+      "type": "single_choice",
+      "question": "How much did negative thoughts affect your day?",
+      "options": ["Not at all", "A little", "Somewhat", "Mostly", "Completely"]
     },
     {
       "id": 10,
       "type": "single_choice",
-      "question": "Overall mood today:",
-      "options": ["Good", "Okay", "Low", "Very low"]
+      "question": "Overall, how would you rate your mood today?",
+      "options": ["Very good", "Good", "Okay", "Low", "Very low"]
     }
   ]
 }
-

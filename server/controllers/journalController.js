@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Journal from "../models/Journal.js";
 import RiskScore from "../models/RiskScore.js";
 import axios from "axios";
@@ -5,13 +6,26 @@ import axios from "axios";
 const getJournalEntries = async(req, res) =>{
     try{
         const userId = req.userId;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const total = await Journal.countDocuments({ user: userId });
         const entries = await Journal.find({
             user: userId
         })
         .sort({
-            entryTime: 1
+            entryTime: -1
         })
-        res.json({entries});
+        .skip(skip)
+        .limit(limit);
+
+        res.json({
+            entries,
+            currentPage: page,
+            totalPages: Math.ceil(total / limit),
+            totalEntries: total
+        });
     }catch(error){
         res.status(500).json({message: "Server error"});
         console.error("Error fetching journal entries", error);
@@ -154,19 +168,34 @@ const updateJournalEntry = async(req, res) =>{
             });
         }
 
-        if(text) entry.text = text;
         if(subject) entry.subject = subject;
-        try {
-            const response = await axios.post(
-                `${process.env.PYTHON_SERVER}/sentiment/analyze`,
-                { text, subject }
-            );
-        entry.sentimentScore = response.data.paragraphScore ?? 0;
-        } catch (err) {
-            console.error("Sentiment API error:", err.message);
+        if(text){
+            entry.text = text;
+            try {
+                const response = await axios.post(
+                    `${process.env.PYTHON_SERVER}/sentiment/analyze`,
+                    { text: entry.text }
+                );
+                entry.sentimentScore = response.data.paragraphScore ?? 0;
+            }catch (err) {
+                console.error("Sentiment API error:", err.message);
+            }
         }
-
         await entry.save();
+        const journalDate = entry.entryTime.toISOString().split("T")[0];
+
+        await RiskScore.findOneAndUpdate({ 
+            user: userId, 
+            date: journalDate 
+        },
+        {
+        $set: {
+            journal_score: entry.sentimentScore,
+            journal_date: journalDate,
+        },
+        },
+        { upsert: true, new: true }
+        ); 
         res.json({
             message: "Journal entry updated successfully", entry
         });
@@ -178,4 +207,42 @@ const updateJournalEntry = async(req, res) =>{
     }
 }
 
-export {getJournalEntries, createJournalEntry, deleteJournalEntry, updateJournalEntry, getJournalEntryByDate};
+const getCalendarDates = async(req, res) => {
+    try{
+        const userId = req.userId;
+        const { month, year } = req.query;
+
+        let matchQuery = { user: new mongoose.Types.ObjectId(userId) };
+
+        if(month && year){
+            const startDate = new Date(year, month - 1, 1);
+            const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+            matchQuery.entryTime = { $gte: startDate, $lte: endDate };
+        }
+
+        const dates = await Journal.aggregate([
+            { $match: matchQuery },
+            {
+                $group: {
+                    _id: {
+                        $dateToString: { format: "%Y-%m-%d", date: "$entryTime" }
+                    },
+                    count: { $sum: 1 }
+                }
+            },
+            { $sort: { _id: 1 } }
+        ]);
+
+        const calendarDates = dates.map(d => ({
+            date: d._id,
+            entryCount: d.count
+        }));
+
+        res.json({ calendarDates });
+    }catch(error){
+        res.status(500).json({message: "Server error"});
+        console.error("Error fetching calendar dates", error);
+    }
+}
+
+export {getJournalEntries, createJournalEntry, deleteJournalEntry, updateJournalEntry, getJournalEntryByDate, getCalendarDates};

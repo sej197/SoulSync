@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import authapi from '../lib/authapi';
+import { User, Settings, LogOut } from 'lucide-react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.jsx';
 
@@ -16,7 +17,7 @@ const Navbar = () => {
             setUser(null);
             setIsLoggedIn(false);
             navigate("/login", { replace: true });
-        }catch(error) {
+        } catch (error) {
             console.error("Logout failed", error);
         }
     };
@@ -82,16 +83,60 @@ const Navbar = () => {
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="navbar-end">
-                <button
-                    className={`btn btn-ghost transition-colors duration-300 hover:text-bloom-primary ${isScrolled ? 'text-gray-600' : 'text-white'
-                        }`}
-                    onClick = {handleLogout}
-                >
-                    Logout
-                </button>
+
+            <div className="navbar-end flex items-center gap-3">
+
+                {/* Profile Dropdown */}
+                <div className="dropdown dropdown-end">
+                    <div
+                        tabIndex={0}
+                        role="button"
+                        className={`btn btn-ghost btn-circle avatar transition-colors duration-300 ${isScrolled ? 'text-gray-600' : 'text-white'
+                            }`}
+                    >
+                        <div className="w-9 h-9 rounded-full bg-bloom-primary/20 flex items-center justify-center border border-bloom-primary/30 text-bloom-primary">
+                            <User className="w-5 h-5" />
+                        </div>
+                    </div>
+
+                    <ul
+                        tabIndex={0}
+                        className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-soft bg-base-100 rounded-box w-56 border border-gray-100"
+                    >
+                        <li className="menu-title px-4 py-2 border-b border-gray-100 mb-2">
+                            <span className="text-gray-900 font-semibold block">Hello, User</span>
+                            <span className="text-xs text-gray-500 font-normal">user@example.com</span>
+                        </li>
+                        <li>
+                            <Link to="/profile" className="flex items-center gap-2 py-2 text-gray-700 hover:text-bloom-primary hover:bg-bloom-primary/10">
+                                <User className="w-4 h-4" />
+                                Profile
+                            </Link>
+                        </li>
+                        <li>
+                            <Link to="/settings" className="flex items-center gap-2 py-2 text-gray-700 hover:text-bloom-primary hover:bg-bloom-primary/10">
+                                <Settings className="w-4 h-4" />
+                                Settings
+                            </Link>
+                        </li>
+                        <div className="divider my-1"></div>
+                        <li>
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center gap-2 py-2 text-red-500 hover:bg-red-50 hover:text-red-600"
+                            >
+                                <LogOut className="w-4 h-4" />
+                                Logout
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
+
         </div>
+
+
     );
 };
 

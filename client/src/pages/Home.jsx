@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BookOpen,
@@ -14,9 +14,22 @@ import {
 export default function Home() {
   const [activeTab, setActiveTab] = useState('journal');
   const [journalEntry, setJournalEntry] = useState('');
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
 
   return (
-    <div className="min-h-screen bg-[#0f0f1a] text-gray-100 overflow-x-hidden selection:bg-bloom-primary selection:text-white">
+    <div className="min-h-screen bg-[#0f0f1a] text-gray-100 overflow-x-hidden selection:bg-bloom-primary selection:text-white relative">
       {/* CSS for animations */}
       <style>
         {`
@@ -29,6 +42,10 @@ export default function Home() {
           @keyframes pulse-glow {
             0%, 100% { opacity: 0.5; transform: scale(1); }
             50% { opacity: 0.8; transform: scale(1.05); }
+          }
+           @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
           }
           @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -55,18 +72,26 @@ export default function Home() {
         `}
       </style>
 
-      {/* Animated Background */}
+      {/* Mouse Follower Spotlight */}
+      <div
+        className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(600px at ${mousePosition.x}px ${mousePosition.y}px, rgba(200, 150, 244, 0.15), transparent 80%)`
+        }}
+      ></div>
+
+      {/* Animated Background Blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-bloom-primary/10 rounded-full blur-[100px] animate-float"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-[120px] animate-float" style={{ animationDelay: '-5s' }}></div>
-        <div className="absolute top-[40%] left-[60%] w-[300px] h-[300px] bg-blue-900/10 rounded-full blur-[80px] animate-float" style={{ animationDelay: '-10s' }}></div>
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-bloom-primary/20 rounded-full blur-[100px] animate-float animate-pulse-glow opacity-60"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-900/30 rounded-full blur-[120px] animate-float animate-pulse-glow opacity-60" style={{ animationDelay: '-5s' }}></div>
+        <div className="absolute top-[40%] left-[60%] w-[300px] h-[300px] bg-blue-900/20 rounded-full blur-[80px] animate-float animate-pulse-glow opacity-50" style={{ animationDelay: '-10s' }}></div>
       </div>
 
       {/* Hero Section */}
       <div className="hero min-h-[85vh] relative text-center px-4">
         <div className="hero-content max-w-3xl">
           <div>
-            
+
             <h1 className="text-5xl md:text-7xl font-bold font-serif mb-8 bg-clip-text text-transparent bg-gradient-to-r from-bloom-secondary via-bloom-primary to-white drop-shadow-sm leading-tight">
               SoulSync
             </h1>

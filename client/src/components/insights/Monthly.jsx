@@ -1,6 +1,6 @@
-// src/components/insights/Monthly.jsx
 import React, { useState } from 'react';
 import { LineChart, Line, BarChart, Bar, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Activity, TrendingUp, TrendingDown, Calendar, CheckCircle } from 'lucide-react';
 
 export default function Monthly({ monthlyData }) {
   const [viewMode, setViewMode] = useState('daily');
@@ -8,210 +8,162 @@ export default function Monthly({ monthlyData }) {
   if (!monthlyData) return null;
 
   const getTrendColor = (trend) => {
-    if (trend === 'improving') return 'text-success';
-    if (trend === 'declining') return 'text-error';
-    return 'text-base-content';
+    if (trend === 'improving') return 'text-emerald-400';
+    if (trend === 'declining') return 'text-red-400';
+    return 'text-gray-400';
   };
 
-  const getTrendIcon = (trend) => {
-    if (trend === 'improving') return '↓';
-    if (trend === 'declining') return '↑';
-    return '→';
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-[#1a1a2e] border border-white/10 p-4 rounded-xl shadow-xl">
+          <p className="text-gray-400 mb-2">{label}</p>
+          {payload.map((entry, index) => (
+            <div key={index} className="flex items-center gap-2 mb-1">
+              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: entry.stroke || entry.fill }}></div>
+              <span className="text-white font-medium">{entry.name}: {entry.value}%</span>
+            </div>
+          ))}
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Stats Grid */}
-      <div className="stats stats-vertical lg:stats-horizontal shadow-xl w-full border" style={{ 
-        borderColor: '#e5e7eb', 
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)',
-        color: 'white' 
-      }}>
-        <div className="stat">
-          <div className="stat-figure" style={{ color: '#c896f4' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-8 h-8 stroke-current">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-            </svg>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="glass-panel p-5 rounded-3xl text-center flex flex-col items-center justify-center hover:bg-white/5 transition-colors group">
+          <div className="w-10 h-10 rounded-xl bg-bloom-primary/10 text-bloom-primary flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+            <Activity className="w-5 h-5" />
           </div>
-          <div className="stat-title" style={{ color: '#6b7280' }}>Average Score</div>
-          <div className="stat-value" style={{ color: '#c896f4' }}>{monthlyData.summary.avg_score}</div>
-          <div className="stat-desc" style={{ color: '#9ca3af' }}>Past 30 days</div>
+          <div className="text-gray-500 text-xs mb-1 uppercase tracking-wide">Average</div>
+          <div className="text-3xl font-bold text-white">{monthlyData.summary.avg_score}</div>
         </div>
-        
-        <div className="stat">
-          <div className={`stat-figure ${getTrendColor(monthlyData.summary.trend)}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-8 h-8 stroke-current">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-            </svg>
+
+        <div className="glass-panel p-5 rounded-3xl text-center flex flex-col items-center justify-center hover:bg-white/5 transition-colors group">
+          <div className={`w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform ${getTrendColor(monthlyData.summary.trend)}`}>
+            {monthlyData.summary.trend === 'improving' ? <TrendingDown className="w-5 h-5" /> : <TrendingUp className="w-5 h-5" />}
           </div>
-          <div className="stat-title" style={{ color: '#6b7280' }}>Trend</div>
-          <div className={`stat-value capitalize ${getTrendColor(monthlyData.summary.trend)}`}>
+          <div className="text-gray-500 text-xs mb-1 uppercase tracking-wide">Trend</div>
+          <div className={`text-xl font-bold capitalize ${getTrendColor(monthlyData.summary.trend)}`}>
             {monthlyData.summary.trend}
           </div>
-          <div className="stat-desc" style={{ color: '#9ca3af' }}>{getTrendIcon(monthlyData.summary.trend)} Overall direction</div>
         </div>
-        
-        <div className="stat">
-          <div className="stat-figure" style={{ color: 'white' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-8 h-8 stroke-current">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-            </svg>
+
+        <div className="glass-panel p-5 rounded-3xl text-center flex flex-col items-center justify-center hover:bg-white/5 transition-colors group">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+            <Calendar className="w-5 h-5" />
           </div>
-          <div className="stat-title" style={{ color: '#6b7280' }}>Days Tracked</div>
-          <div className="stat-value" style={{ color: 'white' }}>{monthlyData.summary.days_tracked}</div>
-          <div className="stat-desc" style={{ color: '#9ca3af' }}>Out of 30 days</div>
+          <div className="text-gray-500 text-xs mb-1 uppercase tracking-wide">Tracked</div>
+          <div className="text-3xl font-bold text-white">{monthlyData.summary.days_tracked}</div>
         </div>
-        
-        <div className="stat">
-          <div className="stat-figure" style={{ color: '#10b981' }}>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" className="inline-block w-8 h-8 stroke-current">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
+
+        <div className="glass-panel p-5 rounded-3xl text-center flex flex-col items-center justify-center hover:bg-white/5 transition-colors group">
+          <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+            <CheckCircle className="w-5 h-5" />
           </div>
-          <div className="stat-title" style={{ color: '#6b7280' }}>Consistency</div>
-          <div className="stat-value" style={{ color: '#10b981' }}>{monthlyData.summary.consistency}%</div>
-          <div className="stat-desc" style={{ color: '#9ca3af' }}>Tracking rate</div>
+          <div className="text-gray-500 text-xs mb-1 uppercase tracking-wide">Consistency</div>
+          <div className="text-3xl font-bold text-emerald-400">{monthlyData.summary.consistency}%</div>
         </div>
       </div>
 
       {/* View Toggle */}
-      <div className="flex gap-2 w-full lg:w-auto" style={{ 
-        backgroundColor: '#1a1a2e',
-        padding: '0.5rem',
-        borderRadius: '0.5rem'
-      }}>
-        <button 
-          className="flex-1 py-2 px-4 rounded-lg font-medium transition"
-          onClick={() => setViewMode('weekly')}
-          style={viewMode === 'weekly' ? { 
-            backgroundColor: '#c896f4', 
-            color: 'white' 
-          } : { 
-            backgroundColor: 'transparent', 
-            color: '#9ca3af' 
-          }}
-        >
-          Weekly View
-        </button>
-        <button 
-          className="flex-1 py-2 px-4 rounded-lg font-medium transition"
-          onClick={() => setViewMode('daily')}
-          style={viewMode === 'daily' ? { 
-            backgroundColor: '#c896f4', 
-            color: 'white' 
-          } : { 
-            backgroundColor: 'transparent', 
-            color: '#9ca3af' 
-          }}
-        >
-          Daily View
-        </button>
+      <div className="flex justify-center">
+        <div className="bg-black/20 p-1 rounded-xl inline-flex backdrop-blur-sm border border-white/5">
+          <button
+            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'daily' ? 'bg-bloom-primary text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
+            onClick={() => setViewMode('daily')}
+          >
+            Daily Flow
+          </button>
+          <button
+            className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${viewMode === 'weekly' ? 'bg-bloom-primary text-white shadow-md' : 'text-gray-400 hover:text-white'}`}
+            onClick={() => setViewMode('weekly')}
+          >
+            Weekly Review
+          </button>
+        </div>
       </div>
 
-      {/* Charts */}
-      {viewMode === 'weekly' ? (
-        <div className="card shadow-xl border" style={{ 
-          borderColor: '#e5e7eb', 
-          background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)',
-          color: 'white' 
-        }}>
-          <div className="card-body">
-            <h3 className="card-title" style={{ color: '#c896f4' }}>Weekly Averages</h3>
-            <div className="mt-4">
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={monthlyData.weekly_overview}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis 
-                    dataKey="week" 
-                    tickFormatter={(week) => `Week ${week}`}
-                    stroke="#6b7280"
-                  />
-                  <YAxis domain={[0, 100]} stroke="#6b7280" />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
-                    formatter={(value) => [`${value}%`, 'Avg Score']}
-                    labelFormatter={(week) => `Week ${week}`}
-                  />
-                  <Bar dataKey="avg_score" fill="#c896f4" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div className="card shadow-xl border" style={{ 
-          borderColor: '#e5e7eb', 
-          background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)',
-          color: 'white' 
-        }}>
-          <div className="card-body">
-            <h3 className="card-title" style={{ color: '#c896f4' }}>Daily Trend (30 Days)</h3>
-            <div className="mt-4">
-              <ResponsiveContainer width="100%" height={300}>
-                <AreaChart data={monthlyData.chart_data}>
-                  <defs>
-                    <linearGradient id="colorOverall" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#c896f4" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#c896f4" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis 
-                    dataKey="date"
-                    tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                    stroke="#6b7280"
-                  />
-                  <YAxis domain={[0, 100]} stroke="#6b7280" />
-                  <Tooltip 
-                    contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
-                    labelFormatter={(date) => new Date(date).toLocaleDateString()}
-                    formatter={(value) => [`${value}%`, 'Score']}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="overall" 
-                    stroke="#c896f4" 
-                    fillOpacity={1} 
-                    fill="url(#colorOverall)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Main Chart */}
+      <div className="glass-panel p-6 rounded-3xl">
+        <h3 className="text-xl font-serif text-white mb-6">
+          {viewMode === 'weekly' ? 'Weekly Averages' : '30-Day Trend'}
+        </h3>
 
-      {/* Category Trends */}
-      <div className="card shadow-xl border" style={{ 
-        borderColor: '#e5e7eb', 
-        background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)',
-        color: 'white' 
-      }}>
-        <div className="card-body">
-          <h3 className="card-title" style={{ color: '#c896f4' }}>Category Trends</h3>
-          <div className="mt-4">
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={monthlyData.chart_data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis 
-                  dataKey="date"
-                  tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+        <div className="h-[350px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            {viewMode === 'weekly' ? (
+              <BarChart data={monthlyData.weekly_overview}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis
+                  dataKey="week"
+                  tickFormatter={(week) => `W${week}`}
                   stroke="#6b7280"
+                  tick={{ fill: '#9ca3af' }}
                 />
-                <YAxis domain={[0, 100]} stroke="#6b7280" />
-                <Tooltip 
-                  contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '0.5rem' }}
-                  labelFormatter={(date) => new Date(date).toLocaleDateString()}
-                  formatter={(value) => [`${value}%`]}
+                <YAxis domain={[0, 100]} stroke="#6b7280" tick={{ fill: '#9ca3af' }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="avg_score" fill="#c896f4" name="Avg Score" radius={[8, 8, 0, 0]} maxBarSize={60} />
+              </BarChart>
+            ) : (
+              <AreaChart data={monthlyData.chart_data}>
+                <defs>
+                  <linearGradient id="colorOverall" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#c896f4" stopOpacity={0.4} />
+                    <stop offset="95%" stopColor="#c896f4" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { day: 'numeric' })}
+                  stroke="#6b7280"
+                  tick={{ fill: '#9ca3af' }}
+                  minTickGap={30}
                 />
-                <Legend />
-                <Line type="monotone" dataKey="depression" stroke="#ef4444" strokeWidth={2} name="Depression" />
-                <Line type="monotone" dataKey="anxiety" stroke="#f59e0b" strokeWidth={2} name="Anxiety" />
-                <Line type="monotone" dataKey="stress" stroke="#3b82f6" strokeWidth={2} name="Stress" />
-                <Line type="monotone" dataKey="sleep" stroke="#c896f4" strokeWidth={2} name="Sleep" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+                <YAxis domain={[0, 100]} stroke="#6b7280" tick={{ fill: '#9ca3af' }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="overall"
+                  stroke="#c896f4"
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorOverall)"
+                  name="Overall Score"
+                />
+              </AreaChart>
+            )}
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Category Trends Line Chart */}
+      <div className="glass-panel p-6 rounded-3xl">
+        <h3 className="text-xl font-serif text-white mb-6">Factor Trends</h3>
+        <div className="h-[300px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={monthlyData.chart_data}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <XAxis
+                dataKey="date"
+                tickFormatter={(date) => new Date(date).toLocaleDateString('en-US', { day: 'numeric' })}
+                stroke="#6b7280"
+                tick={{ fill: '#9ca3af' }}
+                minTickGap={30}
+              />
+              <YAxis domain={[0, 100]} stroke="#6b7280" tick={{ fill: '#9ca3af' }} />
+              <Tooltip content={<CustomTooltip />} />
+              <Legend wrapperStyle={{ paddingTop: '10px' }} />
+              <Line type="monotone" dataKey="depression" stroke="#ef4444" strokeWidth={2} name="Dep" dot={false} />
+              <Line type="monotone" dataKey="anxiety" stroke="#f59e0b" strokeWidth={2} name="Anx" dot={false} />
+              <Line type="monotone" dataKey="stress" stroke="#3b82f6" strokeWidth={2} name="Str" dot={false} />
+              <Line type="monotone" dataKey="sleep" stroke="#c896f4" strokeWidth={2} name="Slp" dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       </div>
     </div>

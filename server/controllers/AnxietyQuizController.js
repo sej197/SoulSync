@@ -6,75 +6,73 @@ const submitAnxietyQuiz = async (req, res) => {
     const { answers } = req.body;
 
     const optionScores = {
-      
       "Not at all": 0,
-      "A little": 0.25,
+      "Rarely": 0.25,
       "Sometimes": 0.5,
       "Often": 0.75,
       "Almost all the time": 1,
 
       "No symptoms": 0,
-      "Sweating": 0.5,
-      "Restlessness": 0.6,
-      "Difficulty concentrating": 0.6,
-      "Fast heartbeat": 0.7,
-      "Racing thoughts": 0.7,
+      "Very mild": 0.25,
+      "Mild": 0.5,
+      "Strong": 0.75,
+      "Very strong": 1,
 
-      "Moderately": 0.6,
-      "Very much": 0.9,
-
-      "No": 0,
-      "Slightly": 0.3,
-      "Yes": 0.7,
-      "Very much": 1,
-
-      "None": 0,
-      "Social situations": 0.6,
-      "College or work": 0.6,
-      "Family issues": 0.6,
-      "Health concerns": 0.7,
-      "Future uncertainty": 0.7,
-
-      "Yes, several things": 0.9,
-
-      
-      "Relaxed": 0,
-      "Slight tension": 0.3,
-      "Moderate tension": 0.6,
-      "Very tense": 0.9,
-
-      
-      "Did not need anything": 0,
-      "Helped a little": 0.3,
-      "Helped moderately": 0.5,
-      "Did not help at all": 0.8,
-
-    
-      "Very low": 0,
-      "Low": 0.25,
+      "Very easy": 0,
+      "Easy": 0.25,
       "Moderate": 0.5,
-      "High": 0.75,
-      "Extreme": 1
+      "Hard": 0.75,
+      "Very hard": 1,
+
+      "Completely relaxed": 0,
+      "Slightly restless": 0.25,
+      "Moderately restless": 0.5,
+      "Very restless": 0.75,
+      "Extremely restless": 1,
+
+      "A little": 0.25,
+      "Somewhat": 0.5,
+      "Very much": 0.75,
+      "Extremely overwhelming": 1,
+
+      "Slightly": 0.25,
+      "A lot": 0.75,
+      "Constantly": 1,
+
+      "Very little": 0.25,
+      "Somewhat": 0.5,
+      "A lot": 0.75,
+      "Completely affected": 1,
+
+      "Fully relaxed": 0,
+      "Slightly tense": 0.25,
+      "Moderately tense": 0.5,
+      "Very tense": 0.75,
+      "Extremely tense": 1,
+
+      "Very effective": 0,
+      "Mostly effective": 0.25,
+      "Somewhat effective": 0.5,
+      "Barely effective": 0.75,
+      "Not effective at all": 1,
+
+      "Very calm": 0,
+      "Mostly calm": 0.25,
+      "Moderately anxious": 0.5,
+      "Highly anxious": 0.75,
+      "Extremely anxious": 1
     };
+
 
     let totalScore = 0;
     let questionCount = 0;
-
-    for (let i = 0; i < answers.length; i++) {
-      const selectedOption = answers[i].selectedOption;
-
-      if (!selectedOption) continue;
-
-      const score = optionScores[selectedOption] ?? 0;
-      totalScore += score;
+    for(let i = 0; i < answers.length; i++) {
+      const userAnswer = answers[i].answer;
+      totalScore = totalScore + optionScores[userAnswer];
       questionCount++;
-    }
-
-    const anxietyScore =
-      questionCount > 0
-        ? Number((totalScore / questionCount).toFixed(2))
-        : 0;
-
+    }    
+    const anxietyScore = Number((totalScore / questionCount).toFixed(2));
+    
     await DailyQuiz.create({
       userId,
       quizType: "anxiety",

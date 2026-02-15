@@ -5,73 +5,121 @@
       "id": 1,
       "type": "single_choice",
       "question": "How often did you feel nervous or on edge today?",
-      "options": ["Not at all", "A little", "Sometimes", "Often", "Almost all the time"]
+      "options": [
+        "Not at all",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Almost all the time"
+      ]
     },
     {
       "id": 2,
-      "type": "multiple_choice",
-      "question": "What symptoms did you notice?",
+      "type": "single_choice",
+      "question": "How intense were your anxiety symptoms today?",
       "options": [
-        "Racing thoughts",
-        "Fast heartbeat",
-        "Restlessness",
-        "Sweating",
-        "Difficulty concentrating",
-        "No symptoms"
+        "No symptoms",
+        "Very mild",
+        "Mild",
+        "Strong",
+        "Very strong"
       ]
     },
     {
       "id": 3,
       "type": "single_choice",
-      "question": "Did you find it hard to control worrying?",
-      "options": ["Not at all", "A little", "Moderately", "Very much"]
+      "question": "How hard was it to control your worrying?",
+      "options": [
+        "Very easy",
+        "Easy",
+        "Moderate",
+        "Hard",
+        "Very hard"
+      ]
     },
     {
       "id": 4,
-      "type": "paragraph",
-      "question": "What were you mainly worried about today?"
+      "type": "single_choice",
+      "question": "How restless or unable to relax did you feel?",
+      "options": [
+        "Completely relaxed",
+        "Slightly restless",
+        "Moderately restless",
+        "Very restless",
+        "Extremely restless"
+      ]
     },
     {
       "id": 5,
       "type": "single_choice",
-      "question": "Did small issues feel bigger than usual?",
-      "options": ["No", "Slightly", "Yes", "Very much"]
+      "question": "Did small problems feel overwhelming today?",
+      "options": [
+        "Not at all",
+        "A little",
+        "Somewhat",
+        "Very much",
+        "Extremely overwhelming"
+      ]
     },
     {
       "id": 6,
-      "type": "multiple_choice",
-      "question": "What situations increased your anxiety?",
+      "type": "single_choice",
+      "question": "How much did future thoughts worry you today?",
       "options": [
-        "Social situations",
-        "College or work",
-        "Family issues",
-        "Health concerns",
-        "Future uncertainty"
+        "Not at all",
+        "Slightly",
+        "Moderately",
+        "A lot",
+        "Constantly"
       ]
     },
     {
       "id": 7,
       "type": "single_choice",
-      "question": "Did you avoid anything because of fear or worry?",
-      "options": ["No", "A little", "Yes, several things"]
+      "question": "How much did anxiety affect your daily activities?",
+      "options": [
+        "Not at all",
+        "Very little",
+        "Somewhat",
+        "A lot",
+        "Completely affected"
+      ]
     },
     {
       "id": 8,
       "type": "single_choice",
-      "question": "How tense did your body feel?",
-      "options": ["Relaxed", "Slight tension", "Moderate tension", "Very tense"]
+      "question": "How tense did your body feel today?",
+      "options": [
+        "Fully relaxed",
+        "Slightly tense",
+        "Moderately tense",
+        "Very tense",
+        "Extremely tense"
+      ]
     },
     {
       "id": 9,
-      "type": "one_line",
-      "question": "What helped reduce your anxiety even a little today?"
+      "type": "single_choice",
+      "question": "How effective were your coping efforts today?",
+      "options": [
+        "Very effective",
+        "Mostly effective",
+        "Somewhat effective",
+        "Barely effective",
+        "Not effective at all"
+      ]
     },
     {
       "id": 10,
       "type": "single_choice",
-      "question": "Overall anxiety level today:",
-      "options": ["Very low", "Low", "Moderate", "High", "Extreme"]
+      "question": "Overall, how anxious did you feel today?",
+      "options": [
+        "Very calm",
+        "Mostly calm",
+        "Moderately anxious",
+        "Highly anxious",
+        "Extremely anxious"
+      ]
     }
   ]
 }
-

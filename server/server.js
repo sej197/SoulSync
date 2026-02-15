@@ -6,11 +6,13 @@ import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import riskRoutes from "./routes/riskRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
+import journalRoutes from "./routes/journalRoutes.js";
+import dailyQuizRoutes from "./routes/dailyQuizRoutes.js"
 import userAuth from "./middleware/authmiddleware.js";
 import UserChat from "./models/Botuserchat.js";
 import Chat from "./models/botchat.js";
 
-import dailyQuizRoutes from "./routes/dailyQuizRoutes.js"
+
 dotenv.config();
 
 const app = express();
@@ -33,9 +35,10 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/risk", riskRoutes);
+app.use("/api/quiz", dailyQuizRoutes);
+app.use("/api/journal", journalRoutes);
 
 // Connect DB & start server
-app.use("/api/quiz", dailyQuizRoutes)
 connectDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server started at port ${PORT}`);

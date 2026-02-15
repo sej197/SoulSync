@@ -1,0 +1,70 @@
+{
+  "quizType": "depression",
+  "questions": [
+    {
+      "id": 1,
+      "type": "single_choice",
+      "question": "How low or sad did you feel today?",
+      "options": ["Not at all", "A little", "Moderately", "Very low"]
+    },
+    {
+      "id": 2,
+      "type": "single_choice",
+      "question": "Did you lose interest in things you usually enjoy?",
+      "options": ["No", "A little", "Yes", "Completely"]
+    },
+    {
+      "id": 3,
+      "type": "single_choice",
+      "question": "How was your energy level?",
+      "options": ["Normal", "Slightly low", "Very low", "Exhausted"]
+    },
+    {
+      "id": 4,
+      "type": "single_choice",
+      "question": "Did you feel hopeless about anything?",
+      "options": ["No", "Sometimes", "Often"]
+    },
+    {
+      "id": 5,
+      "type": "multiple_choice",
+      "question": "What did you experience today?",
+      "options": [
+        "Crying or tearful moments",
+        "Feeling empty",
+        "Difficulty concentrating",
+        "Low motivation",
+        "Negative thoughts"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "single_choice",
+      "question": "Did you feel like isolating yourself?",
+      "options": ["No", "A little", "Yes"]
+    },
+    {
+      "id": 7,
+      "type": "paragraph",
+      "question": "What thoughts or events affected your mood the most today?"
+    },
+    {
+      "id": 8,
+      "type": "single_choice",
+      "question": "How hopeful did you feel about tomorrow?",
+      "options": ["Hopeful", "Neutral", "Low hope"]
+    },
+    {
+      "id": 9,
+      "type": "one_line",
+      "question": "What felt hardest to do today?"
+    },
+    {
+      "id": 10,
+      "type": "single_choice",
+      "question": "Overall mood today:",
+      "options": ["Good", "Okay", "Low", "Very low"]
+    }
+  ]
+}
+

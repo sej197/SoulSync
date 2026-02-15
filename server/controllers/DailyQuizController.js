@@ -1,8 +1,11 @@
 import DailyQuiz from "../models/DailyQuiz.js";
-
+import RiskScore from "../models/RiskScore.js";
 const submitDailyQuiz = async (req, res) => {
   try {
-    const { userId, answers } = req.body;
+     const userId = req.userId; 
+        const today = new Date().toISOString().split("T")[0]
+
+    const { answers } = req.body; 
 
     const optionScores = {
       // feelings
@@ -185,6 +188,7 @@ const submitDailyQuiz = async (req, res) => {
 
     const quiz = await DailyQuiz.create({
       userId,
+      quizType:"daily",
       date: new Date(),
       answers,
       scores: {
@@ -193,15 +197,24 @@ const submitDailyQuiz = async (req, res) => {
         sleepScore: sleep,
         socialScore: social,
         reflectionScore: reflection,
-        
+        paragraphScore: paragraphScore,
       },
       finalScore,
     });
-
+     await RiskScore.findOneAndUpdate(
+          { user: userId, date: today },
+          {
+            $set: {
+              quiz_score: finalScore,
+              quiz_date: today
+            }
+          },
+          { upsert: true, new: true }
+        );
     res.status(201).json({
       message: "quiz submitted successfully",
-      finalScore,
-      paragraphScore   
+      // finalScore,
+      // paragraphScore   
     });
   } catch (error) {
     res.status(500).json({ error: error.message });

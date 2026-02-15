@@ -1,10 +1,23 @@
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
+
 const submitAnxietyQuiz = async (req, res) => {
   try {
-    const userId = req.userId;
+    const userId = req.userId; 
     const { answers } = req.body;
-    const today = new Date().toISOString().split("T")[0]
+
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized user" });
+    }
+
+    if (!Array.isArray(answers) || answers.length === 0) {
+      return res.status(400).json({
+        message: "Answers must be a non-empty array"
+      });
+    }
+
+    const today = new Date().toISOString().split("T")[0];
+
     const optionScores = {
       "Not at all": 0,
       "Rarely": 0.25,
@@ -40,8 +53,8 @@ const submitAnxietyQuiz = async (req, res) => {
       "Constantly": 1,
 
       "Very little": 0.25,
-      "Somewhat": 0.5,
-      "A lot": 0.75,
+      "Somewhat affected": 0.5,
+      "A lot affected": 0.75,
       "Completely affected": 1,
 
       "Fully relaxed": 0,
@@ -63,47 +76,70 @@ const submitAnxietyQuiz = async (req, res) => {
       "Extremely anxious": 1
     };
 
-
     let totalScore = 0;
-    let questionCount = 0;
-    for(let i = 0; i < answers.length; i++) {
-      const userAnswer = answers[i].answer;
-      totalScore = totalScore + optionScores[userAnswer];
-      questionCount++;
-    }    
-    const anxietyScore = Number((totalScore / questionCount).toFixed(2));
+    let validCount = 0;
+
+    for (const ans of answers) {
+      const score = optionScores[ans.answer];
+
+      if (typeof score !== "number") {
+        console.warn("Invalid answer option:", ans.answer);
+        continue;
+      }
+
+      totalScore += score;
+      validCount++;
+    }
+
+    if (validCount === 0) {
+      return res.status(400).json({
+        message: "No valid answers provided"
+      });
+    }
+
+    const anxietyScore = Number((totalScore / validCount).toFixed(2));
+
+    if (isNaN(anxietyScore)) {
+      return res.status(400).json({
+        message: "Score calculation failed"
+      });
+    }
+
     const transformedAnswers = answers.map(a => ({
-        questionId: a.questionId,
-        selectedOptions: [a.answer] 
+      questionId: a.questionId,
+      selectedOptions: [a.answer]
     }));
-    
+
     await DailyQuiz.create({
       userId,
       quizType: "anxiety",
       date: new Date(),
-      answers:transformedAnswers,
-      scores: {
-        anxietyScore
-      },
+      answers: transformedAnswers,
+      scores: { anxietyScore },
       finalScore: anxietyScore
     });
-     await RiskScore.findOneAndUpdate(
-          { user: userId, date: today },
-          {
-            $set: {
-              anxiety_quiz_score: anxietyScore,
-              anxiety_quiz_date: today
-            }
-          },
-          { upsert: true, new: true }
-        );
+
+    await RiskScore.findOneAndUpdate(
+      { user: userId, date: today },
+      {
+        $set: {
+          anxiety_quiz_score: anxietyScore,
+          anxiety_quiz_date: today
+        }
+      },
+      { upsert: true, new: true }
+    );
+
     res.status(201).json({
-      message: "anxiety quiz submitted successfully",
+      message: "Anxiety quiz submitted successfully",
       anxietyScore
     });
+
   } catch (error) {
-    console.error("arror submitting anxiety quiz:", error);
-    res.status(500).json({ message: "internal server error" });
+    console.error("Error submitting anxiety quiz:", error);
+    res.status(500).json({
+      message: "Internal server error"
+    });
   }
 };
 

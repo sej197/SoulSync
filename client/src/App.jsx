@@ -17,8 +17,9 @@ import AnxietyQuiz from './components/quiz/AnxietyQuiz';
 import DepressionQuiz from './components/quiz/DepressionQuiz';
 import SleepQuiz from './components/quiz/SleepQuiz';
 import StressQuiz from './components/quiz/StressQuiz';
+import DailyQuiz from './components/quiz/DailyQuiz';
 const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Community Chat Coming Soon</div>;
-const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
+// const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
 
 
 function App() {

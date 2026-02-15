@@ -1,0 +1,125 @@
+{
+  "quizType": "anxiety",
+  "questions": [
+    {
+      "id": 1,
+      "type": "single_choice",
+      "question": "How often did you feel nervous or on edge today?",
+      "options": [
+        "Not at all",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Almost all the time"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "single_choice",
+      "question": "How intense were your anxiety symptoms today?",
+      "options": [
+        "No symptoms",
+        "Very mild",
+        "Mild",
+        "Strong",
+        "Very strong"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "single_choice",
+      "question": "How hard was it to control your worrying?",
+      "options": [
+        "Very easy",
+        "Easy",
+        "Moderate",
+        "Hard",
+        "Very hard"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "single_choice",
+      "question": "How restless or unable to relax did you feel?",
+      "options": [
+        "Completely relaxed",
+        "Slightly restless",
+        "Moderately restless",
+        "Very restless",
+        "Extremely restless"
+      ]
+    },
+    {
+      "id": 5,
+      "type": "single_choice",
+      "question": "Did small problems feel overwhelming today?",
+      "options": [
+        "Not at all",
+        "A little",
+        "Somewhat",
+        "Very much",
+        "Extremely overwhelming"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "single_choice",
+      "question": "How much did future thoughts worry you today?",
+      "options": [
+        "Not at all",
+        "Slightly",
+        "Moderately",
+        "A lot",
+        "Constantly"
+      ]
+    },
+    {
+      "id": 7,
+      "type": "single_choice",
+      "question": "How much did anxiety affect your daily activities?",
+      "options": [
+        "Not at all",
+        "Very little",
+        "Somewhat",
+        "A lot",
+        "Completely affected"
+      ]
+    },
+    {
+      "id": 8,
+      "type": "single_choice",
+      "question": "How tense did your body feel today?",
+      "options": [
+        "Fully relaxed",
+        "Slightly tense",
+        "Moderately tense",
+        "Very tense",
+        "Extremely tense"
+      ]
+    },
+    {
+      "id": 9,
+      "type": "single_choice",
+      "question": "How effective were your coping efforts today?",
+      "options": [
+        "Very effective",
+        "Mostly effective",
+        "Somewhat effective",
+        "Barely effective",
+        "Not effective at all"
+      ]
+    },
+    {
+      "id": 10,
+      "type": "single_choice",
+      "question": "Overall, how anxious did you feel today?",
+      "options": [
+        "Very calm",
+        "Mostly calm",
+        "Moderately anxious",
+        "Highly anxious",
+        "Extremely anxious"
+      ]
+    }
+  ]
+}

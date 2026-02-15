@@ -1,0 +1,65 @@
+{
+  "quizType": "depression",
+  "questions": [
+    {
+      "id": 1,
+      "type": "single_choice",
+      "question": "How low or sad did you feel today?",
+      "options": ["Not at all", "Slightly", "Moderately", "Very low", "Extremely low"]
+    },
+    {
+      "id": 2,
+      "type": "single_choice",
+      "question": "Did you lose interest in things you usually enjoy?",
+      "options": ["Not at all", "A little", "Somewhat", "Mostly", "Completely"]
+    },
+    {
+      "id": 3,
+      "type": "single_choice",
+      "question": "How was your energy level today?",
+      "options": ["Normal", "Slightly low", "Moderate", "Low", "Very low"]
+    },
+    {
+      "id": 4,
+      "type": "single_choice",
+      "question": "Did you feel hopeless about anything?",
+      "options": ["Not at all", "A little", "Sometimes", "Often", "Always"]
+    },
+    {
+      "id": 5,
+      "type": "single_choice",
+      "question": "How much difficulty did you have concentrating?",
+      "options": ["None", "Slight", "Moderate", "High", "Very high"]
+    },
+    {
+      "id": 6,
+      "type": "single_choice",
+      "question": "Did you feel like isolating yourself?",
+      "options": ["Not at all", "Slightly", "Somewhat", "Mostly", "Completely"]
+    },
+    {
+      "id": 7,
+      "type": "single_choice",
+      "question": "How motivated did you feel today?",
+      "options": ["Very motivated", "Somewhat motivated", "Neutral", "Low motivation", "No motivation"]
+    },
+    {
+      "id": 8,
+      "type": "single_choice",
+      "question": "How hopeful did you feel about tomorrow?",
+      "options": ["Very hopeful", "Somewhat hopeful", "Neutral", "Low hope", "No hope at all"]
+    },
+    {
+      "id": 9,
+      "type": "single_choice",
+      "question": "How much did negative thoughts affect your day?",
+      "options": ["Not at all", "A little", "Somewhat", "Mostly", "Completely"]
+    },
+    {
+      "id": 10,
+      "type": "single_choice",
+      "question": "Overall, how would you rate your mood today?",
+      "options": ["Very good", "Good", "Okay", "Low", "Very low"]
+    }
+  ]
+}

@@ -15,7 +15,8 @@ import EditProfile from './pages/EditProfile';
 import Settings from './pages/Settings';
 import AnxietyQuiz from './components/quiz/AnxietyQuiz';
 import DepressionQuiz from './components/quiz/DepressionQuiz';
-
+import SleepQuiz from './components/quiz/SleepQuiz';
+import StressQuiz from './components/quiz/StressQuiz';
 const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Community Chat Coming Soon</div>;
 const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
 
@@ -49,6 +50,8 @@ function App() {
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="/anxiety-quiz" element={<ProtectedRoute><AnxietyQuiz /></ProtectedRoute>} />
                   <Route path="/depression-quiz" element={<ProtectedRoute><DepressionQuiz /></ProtectedRoute>} />
+                  <Route path="/sleep-quiz" element={<ProtectedRoute><SleepQuiz /></ProtectedRoute>} />
+                  <Route path="/stress-quiz" element={<ProtectedRoute><StressQuiz /></ProtectedRoute>} />
                 </Routes>
               </main>
               <Footer />

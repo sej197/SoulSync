@@ -44,7 +44,7 @@ const DailyQuiz = ({ userId }) => {
 
       // send to backend
       const res = await axios.post(
-        "http://localhost:5000/api/quiz/submit-dailyquiz",
+        `${import.meta.env.VITE_BASE_URL}/api/quiz/submit-dailyquiz`,
         {
           
           answers: payload,

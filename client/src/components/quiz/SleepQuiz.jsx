@@ -1,10 +1,10 @@
-// src/components/quiz/DepressionQuiz.jsx
+// src/components/quiz/SleepQuiz.jsx
 import React, { useState } from "react";
-import depressionQuizData from "./depressionQuiz.json";
+import sleepQuizData from "./sleepQuiz.json";
 import axios from "axios";
 
-const DepressionQuiz = ({ userId }) => {
-  const [quizData] = useState(depressionQuizData);
+const SleepQuiz = ({ userId }) => {
+  const [quizData] = useState(sleepQuizData);
   const [answers, setAnswers] = useState({});
   const [finalScore, setFinalScore] = useState(null);
   const [submitted, setSubmitted] = useState(false);
@@ -28,15 +28,15 @@ const DepressionQuiz = ({ userId }) => {
       }));
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/quiz/submit-depressionquiz`,
+        `${import.meta.env.VITE_BASE_URL}/api/quiz/submit-sleepquiz`,
         { answers: payload },
         { withCredentials: true }
       );
 
-      setFinalScore(res.data.depressionScore);
+      setFinalScore(res.data.sleepScore);
       setSubmitted(true);
     } catch (error) {
-      console.error("Error submitting depression quiz:", error);
+      console.error("Error submitting sleep quiz:", error);
     }
   };
 
@@ -52,7 +52,7 @@ const DepressionQuiz = ({ userId }) => {
   if (submitted) {
     return (
       <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
-        {/* Background */}
+        
         <div className="absolute inset-0 bg-gradient-to-br from-bloom-cream via-white to-bloom-primary/20">
           <div className="absolute top-20 left-20 w-72 h-72 bg-bloom-primary/10 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 right-20 w-96 h-96 bg-bloom-dark/5 rounded-full blur-3xl"></div>
@@ -62,7 +62,7 @@ const DepressionQuiz = ({ userId }) => {
         <div className="relative max-w-2xl w-full">
           <div className="backdrop-blur-xl bg-white/80 rounded-3xl shadow-2xl p-8 md:p-14 border border-white/50">
             <div className="text-center space-y-8">
-              {/* Success Icon */}
+              
               <div className="relative mx-auto w-32 h-32">
                 <div className="relative w-32 h-32 bg-gradient-to-br from-bloom-primary via-bloom-primary to-bloom-dark rounded-full flex items-center justify-center shadow-2xl">
                   <svg
@@ -83,17 +83,17 @@ const DepressionQuiz = ({ userId }) => {
 
               <div className="space-y-4">
                 <h2 className="text-5xl md:text-6xl font-serif bg-gradient-to-r from-bloom-primary via-bloom-dark to-bloom-primary bg-clip-text text-transparent">
-                  Thank You
+                  Sweet Dreams
                 </h2>
                 <p className="text-xl text-bloom-muted max-w-md mx-auto">
-                  Your mood assessment has been recorded
+                  Your sleep assessment has been recorded
                 </p>
               </div>
 
-              {/* Encouragement Quote */}
+              
               <div className="bg-gradient-to-r from-bloom-primary/10 via-transparent to-bloom-primary/10 rounded-xl p-6 border border-bloom-primary/20">
                 <p className="text-bloom-dark font-serif text-lg italic">
-                  "Every new day brings new strength and new thoughts" 🌸
+                  "Sleep is the best meditation" 🌙
                 </p>
               </div>
             </div>
@@ -107,7 +107,7 @@ const DepressionQuiz = ({ userId }) => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Background */}
+      
       <div className="absolute inset-0 bg-gradient-to-br from-bloom-cream via-white to-bloom-primary/10">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
           <div className="absolute top-10 left-10 w-64 h-64 bg-bloom-primary/10 rounded-full blur-3xl" style={{ animation: 'blob 7s infinite' }}></div>
@@ -118,21 +118,21 @@ const DepressionQuiz = ({ userId }) => {
 
       <div className="relative py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto">
-          {/* Header */}
+          
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="text-2xl">💙</div>
+              <div className="text-2xl">🌙</div>
               <h1 className="text-3xl md:text-4xl font-serif bg-gradient-to-r from-bloom-primary via-bloom-dark to-bloom-primary bg-clip-text text-transparent">
-                Mood Assessment
+                Sleep Assessment
               </h1>
-              <div className="text-2xl">💙</div>
+              <div className="text-2xl">🌙</div>
             </div>
             <p className="text-bloom-muted text-sm md:text-base">
-              Understanding your emotional well-being today
+              Understanding your sleep quality and patterns
             </p>
           </div>
 
-          {/* Progress Bar */}
+          
           <div className="mb-6 bg-white rounded-2xl p-4 shadow-xl border border-white/50">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs font-semibold text-bloom-dark">
@@ -151,9 +151,9 @@ const DepressionQuiz = ({ userId }) => {
             </div>
           </div>
 
-          {/* Question Card */}
+          
           <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border border-white/50 transform transition-all duration-500" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
-            {/* Question Header */}
+            
             <div className="mb-6">
               <div className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-bloom-primary to-bloom-dark rounded-xl flex items-center justify-center shadow-lg transition-transform">
@@ -167,7 +167,7 @@ const DepressionQuiz = ({ userId }) => {
               </div>
             </div>
 
-            {/* Options */}
+           
             <div className="space-y-3 mb-6">
               {q.type === "single_choice" &&
                 q.options.map((opt, idx) => {
@@ -336,4 +336,4 @@ const DepressionQuiz = ({ userId }) => {
   );
 };
 
-export default DepressionQuiz;
+export default SleepQuiz;

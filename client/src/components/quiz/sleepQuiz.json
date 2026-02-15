@@ -1,0 +1,65 @@
+{
+  "quizType": "sleep",
+  "questions": [
+    {
+      "id": 1,
+      "type": "single_choice",
+      "question": "How well did you sleep?",
+      "options": ["Very well", "Well", "Okay", "Poor", "Very poor"]
+    },
+    {
+      "id": 2,
+      "type": "single_choice",
+      "question": "How long did you sleep?",
+      "options": ["Less than 4 hrs", "4–5 hrs", "5–6 hrs", "6–7 hrs", "More than 7 hrs"]
+    },
+    {
+      "id": 3,
+      "type": "single_choice",
+      "question": "Did you wake up during the night?",
+      "options": ["Not at all", "Once", "Twice", "Three times", "Multiple times"]
+    },
+    {
+      "id": 4,
+      "type": "single_choice",
+      "question": "Did you feel rested in the morning?",
+      "options": ["Fully rested", "Mostly rested", "Somewhat rested", "Slightly rested", "Not at all"]
+    },
+    {
+      "id": 5,
+      "type": "single_choice",
+      "question": "How often do you have trouble falling asleep?",
+      "options": ["Never", "Rarely", "Sometimes", "Often", "Always"]
+    },
+    {
+      "id": 6,
+      "type": "single_choice",
+      "question": "Daytime sleepiness:",
+      "options": ["None", "Mild", "Moderate", "Severe", "Extremely severe"]
+    },
+    {
+      "id": 7,
+      "type": "single_choice",
+      "question": "How often do you wake up feeling tired?",
+      "options": ["Never", "Rarely", "Sometimes", "Often", "Always"]
+    },
+    {
+      "id": 8,
+      "type": "single_choice",
+      "question": "Did sleep affect your mood today?",
+      "options": ["Not at all", "A little", "Somewhat", "A lot", "Extremely"]
+    },
+    {
+      "id": 9,
+      "type": "single_choice",
+      "question": "How consistent is your sleep schedule?",
+      "options": ["Very consistent", "Mostly consistent", "Somewhat consistent", "Rarely consistent", "Not consistent at all"]
+    },
+    {
+      "id": 10,
+      "type": "single_choice",
+      "question": "Overall sleep quality:",
+      "options": ["Excellent", "Good", "Average", "Poor", "Very poor"]
+    }
+  ]
+}

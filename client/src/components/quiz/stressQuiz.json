@@ -1,0 +1,65 @@
+{
+  "quizType": "stress",
+  "questions": [
+    {
+      "id": 1,
+      "type": "single_choice",
+      "question": "How stressed did you feel today?",
+      "options": ["Very low", "Low", "Moderate", "High", "Extreme"]
+    },
+    {
+      "id": 2,
+      "type": "single_choice",
+      "question": "Main stress source today?",
+      "options": ["Work or studies", "Family", "Money", "Health", "Time pressure"]
+    },
+    {
+      "id": 3,
+      "type": "single_choice",
+      "question": "Did you feel overwhelmed?",
+      "options": ["Never", "Rarely", "Sometimes", "Often", "Always"]
+    },
+    {
+      "id": 4,
+      "type": "single_choice",
+      "question": "Did stress affect your focus?",
+      "options": ["Not at all", "Slightly", "Somewhat", "Mostly", "Completely"]
+    },
+    {
+      "id": 5,
+      "type": "single_choice",
+      "question": "Physical signs of stress?",
+      "options": ["None", "Mild", "Moderate", "Severe", "Extremely severe"]
+    },
+    {
+      "id": 6,
+      "type": "single_choice",
+      "question": "How often did you take a break to relax?",
+      "options": ["Never", "Rarely", "Sometimes", "Often", "Always"]
+    },
+    {
+      "id": 7,
+      "type": "single_choice",
+      "question": "How well did you handle stress?",
+      "options": ["Very poorly", "Poorly", "Okay", "Well", "Very well"]
+    },
+    {
+      "id": 8,
+      "type": "single_choice",
+      "question": "How much did stress affect your sleep?",
+      "options": ["Not at all", "Slightly", "Somewhat", "Mostly", "Completely"]
+    },
+    {
+      "id": 9,
+      "type": "single_choice",
+      "question": "How often did stress affect your mood?",
+      "options": ["Never", "Rarely", "Sometimes", "Often", "Always"]
+    },
+    {
+      "id": 10,
+      "type": "single_choice",
+      "question": "Overall stress impact today:",
+      "options": ["None", "Low", "Moderate", "High", "Extreme"]
+    }
+  ]
+}

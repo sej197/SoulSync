@@ -1,15 +1,15 @@
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { IKImage } from "imagekitio-react";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Uploads from "./Uploads";
 import model from "../../lib/gemini";
 import Markdown from "react-markdown";
 import "./newprompt.css";
 
 export default function Newprompt({ chatId }) {
-    const { id } = useParams();
-    const activeChatId = chatId || id;
+    const navigate = useNavigate();
+    const activeChatId = chatId;
 
     const [ques, setQues] = useState("");
     const [ans, setAns] = useState("");
@@ -27,10 +27,12 @@ export default function Newprompt({ chatId }) {
         generationConfig: {}
     });
 
+    // Auto scroll
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chat]);
 
+    // 🔥 Load existing chat
     useEffect(() => {
         const fetchChat = async () => {
             if (!activeChatId) return;
@@ -59,22 +61,48 @@ export default function Newprompt({ chatId }) {
         fetchChat();
     }, [activeChatId]);
 
+    // 🔥 Main Send Logic
     const add = async (text) => {
         if (!text) return;
 
         setQues("");
 
-        setChat(prev => [
-            ...prev,
-            { type: "user", text, img: img.dbData }
-        ]);
-
-        const payload =
-            Object.keys(img.aiData).length > 0
-                ? [img.aiData, { text }]
-                : text;
+        let currentChatId = activeChatId;
 
         try {
+            // 🟢 If NEW CHAT → create first
+            if (!currentChatId) {
+                const res = await fetch(
+                    "http://localhost:5000/api/chats",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({ text })
+                    }
+                );
+
+                const data = await res.json();
+                currentChatId = data.chatId;
+
+                // Redirect to real chat page
+                navigate(`/chatbot/${currentChatId}`);
+                return;
+            }
+
+            // 🟢 Add user message locally
+            setChat(prev => [
+                ...prev,
+                { type: "user", text, img: img.dbData }
+            ]);
+
+            const payload =
+                Object.keys(img.aiData).length > 0
+                    ? [img.aiData, { text }]
+                    : text;
+
             const result = await chatModel.sendMessageStream(payload);
 
             let response = "";
@@ -85,31 +113,33 @@ export default function Newprompt({ chatId }) {
                 setAns(response);
             }
 
+            // Add bot message locally
             setChat(prev => [
                 ...prev,
                 { type: "bot", text: response }
             ]);
-            if (activeChatId) {
-                await fetch(
-                    `http://localhost:5000/api/chats/${activeChatId}`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        credentials: "include",
-                        body: JSON.stringify({
-                            question: text,
-                            answer: response
-                        })
-                    }
-                );
-            }
+
+            // 🟢 Save to DB
+            await fetch(
+                `http://localhost:5000/api/chats/${currentChatId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({
+                        question: text,
+                        answer: response
+                    })
+                }
+            );
 
         } catch (error) {
-            console.error("Error generating response:", error);
+            console.error("Chat error:", error);
         }
 
+        // Reset image
         setImg({
             isLoading: false,
             error: "",
@@ -122,7 +152,6 @@ export default function Newprompt({ chatId }) {
         e.preventDefault();
         const text = e.target.text.value;
         if (!text) return;
-
         add(text);
     };
 

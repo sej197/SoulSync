@@ -113,4 +113,49 @@ app.get("/api/userchats", userAuth, async (req, res) => {
         console.error("Error fetching user chats:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-}); 
+});
+
+app.get("/api/chats/:id", userAuth, async (req, res) => {
+    try {
+        const chat = await Chat.findOne({
+            _id: req.params.id,
+            userId: req.userId
+        });
+
+        if (!chat) return res.status(404).json({ message: "Chat not found" });
+
+        res.status(200).json(chat);
+    } catch (error) {
+        console.error("Error fetching chat:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
+app.put("/api/chats/:id", userAuth, async (req, res) => {
+    try {
+        const { question, answer } = req.body;
+
+        await Chat.updateOne(
+            { _id: req.params.id, userId: req.userId },
+            {
+                $push: {
+                    history: [
+                        {
+                            role: "user",
+                            parts: [{ text: question }]
+                        },
+                        {
+                            role: "model",
+                            parts: [{ text: answer }]
+                        }
+                    ]
+                }
+            }
+        );
+
+        res.status(200).json({ message: "Chat updated" });
+    } catch (error) {
+        console.error("Error updating chat:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});

@@ -1,57 +1,121 @@
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import Uploads from "./Uploads";
 import { IKImage } from "imagekitio-react";
+import { useParams } from "react-router-dom";
+import Uploads from "./Uploads";
 import model from "../../lib/gemini";
 import Markdown from "react-markdown";
 import "./newprompt.css";
 
-export default function Newprompt() {
+export default function Newprompt({ chatId }) {
+    const { id } = useParams();
+    const activeChatId = chatId || id;
+
     const [ques, setQues] = useState("");
     const [ans, setAns] = useState("");
-    const [img, setImg] = useState({ isLoading: false, error: "", dbData: {}, aiData: {} });
+    const [img, setImg] = useState({
+        isLoading: false,
+        error: "",
+        dbData: {},
+        aiData: {}
+    });
     const [chat, setChat] = useState([]);
     const endRef = useRef(null);
 
     const chatModel = model.startChat({
-        history: [
-            {
-                role: "user",
-                parts: [{ text: "Hello, how are you?" }],
-            },
-            {
-                role: "model",
-                parts: [{ text: "I'm doing well, thank you!" }],
-            },
-        ],
-        generationConfig: {
-
-        }
+        history: [],
+        generationConfig: {}
     });
 
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chat]);
 
+    useEffect(() => {
+        const fetchChat = async () => {
+            if (!activeChatId) return;
+
+            try {
+                const res = await fetch(
+                    `http://localhost:5000/api/chats/${activeChatId}`,
+                    { credentials: "include" }
+                );
+
+                if (!res.ok) return;
+
+                const data = await res.json();
+
+                const formatted = data.history.map((item) => ({
+                    type: item.role === "user" ? "user" : "bot",
+                    text: item.parts[0].text
+                }));
+
+                setChat(formatted);
+            } catch (err) {
+                console.error("Error loading chat:", err);
+            }
+        };
+
+        fetchChat();
+    }, [activeChatId]);
+
     const add = async (text) => {
-        setQues(text);
+        if (!text) return;
 
-        setChat(prev => [...prev, { type: "user", text, img: img.dbData }]);
+        setQues("");
 
-        const payload = Object.keys(img.aiData).length > 0 ? [img.aiData, { text }] : text;
-        const result = await chatModel.sendMessageStream(payload);
+        setChat(prev => [
+            ...prev,
+            { type: "user", text, img: img.dbData }
+        ]);
 
-        let response = "";
-        for await (const chunk of result.stream) {
-            const textChunk = chunk.text();
-            response += textChunk;
-            setAns(response);
+        const payload =
+            Object.keys(img.aiData).length > 0
+                ? [img.aiData, { text }]
+                : text;
+
+        try {
+            const result = await chatModel.sendMessageStream(payload);
+
+            let response = "";
+
+            for await (const chunk of result.stream) {
+                const textChunk = chunk.text();
+                response += textChunk;
+                setAns(response);
+            }
+
+            setChat(prev => [
+                ...prev,
+                { type: "bot", text: response }
+            ]);
+            if (activeChatId) {
+                await fetch(
+                    `http://localhost:5000/api/chats/${activeChatId}`,
+                    {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        credentials: "include",
+                        body: JSON.stringify({
+                            question: text,
+                            answer: response
+                        })
+                    }
+                );
+            }
+
+        } catch (error) {
+            console.error("Error generating response:", error);
         }
 
-        setChat(prev => [...prev, { type: "bot", text: response }]);
-
-        setImg({ isLoading: false, error: "", dbData: {}, aiData: {} });
-        setQues("");
+        setImg({
+            isLoading: false,
+            error: "",
+            dbData: {},
+            aiData: {}
+        });
     };
 
     const handleSubmit = async (e) => {
@@ -72,6 +136,7 @@ export default function Newprompt() {
                                 {m.text}
                             </div>
                         )}
+
                         {m.img?.filePath && (
                             <div className="image-wrapper">
                                 <IKImage
@@ -83,6 +148,7 @@ export default function Newprompt() {
                                 />
                             </div>
                         )}
+
                         {m.type === "bot" && (
                             <div className="message-bot">
                                 <Markdown>{m.text}</Markdown>
@@ -90,6 +156,7 @@ export default function Newprompt() {
                         )}
                     </div>
                 ))}
+
                 <div ref={endRef}></div>
             </div>
 
@@ -97,6 +164,7 @@ export default function Newprompt() {
                 <label className="file-label">
                     <Uploads setImg={setImg} />
                 </label>
+
                 <input
                     type="text"
                     name="text"
@@ -104,6 +172,7 @@ export default function Newprompt() {
                     onChange={(e) => setQues(e.target.value)}
                     placeholder="Ask me anything!"
                 />
+
                 <button type="submit" className="sendButton">
                     <ArrowUp size={25} />
                 </button>

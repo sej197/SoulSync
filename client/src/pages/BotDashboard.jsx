@@ -10,14 +10,17 @@ export default function BotDashboard() {
 
     const queryClient = useQueryClient();
 
-    const { data: chatsData, isLoading, error } = useQuery(['userChats'], async () => {
-        const res = await fetch('http://localhost:5000/api/user-chats', { credentials: 'include' });
-        if (!res.ok) throw new Error('Failed to fetch chats');
-        return res.json();
+    const { data: chatsData, isLoading, error } = useQuery({
+        queryKey: ['userChats'],
+        queryFn: async () => {
+            const res = await fetch('http://localhost:5000/api/userchats', { credentials: 'include' });
+            if (!res.ok) throw new Error('Failed to fetch chats');
+            return res.json();
+        }
     });
 
-    const createChatMutation = useMutation(
-        async (text) => {
+    const createChatMutation = useMutation({
+        mutationFn: async (text) => {
             const res = await fetch('http://localhost:5000/api/chats', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -27,10 +30,10 @@ export default function BotDashboard() {
             if (!res.ok) throw new Error('Failed to create chat');
             return res.json();
         },
-        {
-            onSuccess: () => queryClient.invalidateQueries(['userChats']), // Refresh chat list
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['userChats'] });
         }
-    );
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();

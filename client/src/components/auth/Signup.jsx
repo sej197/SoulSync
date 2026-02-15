@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import authapi from '../../lib/authapi';
+import { registerUser } from '../../lib/authapi';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext.jsx';
 
@@ -48,7 +48,7 @@ const Signup = () => {
         return;
       }
 
-      await authapi.post('/register', {
+      await registerUser({
       username: formData.username,
       email: formData.email,
       password: formData.password,
@@ -71,7 +71,6 @@ const Signup = () => {
     }finally{
       setLoading(false);
     }
-    console.log('Signup submitted:', formData);
   };
 
   return (

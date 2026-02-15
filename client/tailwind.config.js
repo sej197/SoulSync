@@ -34,7 +34,13 @@ export default {
           "accent": "#F8F6FA",
           "neutral": "#2F2F35",
           "base-100": "#ebd8d8ff",
+          "base-200": "#f5e6e6", // Slightly darker than base-100
+          "base-content": "#2F2F35", // Dark text for light mode
           "head": "#1a1a2e",
+          "info": "#3ABFF8",
+          "success": "#36D399",
+          "warning": "#FBBD23",
+          "error": "#F87272",
         },
         "bloom-dark": {
           "primary": "#c896f4",

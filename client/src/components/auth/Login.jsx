@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import authapi from '../../lib/authapi';
+import { loginUser } from '../../lib/authapi';
 import { useContext } from 'react';
 import { AuthContext } from '../../context/AuthContext.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -25,7 +25,7 @@ const Login = () => {
       return;
     }
     try{
-      await authapi.post("/login", { email, password });
+      await loginUser(email, password);
       toast.success("Login successful");
       await getAuthStatus();
       navigate("/");

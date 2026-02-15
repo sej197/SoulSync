@@ -6,12 +6,10 @@ import Weekly from '../components/insights/Weekly';
 import Monthly from '../components/insights/Monthly';
 
 export default function Insights() {
-  //const userId = "698f3604a22b9b8627800279";
-  const { user, getAuthStatus } = useContext(AuthContext);
-  console.log('Insights Page - User:', user.id);
+  const { user } = useContext(AuthContext);
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-  const userId = user.id; 
-  
+  const userId = user?.id;
+
   const [dailyData, setDailyData] = useState(null);
   const [weeklyData, setWeeklyData] = useState(null);
   const [monthlyData, setMonthlyData] = useState(null);
@@ -20,7 +18,7 @@ export default function Insights() {
   const [activeTab, setActiveTab] = useState('daily');
 
   useEffect(() => {
-    fetchInsights();
+    if (userId) fetchInsights();
   }, [userId]);
 
   const fetchInsights = async () => {
@@ -50,78 +48,87 @@ export default function Insights() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
-        <span className="loading loading-spinner loading-lg" style={{ color: '#c896f4' }}></span>
+      <div className="flex items-center justify-center min-h-screen bg-[#0f0f1a]">
+        <span className="loading loading-spinner loading-lg text-bloom-primary"></span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto p-6 bg-white min-h-screen">
-        <div className="alert alert-error">
-          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
+      <div className="container mx-auto p-6 bg-[#0f0f1a] min-h-screen text-white">
+        <div role="alert" className="alert alert-error bg-red-900/50 border-red-900 text-white">
+          <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <div>
             <h3 className="font-bold">Error loading insights</h3>
             <div className="text-xs">{error}</div>
           </div>
-          <button className="btn btn-sm btn-ghost" onClick={fetchInsights}>Try Again</button>
+          <button className="btn btn-sm btn-ghost text-white" onClick={fetchInsights}>Try Again</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto p-6 max-w-7xl">
+    <div className="min-h-screen bg-[#0f0f1a] text-gray-100 overflow-x-hidden selection:bg-bloom-primary selection:text-white pb-20">
+      <style>
+        {`
+          @keyframes float {
+            0% { transform: translate(0px, 0px); }
+            33% { transform: translate(30px, -50px); }
+            66% { transform: translate(-20px, 20px); }
+            100% { transform: translate(0px, 0px); }
+          }
+          .animate-float {
+            animation: float 20s ease-in-out infinite;
+          }
+           .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+          }
+        `}
+      </style>
+
+      {/* Animated Background */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-bloom-primary/10 rounded-full blur-[100px] animate-float"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-[120px] animate-float" style={{ animationDelay: '-5s' }}></div>
+      </div>
+
+      <div className="container mx-auto p-4 md:p-8 max-w-7xl">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold" style={{ color: '#1a1a2e' }}>
-            Mental Health Insights
+        <div className="mb-10 text-center md:text-left">
+          <h1 className="text-4xl md:text-5xl font-bold font-serif mb-2 bg-clip-text text-transparent bg-gradient-to-r from-bloom-secondary via-bloom-primary to-white">
+            Mental Wellness Insights
           </h1>
-          <p className="text-gray-500 mt-2">Track your mental wellness journey</p>
+          <p className="text-gray-400 text-lg">Track your emotional journey and discover patterns.</p>
         </div>
 
         {/* Tab Navigation */}
-        <div className="tabs tabs-boxed mb-8 w-fit" style={{ backgroundColor: '#1a1a2e' }}>
-          <a 
-            className={`tab tab-lg ${activeTab === 'daily' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('daily')}
-            style={activeTab === 'daily' ? { backgroundColor: '#c896f4', color: 'white' } : { color: '#9ca3af' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Daily
-          </a>
-          <a 
-            className={`tab tab-lg ${activeTab === 'weekly' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('weekly')}
-            style={activeTab === 'weekly' ? { backgroundColor: '#c896f4', color: 'white' } : { color: '#9ca3af' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            Weekly
-          </a>
-          <a 
-            className={`tab tab-lg ${activeTab === 'monthly' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('monthly')}
-            style={activeTab === 'monthly' ? { backgroundColor: '#c896f4', color: 'white' } : { color: '#9ca3af' }}
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-            </svg>
-            Monthly
-          </a>
+        <div className="flex justify-center md:justify-start mb-8">
+          <div className="bg-white/5 p-1 rounded-2xl inline-flex backdrop-blur-md border border-white/10">
+            {['daily', 'weekly', 'monthly'].map((tab) => (
+              <button
+                key={tab}
+                className={`px-6 py-2.5 rounded-xl font-medium transition-all duration-300 capitalize ${activeTab === tab
+                    ? 'bg-bloom-primary text-white shadow-lg shadow-bloom-primary/20 scale-105'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                  }`}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Content */}
-        {activeTab === 'daily' && <Daily dailyData={dailyData} onRefresh={fetchInsights} />}
-        {activeTab === 'weekly' && <Weekly weeklyData={weeklyData} />}
-        {activeTab === 'monthly' && <Monthly monthlyData={monthlyData} />}
+        <div className="animate-fade-in">
+          {activeTab === 'daily' && <Daily dailyData={dailyData} onRefresh={fetchInsights} />}
+          {activeTab === 'weekly' && <Weekly weeklyData={weeklyData} />}
+          {activeTab === 'monthly' && <Monthly monthlyData={monthlyData} />}
+        </div>
       </div>
     </div>
   );

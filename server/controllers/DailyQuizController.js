@@ -3,6 +3,7 @@ import RiskScore from "../models/RiskScore.js";
 const submitDailyQuiz = async (req, res) => {
   try {
      const userId = req.userId; 
+        const today = new Date().toISOString().split("T")[0]
 
     const { answers } = req.body; 
 

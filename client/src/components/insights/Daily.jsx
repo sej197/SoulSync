@@ -170,54 +170,90 @@ export default function Daily({ dailyData, onRefresh }) {
       {/* Middle - Contributing Factors & Recommendations */}
       <div className="lg:col-span-1 flex flex-col gap-6">
         {/* Contributing Factors */}
-        {dailyData.top_factors && dailyData.top_factors.length > 0 && (
-          <div className="card shadow-xl border flex-1" style={{ 
-            borderColor: '#e5e7eb',  
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)' 
-          }}>
-            <div className="card-body">
-              <h3 className="card-title" style={{ color: 'white' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" style={{ color: '#c896f4' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Contributing Factors
-              </h3>
-              <div className="grid md:grid-cols-1 gap-3 mt-4">
-                {dailyData.top_factors.map((factor, index) => (
+        <div className="card shadow-xl border flex-1" style={{ 
+          borderColor: '#e5e7eb',  
+          background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)' 
+        }}>
+          <div className="card-body">
+            <h3 className="card-title" style={{ color: 'white' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" style={{ color: '#c896f4' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Contributing Factors
+            </h3>
+            <div className="grid md:grid-cols-1 gap-3 mt-4">
+              {dailyData.top_factors && dailyData.top_factors.length > 0 ? (
+                dailyData.top_factors.map((factor, index) => (
                   <div key={index} className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition" style={{ backgroundColor: '#f9fafb' }}>
                     <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: '#c896f4' }}></div>
                     <span className="text-sm font-medium" style={{ color: '#1a1a2e' }}>{factor}</span>
                   </div>
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className="flex items-center gap-3 p-4 rounded-lg" style={{ backgroundColor: '#f0fdf4' }}>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 flex-shrink-0" style={{ color: '#10b981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-sm font-medium" style={{ color: '#065f46' }}>
+                    Great news! No significant risk factors detected today. Keep up the good work!
+                  </span>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
 
         {/* Recommendations */}
-        {dailyData.recommendations && dailyData.recommendations.length > 0 && (
-          <div className="card shadow-xl border flex-1" style={{ 
-            borderColor: '#e5e7eb',  
-            background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)' 
-          }}>
-            <div className="card-body">
-              <h3 className="card-title" style={{ color: 'white' }}>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" style={{ color: '#c896f4' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                Recommendations
-              </h3>
-              <div className="grid md:grid-cols-1 gap-3 mt-4">
-                {dailyData.recommendations.map((rec, index) => (
+        <div className="card shadow-xl border flex-1" style={{ 
+          borderColor: '#e5e7eb',  
+          background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)' 
+        }}>
+          <div className="card-body">
+            <h3 className="card-title" style={{ color: 'white' }}>
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" style={{ color: '#c896f4' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              Recommendations
+            </h3>
+            <div className="grid md:grid-cols-1 gap-3 mt-4">
+              {dailyData.recommendations && dailyData.recommendations.length > 0 ? (
+                dailyData.recommendations.map((rec, index) => (
                   <div key={index} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition" style={{ backgroundColor: '#f9fafb' }}>
                     <div className="w-2 h-2 rounded-full flex-shrink-0 mt-1" style={{ backgroundColor: '#c896f4' }}></div>
                     <span className="text-sm font-medium" style={{ color: '#1a1a2e' }}>{rec}</span>
                   </div>
-                ))}
-              </div>
+                ))
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: '#f0fdf4' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: '#10b981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm font-medium" style={{ color: '#065f46' }}>
+                      You're doing well! Continue with your current healthy habits.
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: '#f0fdf4' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: '#10b981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm font-medium" style={{ color: '#065f46' }}>
+                      Maintain regular sleep schedule and stay connected with your support system.
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-3 p-3 rounded-lg" style={{ backgroundColor: '#f0fdf4' }}>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: '#10b981' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span className="text-sm font-medium" style={{ color: '#065f46' }}>
+                      Keep practicing self-care and monitoring your mental wellness journey.
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
-        )}
+        </div>
 
         {/* Refresh Button */}
         <button 

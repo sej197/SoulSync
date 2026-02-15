@@ -1,13 +1,17 @@
 // src/pages/Insights.jsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import Daily from '../components/insights/Daily';
 import Weekly from '../components/insights/Weekly';
 import Monthly from '../components/insights/Monthly';
 
 export default function Insights() {
-  const userId = "698f3604a22b9b8627800279";
+  //const userId = "698f3604a22b9b8627800279";
+  const { user, getAuthStatus } = useContext(AuthContext);
+  console.log('Insights Page - User:', user.id);
   const BASE_URL = import.meta.env.VITE_BASE_URL;
-
+  const userId = user.id; 
+  
   const [dailyData, setDailyData] = useState(null);
   const [weeklyData, setWeeklyData] = useState(null);
   const [monthlyData, setMonthlyData] = useState(null);

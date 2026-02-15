@@ -92,58 +92,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Today's Wellness Tip */}
-            <div className="card shadow-xl border" style={{ 
-              borderColor: '#e5e7eb',
-              background: 'linear-gradient(135deg, #c896f4 0%, #a855f7 100%)',
-            }}>
-              <div className="card-body">
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-4xl">{randomTip.icon}</span>
-                  <div>
-                    <h3 className="text-white font-bold text-xl">Quick Wellness Tip</h3>
-                    <p className="text-white text-opacity-90">Take a moment for yourself</p>
-                  </div>
-                </div>
-                <div className="bg-white bg-opacity-20 rounded-lg p-4">
-                  <p className="text-white text-lg font-medium">{randomTip.tip}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Your Progress */}
-            <div className="card shadow-xl border" style={{ 
-              borderColor: '#e5e7eb',
-              background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)',
-            }}>
-              <div className="card-body">
-                <h3 className="card-title text-white mb-4">
-                  <span className="mr-2">📊</span>
-                  Your Progress
-                </h3>
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold" style={{ color: '#c896f4' }}>7</div>
-                    <p className="text-sm text-gray-400">Day Streak</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold" style={{ color: '#10b981' }}>12</div>
-                    <p className="text-sm text-gray-400">Journal Entries</p>
-                  </div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold" style={{ color: '#f59e0b' }}>85%</div>
-                    <p className="text-sm text-gray-400">Completion</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => navigate('/insights')}
-                  className="btn btn-block mt-4 text-white"
-                  style={{ backgroundColor: '#c896f4', borderColor: '#c896f4' }}
-                >
-                  View Detailed Insights
-                </button>
-              </div>
-            </div>
           </div>
 
           {/* Right Column - Sidebar */}
@@ -170,75 +118,8 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-                <button 
-                  className="btn btn-sm btn-block mt-3 bg-white bg-opacity-10 border-0 text-white hover:bg-opacity-20"
-                >
-                  See All Exercises
-                </button>
               </div>
             </div>
-
-            {/* Mood Tracker */}
-            <div className="card shadow-xl border" style={{ 
-              borderColor: '#e5e7eb',  
-              background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)',
-              color: 'white'
-            }}>
-              <div className="card-body">
-                <h3 className="card-title text-sm mb-3">
-                  <span className="text-2xl mr-2">😊</span>
-                  How are you feeling?
-                </h3>
-                <div className="grid grid-cols-5 gap-2">
-                  {['😢', '😟', '😐', '🙂', '😄'].map((emoji, index) => (
-                    <button
-                      key={index}
-                      className="aspect-square rounded-lg bg-white bg-opacity-10 hover:bg-opacity-20 transition text-2xl"
-                    >
-                      {emoji}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-xs text-center mt-3 opacity-70">Track your daily mood</p>
-              </div>
-            </div>
-
-            {/* Upcoming Events */}
-            <div className="card shadow-xl border" style={{ 
-              borderColor: '#e5e7eb',  
-              background: 'linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)',
-              color: 'white'
-            }}>
-              <div className="card-body">
-                <h3 className="card-title text-sm mb-3">
-                  <span className="text-2xl mr-2">📅</span>
-                  Upcoming
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-2 rounded-lg bg-white bg-opacity-10">
-                    <div className="bg-purple-500 rounded-lg p-2 text-center min-w-[50px]">
-                      <p className="text-xs">Today</p>
-                      <p className="text-lg font-bold">14</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">Daily Check-in</p>
-                      <p className="text-xs opacity-70">Complete your wellness quiz</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-2 rounded-lg bg-white bg-opacity-10">
-                    <div className="bg-blue-500 rounded-lg p-2 text-center min-w-[50px]">
-                      <p className="text-xs">Mon</p>
-                      <p className="text-lg font-bold">17</p>
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">Group Session</p>
-                      <p className="text-xs opacity-70">Community chat at 6 PM</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
             {/* Helpful Resources */}
             <div className="card shadow-xl border" style={{ 
               borderColor: '#e5e7eb',  

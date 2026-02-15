@@ -1,10 +1,10 @@
 import DailyQuiz from "../models/DailyQuiz.js";
-
+import RiskScore from "../models/RiskScore.js";
 const submitAnxietyQuiz = async (req, res) => {
   try {
     const userId = req.userId;
     const { answers } = req.body;
-
+    const today = new Date().toISOString().split("T")[0]
     const optionScores = {
       "Not at all": 0,
       "Rarely": 0.25,
@@ -72,18 +72,31 @@ const submitAnxietyQuiz = async (req, res) => {
       questionCount++;
     }    
     const anxietyScore = Number((totalScore / questionCount).toFixed(2));
+    const transformedAnswers = answers.map(a => ({
+        questionId: a.questionId,
+        selectedOptions: [a.answer] 
+    }));
     
     await DailyQuiz.create({
       userId,
       quizType: "anxiety",
       date: new Date(),
-      answers,
+      answers:transformedAnswers,
       scores: {
         anxietyScore
       },
       finalScore: anxietyScore
     });
-
+     await RiskScore.findOneAndUpdate(
+          { user: userId, date: today },
+          {
+            $set: {
+              anxiety_quiz_score: anxietyScore,
+              anxiety_quiz_date: today
+            }
+          },
+          { upsert: true, new: true }
+        );
     res.status(201).json({
       message: "anxiety quiz submitted successfully",
       anxietyScore

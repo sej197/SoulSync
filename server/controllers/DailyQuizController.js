@@ -1,5 +1,5 @@
 import DailyQuiz from "../models/DailyQuiz.js";
-
+import RiskScore from "../models/RiskScore.js";
 const submitDailyQuiz = async (req, res) => {
   try {
      const userId = req.userId; 
@@ -200,7 +200,16 @@ const submitDailyQuiz = async (req, res) => {
       },
       finalScore,
     });
-
+     await RiskScore.findOneAndUpdate(
+          { user: userId, date: today },
+          {
+            $set: {
+              quiz_score: finalScore,
+              quiz_date: today
+            }
+          },
+          { upsert: true, new: true }
+        );
     res.status(201).json({
       message: "quiz submitted successfully",
       // finalScore,

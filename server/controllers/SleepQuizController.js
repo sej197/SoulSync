@@ -1,5 +1,5 @@
 import DailyQuiz from "../models/DailyQuiz.js";
-
+import RiskScore from "../models/RiskScore.js";
 const submitSleepQuiz = async (req, res) => {
     try {
         const userId = req.userId;
@@ -9,6 +9,7 @@ const submitSleepQuiz = async (req, res) => {
                 message:"atleast one answer is required"
             })
         }
+        const today = new Date().toISOString().split("T")[0]
         const optionScores = {
             "Very well": 0,
             "Well": 0.25,
@@ -66,15 +67,29 @@ const submitSleepQuiz = async (req, res) => {
             questionCount++;
         }
         const sleepScore = Number((totalScore / questionCount).toFixed(2));
+        const transformedAnswers = answers.map(a => ({
+            questionId: a.questionId,
+            selectedOptions: [a.answer] 
+        }));
         await DailyQuiz.create({
             userId, 
             quizType: "sleep",
             date: new Date(),
-            answers,
+            answers:transformedAnswers,
             score:{
                 sleepScore
             },
         });
+         await RiskScore.findOneAndUpdate(
+              { user: userId, date: today },
+              {
+                $set: {
+                    sleep_quiz_score: sleepScore,   
+                    sleep_quiz_date: today
+                }
+              },
+              { upsert: true, new: true }
+            );
         res.status(200).json({
             message:"Sleep quiz submitted successfully",
             sleepScore

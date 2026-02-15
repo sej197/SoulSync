@@ -33,7 +33,7 @@ const dailyQuizSchema = new mongoose.Schema({
     // Identify quiz type
     quizType: {
       type: String,
-      enum: ["daily", "anxiety", "depression", "burnout", "sleep"],
+      enum: ["daily", "anxiety", "depression", "stress", "sleep"],
       default: "daily",
       index: true
     },

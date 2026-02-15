@@ -2,16 +2,16 @@
 import { RISK_WEIGHTS, RISK_LABELS } from "../config/riskConfig.js";
 import RiskScore from "../models/RiskScore.js";
 
-const scores = {
-  depression_quiz_score: 0.6,
-  anxiety_quiz_score: 0.4,
-  stress_quiz_score: 0.5,
-  sleep_quiz_score: 0.7,
-  journal_score: 0.3,
-  chatbot_score: 0.4,
-  quiz_score: 0.5,
-  community_score: 0.2
-};
+// const scores = {
+//   depression_quiz_score: 0.6,
+//   anxiety_quiz_score: 0.4,
+//   stress_quiz_score: 0.5,
+//   sleep_quiz_score: 0.7,
+//   journal_score: 0.3,
+//   chatbot_score: 0.4,
+//   quiz_score: 0.5,
+//   community_score: 0.2
+// };
 
 const getRiskLevel = (score) => {
     if (score >= 0.70) return "HIGH";
@@ -44,67 +44,93 @@ const getRecommendations = (factors) => {
 }    
 
 export const calculateOverallRisk = async (req, res) => {
-    try {
-        const { userId } = req.params;
-        console.log("User ID:", userId);
-        
-        const today = new Date().toISOString().split("T")[0];
-        const previous = await RiskScore.findOne({ user: userId }).sort({ created_at: -1 });
-        const previousScore = previous ? previous.overall_score : null;
-        
-        // Calculate total risk
-        let totalRisk = 0;
-        for (const key in RISK_WEIGHTS) {
-            totalRisk += scores[key] * RISK_WEIGHTS[key];
-        }
-        
-        const level = getRiskLevel(totalRisk);
-        const trend = getTrend(totalRisk, previousScore);
-        
-        let topFactors = [];
-        
-        for (const { key, label, threshold } of RISK_LABELS) {
-            if (scores[key] >= threshold) {
-                const percentage = Math.round(scores[key] * 100);
-                topFactors.push(`${label} (${percentage}%)`); // FIXED: Added backtick
-            }
-        }
-        
-        const recommendations = getRecommendations(topFactors);
-        
-        // Update or create risk score with upsert option
-        const updatedRisk = await RiskScore.findOneAndUpdate(
-            { user: userId, date: today },
-            {
-                ...scores,
-                overall_score: totalRisk,
-                risk_level: level,
-                top_factors: topFactors,
-                previous_score: previousScore,
-                trend
-            },
-            { 
-                upsert: true,  // Create if doesn't exist
-                new: true      // Return updated document
-            }
-        );
-        
-        console.log("Updated Risk Score:", updatedRisk);
-        
-        res.json({
-            daily: {
-                score: Math.round(totalRisk * 100),
-                level,
-                trend,
-                top_factors: topFactors,
-                recommendations
-            }
-        });
-    } catch (error) {
-        console.error("Error calculating risk:", error);
-        res.status(500).json({ error: error.message });
+  try {
+    const { userId } = req.params;
+    console.log("User ID:", userId);
+    
+    const today = new Date().toISOString().split("T")[0];
+    
+    // Get previous risk score (excluding today)
+    const previous = await RiskScore.findOne({ 
+      user: userId,
+      date: { $ne: today }
+    }).sort({ created_at: -1 });
+    const previousScore = previous ? previous.overall_score : null;
+    
+    // Get today's existing risk score to retrieve all component scores
+    const todayRisk = await RiskScore.findOne({ 
+      user: userId, 
+      date: today 
+    });
+    
+    if (!todayRisk) {
+      return res.status(404).json({ 
+        error: "No risk score data found for today" 
+      });
     }
-}
+    
+    // Get all scores from today's database record
+    const scores = {
+      depression_quiz_score: todayRisk.depression_quiz_score || 0,
+      anxiety_quiz_score: todayRisk.anxiety_quiz_score || 0,
+      stress_quiz_score: todayRisk.stress_quiz_score || 0,
+      sleep_quiz_score: todayRisk.sleep_quiz_score || 0,
+      journal_score: todayRisk.journal_score || 0,
+      chatbot_score: todayRisk.chatbot_score || 0,
+      quiz_score: todayRisk.quiz_score || 0,
+      community_score: todayRisk.community_score || 0
+    };
+
+    // Calculate total risk
+    let totalRisk = 0;
+    for (const key in RISK_WEIGHTS) {
+      totalRisk += scores[key] * RISK_WEIGHTS[key];
+    }
+
+    const level = getRiskLevel(totalRisk);
+    const trend = getTrend(totalRisk, previousScore);
+
+    let topFactors = [];
+    for (const { key, label, threshold } of RISK_LABELS) {
+      if (scores[key] >= threshold) {
+        const percentage = Math.round(scores[key] * 100);
+        topFactors.push(`${label} (${percentage}%)`);
+      }
+    }
+
+    const recommendations = getRecommendations(topFactors);
+
+    // Update the existing risk score document
+    const updatedRisk = await RiskScore.findOneAndUpdate(
+      { user: userId, date: today },
+      {
+        overall_score: totalRisk,
+        risk_level: level,
+        top_factors: topFactors,
+        previous_score: previousScore,
+        trend
+      },
+      {
+        new: true // Return updated document
+      }
+    );
+
+    console.log("Updated Risk Score:", updatedRisk);
+
+    res.json({
+      daily: {
+        score: Math.round(totalRisk * 100),
+        level,
+        trend,
+        top_factors: topFactors,
+        recommendations
+      }
+    });
+  } catch (error) {
+    console.error("Error calculating risk:", error);
+    res.status(500).json({ error: error.message });
+  }
+};
 
 export const weeklyInsights = async (req, res) => {
     try {

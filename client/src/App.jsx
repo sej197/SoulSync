@@ -47,7 +47,6 @@ function App() {
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
                   <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
                   <Route path="/insights" element={<Insights />} />
-                  <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                   <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

@@ -22,16 +22,16 @@ const Navbar = () => {
         }
     };
 
-    const [isScrolled, setIsScrolled] = React.useState(false);
+  const [isScrolled, setIsScrolled] = React.useState(false);
 
-    React.useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 0);
-        };
+  React.useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 0);
+    };
 
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
     return (
         <div
@@ -69,22 +69,36 @@ const Navbar = () => {
                 </Link>
             </div>
 
-            {/* CENTER MENU */}
-            <div className="navbar-center hidden lg:flex">
-                <ul
-                    className={`menu menu-horizontal px-1 font-medium whitespace-nowrap flex-nowrap transition-colors duration-300 ${isScrolled ? 'text-gray-600' : 'text-white'
-                        }`}
-                >
-                    <li><Link to="/community-chat">Community Chat</Link></li>
-                    <li><Link to="/daily-quiz">Daily Quiz</Link></li>
-                    <li><Link to="/journal">Journal</Link></li>
-                    <li><Link to="/insights">Insights</Link></li>
-                    <li><Link to="/about">About Us</Link></li>
-                    <li><Link to="/chatbot">Chatbot</Link></li>
-                </ul>
-            </div>
+      {/* CENTER MENU */}
+      <div className="navbar-center hidden lg:flex">
+        <ul
+          className={`menu menu-horizontal px-1 font-medium whitespace-nowrap flex-nowrap transition-colors duration-300 ${
+  isScrolled
+    ? "text-slate-900 hover:text-bloom-primary"
+    : "text-white hover:text-bloom-primary"
+}`}
 
-            {/* RIGHT SIDE */}
+        >
+          <li>
+            <Link to="/community-chat">Community Chat</Link>
+          </li>
+          <li>
+            <Link to="/daily-quiz">Daily Quiz</Link>
+          </li>
+                    <li><Link to="/journal">Journal</Link></li>
+          <li>
+            <Link to="/insights">Insights</Link>
+          </li>
+          <li>
+            <Link to="/about">About Us</Link>
+          </li>
+          <li>
+            <Link to="/chatbot">Chatbot</Link>
+          </li>
+        </ul>
+      </div>
+
+      {/* RIGHT SIDE */}
 
             <div className="navbar-end flex items-center gap-3">
 

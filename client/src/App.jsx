@@ -19,6 +19,7 @@ import DepressionQuiz from './components/quiz/DepressionQuiz';
 import SleepQuiz from './components/quiz/SleepQuiz';
 import StressQuiz from './components/quiz/StressQuiz';
 import DailyQuiz from './components/quiz/DailyQuiz';
+import Helplines from './pages/Helplines';
 const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Community Chat Coming Soon</div>;
 // const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
 
@@ -46,6 +47,7 @@ function App() {
                   <Route path="/community-chat" element={<ProtectedRoute><CommunityChat /></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
                   <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
+                  <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />
                   <Route path="/insights" element={<Insights />} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                   <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />

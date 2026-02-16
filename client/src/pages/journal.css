@@ -1,0 +1,666 @@
+/* ── Journal Page — Cozy Diary Theme ── */
+@import url('https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Quicksand:wght@400;500;600;700&display=swap');
+
+.journal-page {
+  min-height: calc(100vh - 68px);
+  background: linear-gradient(135deg, #faf8f5 0%, #f5f0e8 30%, #eee8f3 60%, #e8eaf5 100%);
+  padding: 2rem 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* floating decorative shapes */
+.journal-page::before {
+  content: '☁';
+  position: absolute;
+  top: 60px;
+  right: 5%;
+  font-size: 3rem;
+  opacity: 0.08;
+  animation: floaty 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.journal-page::after {
+  content: '✦';
+  position: absolute;
+  bottom: 80px;
+  left: 3%;
+  font-size: 4rem;
+  opacity: 0.06;
+  animation: floaty 8s ease-in-out infinite reverse;
+  pointer-events: none;
+}
+
+@keyframes floaty {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(5deg); }
+}
+
+/* ── Calendar Panel ── */
+
+.journal-calendar-panel {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(190, 180, 160, 0.25);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow:
+    0 8px 32px rgba(170, 160, 140, 0.12),
+    0 2px 8px rgba(170, 160, 140, 0.06);
+}
+
+.journal-calendar-panel h3 {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: #4a5568;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* react-calendar overrides — cozy neutral */
+.react-calendar {
+  border: none !important;
+  background: transparent !important;
+  font-family: 'Quicksand', sans-serif !important;
+  width: 100% !important;
+}
+
+.react-calendar__navigation {
+  margin-bottom: 0.5rem;
+}
+
+.react-calendar__navigation button {
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-radius: 0.75rem;
+  min-width: 36px;
+  background: transparent;
+  font-family: 'Quicksand', sans-serif;
+}
+
+.react-calendar__navigation button:hover,
+.react-calendar__navigation button:focus {
+  background: rgba(180, 160, 130, 0.12) !important;
+}
+
+.react-calendar__month-view__weekdays {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #7c8a7e;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.react-calendar__month-view__weekdays abbr {
+  text-decoration: none !important;
+}
+
+.react-calendar__tile {
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 0.55em 0.35em;
+  color: #4a5568;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.react-calendar__tile:hover {
+  background: rgba(180, 160, 130, 0.12) !important;
+}
+
+.react-calendar__tile--now {
+  background: rgba(180, 160, 130, 0.1) !important;
+  font-weight: 700;
+  border: 2px dashed rgba(180, 160, 130, 0.4) !important;
+}
+
+.react-calendar__tile--active,
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  background: linear-gradient(135deg, #8fb5a3, #7c9db8) !important;
+  color: white !important;
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgba(143, 181, 163, 0.35);
+  border: none !important;
+}
+
+/* dot for days with entries */
+.calendar-has-entry {
+  position: relative;
+}
+
+.calendar-has-entry::after {
+  content: '●';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 7px;
+  color: #8fb5a3;
+  line-height: 1;
+}
+
+.react-calendar__tile--active.calendar-has-entry::after {
+  color: white;
+}
+
+/* ── Diary Panel ── */
+
+.diary-container {
+  perspective: 1200px;
+}
+
+.diary-book {
+  background: linear-gradient(155deg, #fdfcf9 0%, #faf8f3 40%, #f7f5f0 100%);
+  border: 1.5px solid rgba(190, 180, 160, 0.25);
+  border-radius: 1.5rem;
+  box-shadow:
+    0 12px 40px rgba(170, 160, 140, 0.12),
+    0 4px 12px rgba(170, 160, 140, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  position: relative;
+  min-height: 540px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* decorative top border gradient */
+.diary-book::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #c4a97d, #8fb5a3, #7c9db8, #8fb5a3, #c4a97d);
+  border-radius: 1.5rem 1.5rem 0 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* binding dots */
+.diary-binding {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.diary-binding-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #c4a97d, #8fb5a3);
+  opacity: 0.35;
+  box-shadow: 0 1px 3px rgba(143, 181, 163, 0.15);
+}
+
+.diary-header {
+  padding: 1.5rem 1.5rem 0.75rem 2.75rem;
+  border-bottom: 1px dashed rgba(190, 180, 160, 0.25);
+  position: relative;
+}
+
+.diary-date {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.65rem;
+  color: #4a5568;
+  line-height: 1.2;
+}
+
+.diary-subject-input {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.2rem;
+  color: #4a5568;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed rgba(190, 180, 160, 0.3);
+  outline: none;
+  width: 100%;
+  padding: 0.25rem 0;
+  margin-top: 0.35rem;
+}
+
+.diary-subject-input::placeholder {
+  color: rgba(74, 85, 104, 0.3);
+}
+
+.diary-subject-input:read-only {
+  border-bottom: none;
+  cursor: default;
+}
+
+.diary-body {
+  flex: 1;
+  padding: 1rem 1.5rem 1rem 2.75rem;
+  position: relative;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 31px,
+    rgba(190, 180, 160, 0.12) 31px,
+    rgba(190, 180, 160, 0.12) 32px
+  );
+  background-position-y: 7px;
+}
+
+/* TipTap editor */
+.diary-body .tiptap {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.2rem;
+  line-height: 32px;
+  color: #3d4f5f;
+  min-height: 320px;
+  outline: none;
+  padding: 0;
+}
+
+.diary-body .tiptap p {
+  margin: 0;
+  padding: 0;
+}
+
+.diary-body .tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: rgba(74, 85, 104, 0.25);
+  pointer-events: none;
+  height: 0;
+  font-style: italic;
+}
+
+.diary-body .tiptap strong {
+  font-weight: 700;
+  color: #5a8a72;
+}
+
+.diary-body .tiptap em {
+  font-style: italic;
+}
+
+.diary-body .tiptap u {
+  text-decoration: underline;
+  text-decoration-color: rgba(160, 180, 160, 0.5);
+  text-underline-offset: 3px;
+}
+
+.diary-body .tiptap ul,
+.diary-body .tiptap ol {
+  padding-left: 1.2rem;
+}
+
+/* Read-only mode */
+.diary-body.read-only .tiptap {
+  cursor: default;
+}
+
+.diary-body .diary-read-text {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.2rem;
+  line-height: 32px;
+  color: #3d4f5f;
+  min-height: 320px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ── Toolbar ── */
+
+.diary-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0.4rem 0.6rem;
+  background: rgba(190, 180, 160, 0.08);
+  border-radius: 12px;
+  border: 1px solid rgba(190, 180, 160, 0.15);
+}
+
+.diary-toolbar button {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  color: #6b7c85;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 0.85rem;
+}
+
+.diary-toolbar button:hover {
+  background: rgba(160, 180, 160, 0.15);
+  color: #5a8a72;
+}
+
+.diary-toolbar button.is-active {
+  background: linear-gradient(135deg, rgba(160, 180, 160, 0.2), rgba(140, 170, 160, 0.2));
+  color: #5a8a72;
+  font-weight: 700;
+}
+
+.diary-toolbar button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.diary-toolbar .toolbar-divider {
+  width: 1px;
+  height: 18px;
+  background: rgba(190, 180, 160, 0.2);
+  margin: 0 3px;
+}
+
+/* ── Footer ── */
+
+.diary-footer {
+  padding: 0.75rem 1.5rem 1.25rem 2.75rem;
+  border-top: 1px dashed rgba(190, 180, 160, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.diary-save-btn {
+  background: linear-gradient(135deg, #8fb5a3, #7c9db8);
+  color: white;
+  border: none;
+  padding: 0.55rem 1.75rem;
+  border-radius: 999px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(143, 181, 163, 0.3);
+  letter-spacing: 0.02em;
+}
+
+.diary-save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(143, 181, 163, 0.4);
+}
+
+.diary-save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.diary-delete-btn {
+  background: transparent;
+  color: #b08968;
+  border: 1.5px solid rgba(176, 137, 104, 0.25);
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.diary-delete-btn:hover {
+  background: rgba(176, 137, 104, 0.06);
+  border-color: rgba(176, 137, 104, 0.4);
+}
+
+/* ── Page flip nav ── */
+
+.page-flip-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.75rem 0 0;
+}
+
+.page-flip-btn {
+  background: rgba(190, 180, 160, 0.1);
+  border: 1.5px solid rgba(190, 180, 160, 0.2);
+  color: #6b7c85;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.page-flip-btn:hover:not(:disabled) {
+  background: rgba(160, 180, 160, 0.15);
+  border-color: rgba(160, 180, 160, 0.4);
+  color: #5a8a72;
+  transform: scale(1.05);
+}
+
+.page-flip-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.page-flip-info {
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #7c8a7e;
+}
+
+/* ── Empty / Past state ── */
+
+.diary-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  text-align: center;
+  padding: 2rem;
+}
+
+.diary-empty-state .empty-icon {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+  animation: floaty 3s ease-in-out infinite;
+}
+
+.diary-empty-state h4 {
+  font-family: 'Patrick Hand', cursive;
+  font-size: 1.5rem;
+  color: #4a5568;
+  margin-bottom: 0.5rem;
+}
+
+.diary-empty-state p {
+  color: #7c8a7e;
+  font-size: 0.88rem;
+  font-family: 'Quicksand', sans-serif;
+}
+
+/* past day read-only notice */
+.diary-readonly-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: linear-gradient(135deg, rgba(190, 180, 160, 0.08), rgba(140, 170, 160, 0.08));
+  border: 1px dashed rgba(140, 170, 160, 0.2);
+  border-radius: 12px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #7c8a7e;
+  margin: 0.75rem 1.5rem 0 2.75rem;
+}
+
+/* mood badge */
+.mood-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(160, 180, 160, 0.12), rgba(140, 170, 160, 0.12));
+  color: #6b8a7a;
+  border: 1px solid rgba(140, 170, 160, 0.15);
+}
+
+/* status tag */
+.diary-status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  letter-spacing: 0.02em;
+}
+
+.diary-status-tag.editing {
+  background: linear-gradient(135deg, rgba(160, 180, 160, 0.15), rgba(140, 170, 160, 0.15));
+  color: #5a8a72;
+}
+
+.diary-status-tag.today {
+  background: rgba(147, 197, 253, 0.12);
+  color: #6da0d3;
+}
+
+.diary-status-tag.readonly {
+  background: rgba(200, 170, 180, 0.1);
+  color: #b09aaa;
+}
+
+/* ── Transition ── */
+
+.diary-page-enter {
+  animation: cutePageIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes cutePageIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── Mode switcher tabs ── */
+
+.journal-mode-tabs {
+  display: flex;
+  gap: 0;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(8px);
+  border-radius: 999px;
+  padding: 3px;
+  border: 1.5px solid rgba(190, 180, 160, 0.2);
+}
+
+.journal-mode-tab {
+  padding: 0.4rem 1.1rem;
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #7c8a7e;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.journal-mode-tab.active {
+  background: linear-gradient(135deg, #8fb5a3, #7c9db8);
+  color: white;
+  box-shadow: 0 3px 12px rgba(143, 181, 163, 0.25);
+}
+
+.journal-mode-tab:hover:not(.active) {
+  color: #5a7068;
+  background: rgba(190, 180, 160, 0.08);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1024px) {
+  .diary-book {
+    min-height: 440px;
+    border-radius: 1.25rem;
+  }
+
+  .diary-header,
+  .diary-body,
+  .diary-footer,
+  .diary-readonly-notice {
+    padding-left: 2.25rem;
+  }
+
+  .diary-binding {
+    width: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .journal-page {
+    padding: 1rem 0.5rem;
+  }
+
+  .diary-date {
+    font-size: 1.3rem;
+  }
+
+  .diary-body .tiptap,
+  .diary-body .diary-read-text {
+    font-size: 1.05rem;
+    line-height: 28px;
+  }
+
+  .diary-body {
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 27px,
+      rgba(190, 180, 160, 0.12) 27px,
+      rgba(190, 180, 160, 0.12) 28px
+    );
+  }
+
+  .diary-binding {
+    display: none;
+  }
+
+  .diary-header,
+  .diary-body,
+  .diary-footer,
+  .diary-readonly-notice {
+    padding-left: 1.25rem;
+  }
+}

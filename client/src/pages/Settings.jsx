@@ -4,17 +4,7 @@ import { User, Bell, Lock, Shield, ChevronRight, Moon, Globe } from 'lucide-reac
 const Settings = () => {
     const [emailNotifications, setEmailNotifications] = useState(true);
     const [pushNotifications, setPushNotifications] = useState(false);
-    const [darkMode, setDarkMode] = useState(localStorage.getItem('theme') === 'bloom-dark');
-
-    React.useEffect(() => {
-        const theme = darkMode ? 'bloom-dark' : 'bloom';
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-    }, [darkMode]);
-
-    const handleThemeToggle = () => {
-        setDarkMode(!darkMode);
-    };
+    
 
     return (
         <div className="bg-base-100 font-sans min-h-full text-base-content transition-colors duration-300">
@@ -115,12 +105,6 @@ const Settings = () => {
                                         <p className="text-sm opacity-70">Switch between light and dark themes</p>
                                     </div>
                                 </div>
-                                <input
-                                    type="checkbox"
-                                    className="toggle toggle-primary"
-                                    checked={darkMode}
-                                    onChange={handleThemeToggle}
-                                />
                             </div>
                         </div>
                     </div>

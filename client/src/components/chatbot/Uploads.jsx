@@ -8,7 +8,9 @@ const publicKey = import.meta.env.VITE_IMAGEKIT_PUBLIC_KEY;
 
 const authenticator = async () => {
     try {
-        const response = await fetch("http://localhost:5000/api/upload");
+        const response = await fetch(`${import.meta.env.VITE_BASE_URL}/api/upload`, {
+            credentials: "include"
+        });
         const data = await response.json();
         const { signature, expire, token } = data;
         return { signature, expire, token };

@@ -51,14 +51,14 @@ export default function Weekly({ weeklyData }) {
               <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Average Risk</div>
               <div className="text-4xl font-bold text-slate-800 font-serif">{weeklyData.summary.avg_score}</div>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-[#F3E5F5] flex items-center justify-center text-[#8E24AA] shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#F3E5F5] flex items-center justify-center text-[#6A1B9A] shadow-sm">
               <Activity className="w-6 h-6" />
             </div>
           </div>
         </div>
 
-        <div className="group bg-white rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#E0F2F1] relative overflow-hidden flex flex-col justify-between h-40">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#E0F2F1] rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
+        <div className="group bg-white rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#B2DFDB]/30 relative overflow-hidden flex flex-col justify-between h-40">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#B2DFDB]/20 rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
 
           <div className="relative z-10 flex justify-between items-start">
             <div>
@@ -68,21 +68,21 @@ export default function Weekly({ weeklyData }) {
               </div>
               <div className="text-xs text-slate-400 mt-1 font-medium">vs previous week</div>
             </div>
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-[#E0F2F1] ${getTrendColor(weeklyData.summary.trend)}`}>
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-[#B2DFDB]/30 ${getTrendColor(weeklyData.summary.trend)}`}>
               {weeklyData.summary.trend === 'improving' ? <TrendingDown className="w-6 h-6" /> : <TrendingUp className="w-6 h-6" />}
             </div>
           </div>
         </div>
 
-        <div className="group bg-white rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#E1F5FE] relative overflow-hidden flex flex-col justify-between h-40">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#E1F5FE] rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
+        <div className="group bg-white rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#FFE0B2]/30 relative overflow-hidden flex flex-col justify-between h-40">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#FFE0B2]/20 rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
 
           <div className="relative z-10 flex justify-between items-start">
             <div>
               <div className="text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">Consistency</div>
               <div className="text-4xl font-bold text-slate-800 font-serif">{weeklyData.summary.days_tracked}<span className="text-lg text-slate-400 font-normal font-sans">/7</span></div>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-[#E1F5FE] flex items-center justify-center text-[#0288D1] shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFE0B2]/40 flex items-center justify-center text-[#EF6C00] shadow-sm">
               <Calendar className="w-6 h-6" />
             </div>
           </div>
@@ -123,11 +123,11 @@ export default function Weekly({ weeklyData }) {
                   <Line
                     type="monotone"
                     dataKey="overall"
-                    stroke="#8E24AA"
+                    stroke="#EF6C00"
                     strokeWidth={3}
                     name="Overall Score"
-                    dot={{ r: 4, fill: '#fff', strokeWidth: 2, stroke: '#8E24AA' }}
-                    activeDot={{ r: 7, fill: '#8E24AA' }}
+                    dot={{ r: 4, fill: '#fff', strokeWidth: 2, stroke: '#EF6C00' }}
+                    activeDot={{ r: 7, fill: '#EF6C00' }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -164,10 +164,10 @@ export default function Weekly({ weeklyData }) {
                   />
                   <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
                   <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                  <Bar dataKey="depression" fill="#FF7043" name="Dep" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                  <Bar dataKey="anxiety" fill="#FFA726" name="Anx" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                  <Bar dataKey="stress" fill="#42A5F5" name="Str" radius={[4, 4, 0, 0]} maxBarSize={40} />
-                  <Bar dataKey="sleep" fill="#AB47BC" name="Slp" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                  <Bar dataKey="depression" fill="#EF6C00" name="Dep" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                  <Bar dataKey="anxiety" fill="#FFCC80" name="Anx" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                  <Bar dataKey="stress" fill="#B2DFDB" name="Str" radius={[4, 4, 0, 0]} maxBarSize={40} />
+                  <Bar dataKey="sleep" fill="#6A1B9A" name="Slp" radius={[4, 4, 0, 0]} maxBarSize={40} />
                 </BarChart>
               </ResponsiveContainer>
             </div>

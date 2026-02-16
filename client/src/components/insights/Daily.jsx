@@ -140,8 +140,8 @@ export default function Daily({ dailyData, onRefresh }) {
 
       <div className="lg:col-span-1 space-y-6">
         {/* Recommendataions */}
-        <div className="group bg-white rounded-[2.5rem] p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#E0F2F1] relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-40 h-40 bg-[#E0F2F1] rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
+        <div className="group bg-white rounded-[2.5rem] p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#B2DFDB]/30 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-40 h-40 bg-[#B2DFDB]/20 rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
 
           <div className="relative z-10">
             <h3 className="card-title text-[#3E2723] flex items-center gap-3 mb-6 font-bold font-serif text-2xl">
@@ -165,8 +165,8 @@ export default function Daily({ dailyData, onRefresh }) {
         </div>
 
         {/* Quick Win / Activity */}
-        <div className="group bg-white rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#E3F2FD] relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-[#E3F2FD] rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
+        <div className="group bg-white rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#FFE0B2]/30 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFE0B2]/20 rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
 
           <div className="relative z-10">
             <div className="flex justify-between items-start mb-4">

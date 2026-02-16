@@ -7,11 +7,9 @@ import connectDB from "./config/db.js";
 import riskRoutes from "./routes/riskRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import journalRoutes from "./routes/journalRoutes.js";
-import dailyQuizRoutes from "./routes/dailyQuizRoutes.js"
+import dailyQuizRoutes from "./routes/dailyQuizRoutes.js";
 import userAuth from "./middleware/authmiddleware.js";
-import UserChat from "./models/Botuserchat.js";
-import Chat from "./models/botchat.js";
-
+import chatRoutes from "./routes/chatbotRoutes.js";
 
 dotenv.config();
 
@@ -37,128 +35,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/risk", riskRoutes);
 app.use("/api/quiz", dailyQuizRoutes);
 app.use("/api/journal", journalRoutes);
+app.use("/api", chatRoutes);
 
 // Connect DB & start server
 connectDB().then(() => {
     app.listen(PORT, () => {
         console.log(`Server started at port ${PORT}`);
     });
-});
-
-// Chatbot routes
-app.get("/api/upload", userAuth, (req, res) => {
-    const result = imagekit.getAuthenticationParameters();
-    res.json(result);
-});
-
-app.post("/api/chats", userAuth, async (req, res) => {
-    const userId = req.userId;
-    const { text } = req.body;
-
-    if (!text) return res.status(400).json({ message: "Text is required" });
-
-    try {
-        // Create new chat
-        const newChat = new Chat({
-            userId: userId,
-            history: [
-                {
-                    role: "user",
-                    parts: [{ text }]
-                }
-            ]
-        });
-        await newChat.save();
-        const userChat = await UserChat.findOne({ userId });
-        if (!userChat) {
-            const newUserChat = new UserChat({
-                userId,
-                chats: [
-                    {
-                        _id: newChat._id,
-                        title: text.substring(0, 30),
-                        createdAt: newChat.createdAt
-                    }
-                ]
-            });
-            await newUserChat.save();
-        } else {
-            await UserChat.updateOne(
-                { userId },
-                {
-                    $push: {
-                        chats: {
-                            _id: newChat._id,
-                            title: text.substring(0, 30),
-                            createdAt: newChat.createdAt
-                        }
-                    }
-                }
-            );
-        }
-
-        res.status(201).json({ chatId: newChat._id });
-    } catch (error) {
-        console.error("Error creating chat:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-});
-
-app.get("/api/userchats", userAuth, async (req, res) => {
-    const userId = req.userId;
-    try {
-        const userChat = await UserChat.findOne({ userId });
-        if (!userChat) {
-            return res.status(200).json({ chats: [] });
-        }
-        res.status(200).json({ chats: userChat.chats });
-    } catch (error) {
-        console.error("Error fetching user chats:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-});
-
-app.get("/api/chats/:id", userAuth, async (req, res) => {
-    try {
-        const chat = await Chat.findOne({
-            _id: req.params.id,
-            userId: req.userId
-        });
-
-        if (!chat) return res.status(404).json({ message: "Chat not found" });
-
-        res.status(200).json(chat);
-    } catch (error) {
-        console.error("Error fetching chat:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
-});
-
-app.put("/api/chats/:id", userAuth, async (req, res) => {
-    try {
-        const { question, answer } = req.body;
-
-        await Chat.updateOne(
-            { _id: req.params.id, userId: req.userId },
-            {
-                $push: {
-                    history: [
-                        {
-                            role: "user",
-                            parts: [{ text: question }]
-                        },
-                        {
-                            role: "model",
-                            parts: [{ text: answer }]
-                        }
-                    ]
-                }
-            }
-        );
-
-        res.status(200).json({ message: "Chat updated" });
-    } catch (error) {
-        console.error("Error updating chat:", error);
-        res.status(500).json({ message: "Internal server error" });
-    }
 });

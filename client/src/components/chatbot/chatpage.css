@@ -1,18 +1,25 @@
 .chatpage-container {
-    height: 100dvh;
+    height: 100%;
     width: 100%;
     display: flex;
     justify-content: center;
-    background-color: #1e1c29;
+    background-color: transparent;
+    /* Parent handles background */
     padding: 20px;
     box-sizing: border-box;
 }
 
 .chat-wrapper {
     flex: 1;
-    max-width: 800px;
+    max-width: 900px;
     display: flex;
     flex-direction: column;
     gap: 20px;
     height: 100%;
+}
+
+@media (max-width: 768px) {
+    .chatpage-container {
+        padding: 0;
+    }
 }

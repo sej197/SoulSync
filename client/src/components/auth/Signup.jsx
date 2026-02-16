@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import authapi from '../../lib/authapi';
+import { registerUser } from '../../lib/authapi';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext.jsx';
 
@@ -48,7 +48,7 @@ const Signup = () => {
         return;
       }
 
-      await authapi.post('/register', {
+      await registerUser({
       username: formData.username,
       email: formData.email,
       password: formData.password,
@@ -71,27 +71,26 @@ const Signup = () => {
     }finally{
       setLoading(false);
     }
-    console.log('Signup submitted:', formData);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bloom-cream text-bloom-dark font-sans px-4 py-8">
-      <div className="w-full max-w-2xl bg-white p-8 rounded-2xl shadow-soft">
+    <div className="min-h-screen flex items-center justify-center bg-bloom-cream dark:bg-gray-900 text-bloom-primary dark:text-gray-100 font-sans px-4 py-8 transition-colors duration-200">
+      <div className="w-full max-w-2xl bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-soft dark:shadow-gray-900/50 transition-colors duration-200">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-serif font-bold text-bloom-primary mb-2">Create Account</h2>
-          <p className="text-bloom-muted">Start your mindfulness journey today</p>
+          <h2 className="text-3xl font-serif font-bold text-bloom-primary dark:text-white mb-2">Create Account</h2>
+          <p className="text-bloom-muted dark:text-gray-400">Start your mindfulness journey today</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-bloom-primary mb-2">Email</label>
+            <label className="block text-sm font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Email</label>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 rounded-lg bg-white/70 border border-bloom-secondary/30 text-bloom-primary placeholder-gray-400 focus:bg-white focus:border-bloom-primary focus:ring-3 focus:ring-bloom-primary/20 outline-none transition-all duration-200"
+              className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all"
               placeholder="name@example.com"
               required
             />
@@ -101,25 +100,25 @@ const Signup = () => {
           {/* Username & Age */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-bloom-primary mb-2">Username</label>
+              <label className="block text-sm font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Username</label>
               <input
                 type="text"
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 rounded-lg bg-white/70 border border-bloom-secondary/30 text-bloom-primary placeholder-gray-400 focus:bg-white focus:border-bloom-primary focus:ring-3 focus:ring-bloom-primary/20 outline-none transition-all duration-200"
+                className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all"
                 placeholder="Choose a username"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-bloom-primary mb-2">Age <span className="text-gray-500 text-xs">(optional)</span></label>
+              <label className="block text-sm font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Age <span className="text-gray-500 dark:text-gray-400 text-xs">(optional)</span></label>
               <input
                 type="number"
                 name="age"
                 value={formData.age}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 rounded-lg bg-white/70 border border-bloom-secondary/30 text-bloom-primary placeholder-gray-400 focus:bg-white focus:border-bloom-primary focus:ring-3 focus:ring-bloom-primary/20 outline-none transition-all duration-200"
+                className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all"
                 placeholder="18"
                 min="13"
                 max="100"
@@ -130,12 +129,12 @@ const Signup = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-bloom-primary mb-1.5">Gender</label>
+              <label className="block text-sm font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Gender</label>
               <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 outline-none transition-all bg-white"
+                className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all"
                 required
               >
                 <option value="">Select your gender</option>
@@ -147,47 +146,47 @@ const Signup = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-bloom-primary mb-1.5">Contact Number</label>
+              <label className="block text-sm font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Contact Number</label>
               <input
                 type="tel"
                 name="contact"
                 value={formData.contact}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 outline-none transition-all"
+                className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all"
                 placeholder="10-digit phone number"
                 maxLength="10"
                 pattern="\d{10}"
                 required
               />
-              <p className="text-xs text-bloom-muted mt-1">Format: 10 digits only</p>
+              <p className="text-xs text-bloom-muted dark:text-gray-400 mt-1">Format: 10 digits only</p>
             </div>
           </div>
 
           
-          <div className="bg-bloom-secondary/10 p-4 rounded-xl border border-bloom-secondary/20">
-            <h3 className="text-sm font-semibold text-bloom-dark mb-3">Emergency Contacts</h3>
+          <div className="bg-bloom-secondary/10 dark:bg-gray-700/40 p-4 rounded-xl border border-bloom-secondary/20 dark:border-gray-600">
+            <h3 className="text-sm font-semibold text-bloom-dark dark:text-gray-100 mb-3">Emergency Contacts</h3>
             <div className="space-y-3">
               <div>
-                <label className="block text-xs font-medium text-bloom-primary mb-1.5">Emergency Contact 1</label>
+                <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Emergency Contact 1</label>
                 <input
                   type="tel"
                   name="emergencyContact1"
                   value={formData.emergencyContact1}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 outline-none transition-all text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                   placeholder="Contact number or name"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-bloom-primary mb-1.5">Emergency Contact 2 <span className="text-gray-400 text-xs">(optional)</span></label>
+                <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Emergency Contact 2 <span className="text-gray-400 dark:text-gray-500 text-xs">(optional)</span></label>
                 <input
                   type="tel"
                   name="emergencyContact2"
                   value={formData.emergencyContact2}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 outline-none transition-all text-sm"
+                  className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                   placeholder="Contact number or name"
                 />
               </div>
@@ -196,40 +195,40 @@ const Signup = () => {
 
           
           <div>
-            <label className="block text-sm font-medium text-bloom-primary mb-2">Password</label>
+            <label className="block text-sm font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 rounded-lg bg-white/70 border border-bloom-secondary/30 text-bloom-primary placeholder-gray-400 focus:bg-white focus:border-bloom-primary focus:ring-3 focus:ring-bloom-primary/20 outline-none transition-all duration-200"
+              className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all"
               placeholder="Create a password"
               required
             />
-            <p className="text-xs text-gray-500 mt-1.5">At least 8 characters</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">At least 8 characters</p>
           </div>
 
           
           <div>
-            <label className="block text-sm font-medium text-bloom-primary mb-2">Confirm Password</label>
+            <label className="block text-sm font-medium text-bloom-primary dark:text-gray-200 mb-1.5">Confirm Password</label>
             <input
               type={showPassword ? 'text' : 'password'}
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 rounded-lg bg-white/70 border border-bloom-secondary/30 text-bloom-primary placeholder-gray-400 focus:bg-white focus:border-bloom-primary focus:ring-3 focus:ring-bloom-primary/20 outline-none transition-all duration-200"
+              className="w-full px-4 py-3 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all"
               placeholder="Confirm your password"
               required
             />
           </div>
 
           
-          <label className="flex items-center gap-2 text-sm text-bloom-primary cursor-pointer hover:text-bloom-primary transition-colors">
+          <label className="flex items-center gap-2 text-sm text-bloom-primary dark:text-gray-200 cursor-pointer hover:text-bloom-primary dark:hover:text-bloom-primary transition-colors">
             <input
               type="checkbox"
               checked={showPassword}
               onChange={(e) => setShowPassword(e.target.checked)}
-              className="w-4 h-4 rounded border-bloom-secondary/50 accent-bloom-primary"
+              className="w-4 h-4 rounded border-bloom-secondary/50 dark:border-gray-500 accent-bloom-primary"
             />
             Show password
           </label>
@@ -237,16 +236,16 @@ const Signup = () => {
           
           <button
             type="submit"
-            className="w-full bg-bloom-primary hover:bg-bloom-primary/90 text-white font-medium py-3 px-4 rounded-xl shadow-lg shadow-bloom-primary/30 transition-all duration-200 transform hover:-translate-y-0.5 mt-6"
+            className="w-full bg-bloom-primary hover:bg-bloom-primary/90 dark:bg-bloom-primary dark:hover:bg-bloom-primary/80 text-white font-medium py-3 px-4 rounded-xl shadow-lg shadow-bloom-primary/30 dark:shadow-bloom-primary/20 transition-all duration-200 transform hover:-translate-y-0.5 mt-6"
           >
             Create Account
           </button>
         </form>
 
         
-        <p className="text-center mt-8 text-bloom-muted text-sm">
+        <p className="text-center mt-8 text-bloom-muted dark:text-gray-400 text-sm">
           Already have an account?{' '}
-          <Link to="/login" className="text-bloom-primary font-medium hover:text-bloom-dark transition-colors">
+          <Link to="/login" className="text-bloom-primary dark:text-bloom-primary font-medium hover:text-bloom-primary/80 dark:hover:text-bloom-primary/80 transition-colors">
             Sign in
           </Link>
         </p>

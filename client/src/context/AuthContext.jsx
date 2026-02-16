@@ -1,6 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import toast from "react-hot-toast";
-import authapi from "../lib/authapi";
+import { checkAuthStatus as fetchAuthStatus } from "../lib/authapi";
 
 export const AuthContext = createContext(null);
 
@@ -11,9 +11,9 @@ export const AuthProvider = ({ children }) => {
 
   const getAuthStatus = async () => {
     try{
-        const response = await authapi.get("/is-authenticated");
-        if(response.data.isAuthenticated){
-            setUser(response.data.user);
+        const data = await fetchAuthStatus();
+        if(data.isAuthenticated){
+            setUser(data.user);
             setIsLoggedIn(true);
         }else{
             setUser(null);

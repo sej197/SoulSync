@@ -28,7 +28,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FFF9F0] text-slate-800 overflow-x-hidden selection:bg-[#FFCC80] selection:text-[#3E2723] relative font-sans">
+    <div className="min-h-screen bg-[#F3E5F5] text-slate-800 overflow-x-hidden selection:bg-[#FFCC80] selection:text-[#3E2723] relative font-sans">
 
       <style>
         {`

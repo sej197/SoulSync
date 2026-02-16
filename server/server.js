@@ -15,7 +15,7 @@ import Chat from "./models/Botchat.js";
 
 dotenv.config();
 
-const app = express();git 
+const app = express();
 const PORT = process.env.PORT || 5000;
 
 const imagekit = new ImageKit({

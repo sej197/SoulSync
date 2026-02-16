@@ -78,7 +78,7 @@ export default function Insights() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F3E5F5] text-slate-800 overflow-x-hidden selection:bg-purple-200 selection:text-purple-900 pb-20 pt-24 font-sans relative">
+    <div className="min-h-screen bg-[#F3E5F5] text-slate-800 overflow-x-hidden selection:bg-[#FFCC80] selection:text-[#3E2723] pb-20 pt-24 font-sans relative">
       <style>
         {`
           @keyframes morph {
@@ -91,26 +91,26 @@ export default function Insights() {
           }
           .blob-shape {
              position: absolute;
-             filter: blur(60px);
-             opacity: 0.7;
+             filter: blur(80px);
+             opacity: 0.6;
              transition: transform 0.1s linear;
           }
         `}
       </style>
 
-      {/* Parallax Background Blobs */}
+      {/* Parallax Background Blobs matching Home/About */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
         <div
-          className="blob-shape bg-[#FFE0B2] w-[600px] h-[600px] top-[-10%] left-[-10%] animate-morph"
+          className="blob-shape bg-[#FFE0B2] w-[600px] h-[600px] top-[-10%] right-[-10%] animate-morph"
           style={{ transform: `translateY(${scrollY * 0.2}px)` }}
         ></div>
         <div
-          className="blob-shape bg-[#B2DFDB] w-[500px] h-[500px] bottom-[-10%] right-[-5%] animate-morph"
+          className="blob-shape bg-[#B2DFDB] w-[500px] h-[500px] top-[40%] left-[-10%] animate-morph"
           style={{ transform: `translateY(${scrollY * -0.15}px)`, animationDelay: '-2s' }}
         ></div>
         <div
-          className="blob-shape bg-[#E1BEE7] w-[400px] h-[400px] top-[30%] right-[10%] animate-morph opacity-50"
-          style={{ transform: `translateY(${scrollY * 0.1}px)`, animationDelay: '-4s' }}
+          className="blob-shape bg-[#FFCCBC] w-[700px] h-[700px] bottom-[-20%] right-[-5%] animate-morph"
+          style={{ transform: `translateY(${scrollY * 0.15}px)`, animationDelay: '-4s' }}
         ></div>
       </div>
 

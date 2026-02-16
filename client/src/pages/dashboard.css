@@ -2,72 +2,54 @@
     display: flex;
     height: 100dvh;
     width: 100%;
-    gap: 0;
+    background-color: #F3E5F5;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Sidebar */
 .menus {
-    flex: 1;
-    background-color: #1a1a2e;
-    min-width: 220px;
+    width: 280px;
     height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid rgba(62, 39, 35, 0.1);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
 }
 
+.sidebar-header {
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-family: 'Lora', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #3E2723;
+}
+
+.mobile-close {
+    display: none;
+    background: transparent;
+    border: none;
+    color: #3E2723;
+    cursor: pointer;
+}
+
+/* Content Area */
 .content {
-    flex: 4;
+    flex: 1;
     display: flex;
     flex-direction: column;
     height: 100%;
-    width: 100%;
-    padding: 0;
-    background-color: #1e1c29;
-}
-
-.formContainer {
-    margin-top: auto;
-    padding: 10px 20px;
-    width: 100%;
-    max-width: 600px;
     position: relative;
-    /* needed for absolute button */
-}
-
-.formContainer form {
-    display: flex;
-    width: 100%;
-}
-
-.formContainer input {
-    flex: 1;
-    padding: 15px 50px 15px 20px;
-    /* extra right padding for button */
-    border-radius: 30px;
-    border: 1px solid #3d3d5c;
-    background-color: #1a1a2e;
-    color: white;
-    outline: none;
-    font-size: 1rem;
-}
-
-.sendButton {
-    position: absolute;
-    right: 30px;
-    /* inside input */
-    top: 50%;
-    transform: translateY(-50%);
-    background-color: #35314d;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s;
-}
-
-.sendButton:hover {
-    background-color: #6a5acd;
+    overflow-y: auto;
 }
 
 .texts {
@@ -76,56 +58,203 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 40px;
-    padding: 20px;
-    height: 100%;
-    color: white;
+    padding: 40px 20px;
+    text-align: center;
 }
 
-.title {
-    font-size: 2rem;
-    font-weight: bold;
-    margin-bottom: 20px;
-    background: linear-gradient(to right, #a855f7, #ec4899);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.cards {
-    display: flex;
-    gap: 20px;
+.title-container {
     margin-bottom: 50px;
 }
 
+.title {
+    font-family: 'Lora', serif;
+    font-size: 4rem;
+    font-weight: 700;
+    color: #3E2723;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: #5D4037;
+    font-weight: 500;
+    opacity: 0.8;
+}
+
+/* Cards Section */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 60px;
+}
+
 .options {
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+    border: 1px solid white;
+    padding: 40px 30px;
+    border-radius: 2.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 15px;
-    padding: 30px;
-    width: 200px;
-    height: 200px;
-    background-color: #292942;
-    border-radius: 20px;
+    gap: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    transition: all 0.3s ease;
     cursor: pointer;
-    transition: transform 0.2s, background-color 0.3s;
-    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .options:hover {
-    background-color: #3d3d5c;
-    transform: translateY(-5px);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
+    background-color: white;
+}
+
+.icon-wrapper {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-wrapper.purple {
+    background-color: #F3E5F5;
+    color: #6A1B9A;
+}
+
+.icon-wrapper.orange {
+    background-color: #FFF3E0;
+    color: #EF6C00;
+}
+
+.icon-wrapper.teal {
+    background-color: #E0F2F1;
+    color: #00695C;
 }
 
 .options span {
-    text-align: center;
-    font-size: 0.9rem;
+    color: #3E2723;
+    font-weight: 600;
+    font-size: 1.1rem;
 }
 
-.icon {
-    width: 40px;
-    height: 40px;
-    color: #a855f7;
+/* Input Form */
+.formContainer {
+    width: 100%;
+    max-width: 800px;
+    padding: 0 20px 40px;
+}
+
+.formContainer form {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.formContainer input {
+    width: 100%;
+    padding: 20px 70px 20px 30px;
+    border-radius: 2rem;
+    border: 1px solid white;
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    font-size: 1.1rem;
+    color: #3E2723;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.formContainer input:focus {
+    background-color: white;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+}
+
+.sendButton {
+    position: absolute;
+    right: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #EF6C00;
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.sendButton:hover {
+    background-color: #E65100;
+    transform: scale(1.05);
+}
+
+/* Mobile Responsiveness */
+.mobile-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1100;
+    display: none;
+    background-color: white;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 10px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    color: #3E2723;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .mobile-toggle {
+        display: block;
+    }
+
+    .menus {
+        position: fixed;
+        left: -300px;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+    }
+
+    .menus.active {
+        transform: translateX(300px);
+    }
+
+    .mobile-close {
+        display: block;
+    }
+
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background-color: rgba(62, 39, 35, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+    }
+
+    .title {
+        font-size: 2.5rem;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .options {
+        padding: 30px;
+    }
+
+    .formContainer {
+        position: sticky;
+        bottom: 0;
+        padding-bottom: 20px;
+    }
 }

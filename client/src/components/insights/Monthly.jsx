@@ -39,7 +39,7 @@ export default function Monthly({ monthlyData }) {
           <div className="absolute top-0 right-0 w-24 h-24 bg-[#F3E5F5] rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
 
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-[#F3E5F5] text-[#8E24AA] flex items-center justify-center mb-3 mx-auto shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#F3E5F5] text-[#6A1B9A] flex items-center justify-center mb-3 mx-auto shadow-sm">
               <Activity className="w-6 h-6" />
             </div>
             <div className="text-slate-400 text-xs mb-1 uppercase tracking-bold font-bold">Average</div>
@@ -47,11 +47,11 @@ export default function Monthly({ monthlyData }) {
           </div>
         </div>
 
-        <div className="group bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#E0F2F1] relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#E0F2F1] rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
+        <div className="group bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#B2DFDB]/30 relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#B2DFDB]/20 rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
 
           <div className="relative z-10">
-            <div className={`w-12 h-12 rounded-2xl bg-[#E0F2F1] flex items-center justify-center mb-3 mx-auto shadow-sm ${getTrendColor(monthlyData.summary.trend)}`}>
+            <div className={`w-12 h-12 rounded-2xl bg-[#B2DFDB]/30 flex items-center justify-center mb-3 mx-auto shadow-sm ${getTrendColor(monthlyData.summary.trend)}`}>
               {monthlyData.summary.trend === 'improving' ? <TrendingDown className="w-6 h-6" /> : <TrendingUp className="w-6 h-6" />}
             </div>
             <div className="text-slate-400 text-xs mb-1 uppercase tracking-bold font-bold">Trend</div>
@@ -61,11 +61,11 @@ export default function Monthly({ monthlyData }) {
           </div>
         </div>
 
-        <div className="group bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#E1F5FE] relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#E1F5FE] rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
+        <div className="group bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#FFE0B2]/30 relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#FFE0B2]/20 rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
 
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-[#E1F5FE] text-[#0288D1] flex items-center justify-center mb-3 mx-auto shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFE0B2]/40 flex items-center justify-center mb-3 mx-auto shadow-sm text-[#EF6C00]">
               <Calendar className="w-6 h-6" />
             </div>
             <div className="text-slate-400 text-xs mb-1 uppercase tracking-bold font-bold">Tracked</div>
@@ -73,11 +73,11 @@ export default function Monthly({ monthlyData }) {
           </div>
         </div>
 
-        <div className="group bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#E0F2F1] relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-[#E0F2F1] rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
+        <div className="group bg-white rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-[#B2DFDB]/30 relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
+          <div className="absolute top-0 right-0 w-24 h-24 bg-[#B2DFDB]/20 rounded-bl-[100%] opacity-60 transition-transform group-hover:scale-110 pointer-events-none"></div>
 
           <div className="relative z-10">
-            <div className="w-12 h-12 rounded-2xl bg-[#E0F2F1] text-emerald-600 flex items-center justify-center mb-3 mx-auto shadow-sm">
+            <div className="w-12 h-12 rounded-2xl bg-[#B2DFDB]/30 text-emerald-600 flex items-center justify-center mb-3 mx-auto shadow-sm">
               <CheckCircle className="w-6 h-6" />
             </div>
             <div className="text-slate-400 text-xs mb-1 uppercase tracking-bold font-bold">Consistency</div>
@@ -136,14 +136,14 @@ export default function Monthly({ monthlyData }) {
                     dx={-10}
                   />
                   <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f8fafc' }} />
-                  <Bar dataKey="avg_score" fill="#c896f4" name="Avg Score" radius={[8, 8, 0, 0]} maxBarSize={60} />
+                  <Bar dataKey="avg_score" fill="#EF6C00" name="Avg Score" radius={[8, 8, 0, 0]} maxBarSize={60} />
                 </BarChart>
               ) : (
                 <AreaChart data={monthlyData.chart_data}>
                   <defs>
                     <linearGradient id="colorOverall" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8E24AA" stopOpacity={0.2} />
-                      <stop offset="95%" stopColor="#8E24AA" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#EF6C00" stopOpacity={0.2} />
+                      <stop offset="95%" stopColor="#EF6C00" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -169,7 +169,7 @@ export default function Monthly({ monthlyData }) {
                   <Area
                     type="monotone"
                     dataKey="overall"
-                    stroke="#8E24AA"
+                    stroke="#EF6C00"
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#colorOverall)"
@@ -212,10 +212,10 @@ export default function Monthly({ monthlyData }) {
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="circle" />
-                <Line type="monotone" dataKey="depression" stroke="#FF7043" strokeWidth={2} name="Dep" dot={false} />
-                <Line type="monotone" dataKey="anxiety" stroke="#FFA726" strokeWidth={2} name="Anx" dot={false} />
-                <Line type="monotone" dataKey="stress" stroke="#42A5F5" strokeWidth={2} name="Str" dot={false} />
-                <Line type="monotone" dataKey="sleep" stroke="#AB47BC" strokeWidth={2} name="Slp" dot={false} />
+                <Line type="monotone" dataKey="depression" stroke="#EF6C00" strokeWidth={2} name="Dep" dot={false} />
+                <Line type="monotone" dataKey="anxiety" stroke="#FFCC80" strokeWidth={2} name="Anx" dot={false} />
+                <Line type="monotone" dataKey="stress" stroke="#B2DFDB" strokeWidth={2} name="Str" dot={false} />
+                <Line type="monotone" dataKey="sleep" stroke="#6A1B9A" strokeWidth={2} name="Slp" dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>

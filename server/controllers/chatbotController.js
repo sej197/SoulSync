@@ -27,7 +27,8 @@ export const createChat = async (req, res) => {
             history: [
                 {
                     role: "user",
-                    parts: [{ text }]
+                    parts: [{ text }],
+                    img: req.body.img || null
                 }
             ]
         });
@@ -123,7 +124,8 @@ export const updateChat = async (req, res) => {
                     history: [
                         {
                             role: "user",
-                            parts: [{ text: question }]
+                            parts: [{ text: question }],
+                            img: req.body.img || null
                         },
                         {
                             role: "model",

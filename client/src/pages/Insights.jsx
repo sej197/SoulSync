@@ -16,6 +16,13 @@ export default function Insights() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('daily');
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   useEffect(() => {
     if (userId) fetchInsights();
@@ -48,76 +55,90 @@ export default function Insights() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0f0f1a]">
-        <span className="loading loading-spinner loading-lg text-bloom-primary"></span>
+      <div className="flex items-center justify-center min-h-screen bg-[#F3E5F5]">
+        <span className="loading loading-spinner loading-lg text-purple-400"></span>
+        <p className="ml-4 text-slate-500 font-medium">Gathering your insights...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="container mx-auto p-6 bg-[#0f0f1a] min-h-screen text-white">
-        <div role="alert" className="alert alert-error bg-red-900/50 border-red-900 text-white">
+      <div className="container mx-auto p-6 bg-[#F3E5F5] min-h-screen text-slate-800 pt-20">
+        <div role="alert" className="alert alert-error bg-red-50 border-red-100 text-red-800 shadow-sm max-w-2xl mx-auto rounded-2xl">
           <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
           <div>
             <h3 className="font-bold">Error loading insights</h3>
-            <div className="text-xs">{error}</div>
+            <div className="text-xs opacity-75">{error}</div>
           </div>
-          <button className="btn btn-sm btn-ghost text-white" onClick={fetchInsights}>Try Again</button>
+          <button className="btn btn-sm bg-white text-red-700 hover:bg-red-50 border-none shadow-sm" onClick={fetchInsights}>Try Again</button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f0f1a] text-gray-100 overflow-x-hidden selection:bg-bloom-primary selection:text-white pb-20">
+    <div className="min-h-screen bg-[#F3E5F5] text-slate-800 overflow-x-hidden selection:bg-purple-200 selection:text-purple-900 pb-20 pt-24 font-sans relative">
       <style>
         {`
-          @keyframes float {
-            0% { transform: translate(0px, 0px); }
-            33% { transform: translate(30px, -50px); }
-            66% { transform: translate(-20px, 20px); }
-            100% { transform: translate(0px, 0px); }
+          @keyframes morph {
+            0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+            100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
           }
-          .animate-float {
-            animation: float 20s ease-in-out infinite;
+          .animate-morph {
+            animation: morph 8s ease-in-out infinite;
           }
-           .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+          .blob-shape {
+             position: absolute;
+             filter: blur(60px);
+             opacity: 0.7;
+             transition: transform 0.1s linear;
           }
         `}
       </style>
 
-      {/* Animated Background */}
+      {/* Parallax Background Blobs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-bloom-primary/10 rounded-full blur-[100px] animate-float"></div>
-        <div className="absolute bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-purple-900/20 rounded-full blur-[120px] animate-float" style={{ animationDelay: '-5s' }}></div>
+        <div
+          className="blob-shape bg-[#FFE0B2] w-[600px] h-[600px] top-[-10%] left-[-10%] animate-morph"
+          style={{ transform: `translateY(${scrollY * 0.2}px)` }}
+        ></div>
+        <div
+          className="blob-shape bg-[#B2DFDB] w-[500px] h-[500px] bottom-[-10%] right-[-5%] animate-morph"
+          style={{ transform: `translateY(${scrollY * -0.15}px)`, animationDelay: '-2s' }}
+        ></div>
+        <div
+          className="blob-shape bg-[#E1BEE7] w-[400px] h-[400px] top-[30%] right-[10%] animate-morph opacity-50"
+          style={{ transform: `translateY(${scrollY * 0.1}px)`, animationDelay: '-4s' }}
+        ></div>
       </div>
 
-      <div className="container mx-auto p-4 md:p-8 max-w-7xl">
+      <div className="container mx-auto p-4 md:p-8 max-w-7xl relative z-10">
         {/* Header */}
-        <div className="mb-10 text-center md:text-left">
-          <h1 className="text-4xl md:text-5xl font-bold font-serif mb-2 bg-clip-text text-transparent bg-gradient-to-r from-bloom-secondary via-bloom-primary to-white">
-            Mental Wellness Insights
-          </h1>
-          <p className="text-gray-400 text-lg">Track your emotional journey and discover patterns.</p>
-        </div>
+        <div className="mb-10 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-6">
+          <div>
+            <div className="inline-block px-3 py-1 bg-white/60 backdrop-blur-sm rounded-full text-xs font-bold text-[#EF6C00] mb-3 shadow-sm border border-orange-100">
+              📈 YOUR PROGRESS
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold font-serif mb-3 text-[#3E2723]">
+              Mental Wellness Insights
+            </h1>
+            <p className="text-slate-500 text-lg max-w-xl">Track your emotional journey, discover patterns, and celebrate your growth.</p>
+          </div>
 
-        {/* Tab Navigation */}
-        <div className="flex justify-center md:justify-start mb-8">
-          <div className="bg-white/5 p-1 rounded-2xl inline-flex backdrop-blur-md border border-white/10">
+          {/* Tab Navigation */}
+          <div className="bg-white/60 p-1.5 rounded-2xl inline-flex backdrop-blur-md shadow-sm border border-white/40">
             {['daily', 'weekly', 'monthly'].map((tab) => (
               <button
                 key={tab}
-                className={`px-6 py-2.5 rounded-xl font-medium transition-all duration-300 capitalize ${activeTab === tab
-                    ? 'bg-bloom-primary text-white shadow-lg shadow-bloom-primary/20 scale-105'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                className={`px-6 py-2.5 rounded-xl font-bold transition-all duration-300 capitalize text-sm ${activeTab === tab
+                  ? 'bg-[#3E2723] text-white shadow-lg scale-105'
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
                   }`}
                 onClick={() => setActiveTab(tab)}
               >
-                {tab}
+                {tab} View
               </button>
             ))}
           </div>

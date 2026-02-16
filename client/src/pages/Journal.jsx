@@ -30,7 +30,15 @@ const formatDisplayDate = (date) => {
   });
 };
 
-const todayStr = () => new Date().toISOString().split('T')[0];
+const toLocalDateStr = (date) => {
+  const d = new Date(date);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+};
+
+const todayStr = () => toLocalDateStr(new Date());
 
 
 const DiaryToolbar = ({ editor }) => {
@@ -125,7 +133,7 @@ export default function Journal() {
   const [loadingDate, setLoadingDate] = useState(false);
 
   
-  const isToday = selectedDate.toISOString().split('T')[0] === todayStr();
+  const isToday = toLocalDateStr(selectedDate) === todayStr();
   // Past day = not today
   const isPastDay = !isToday;
 
@@ -175,15 +183,21 @@ export default function Journal() {
   
   const loadEntryForDate = useCallback(async (date) => {
     setLoadingDate(true);
+    const dateIsToday = toLocalDateStr(date) === todayStr();
     try {
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = toLocalDateStr(date);
       const data = await fetchJournalByDate(dateStr);
       if (data.entries && data.entries.length > 0) {
         const entry = data.entries[0];
         setExistingEntry(entry);
-        setSubject(entry.subject || '');
-        if (editor) {
-          editor.commands.setContent(entry.text || '');
+        if (dateIsToday) {
+          // Keep editor fresh with placeholder for today
+          setSubject('');
+          if (editor) editor.commands.setContent('');
+        } else {
+          // Show existing entry read-only for past days
+          setSubject(entry.subject || '');
+          if (editor) editor.commands.setContent(entry.text || '');
         }
       } else {
         setExistingEntry(null);
@@ -307,7 +321,7 @@ export default function Journal() {
   // Tile class for calendar
   const tileClassName = ({ date, view }) => {
     if (view !== 'month') return '';
-    const dateStr = date.toISOString().split('T')[0];
+    const dateStr = toLocalDateStr(date);
     const hasEntry = calendarDates.some(d => d.date === dateStr);
     return hasEntry ? 'calendar-has-entry' : '';
   };
@@ -460,23 +474,6 @@ export default function Journal() {
                         </button>
                       )}
                     </div>
-                    {existingEntry?.sentimentScore != null && (
-                      <span className="mood-badge">
-                        💜 Mood: {existingEntry.sentimentScore.toFixed(2)}
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Past day with entry — show mood in footer */}
-                {isPastDay && existingEntry && (
-                  <div className="diary-footer">
-                    <div />
-                    {existingEntry?.sentimentScore != null && (
-                      <span className="mood-badge">
-                        💜 Mood: {existingEntry.sentimentScore.toFixed(2)}
-                      </span>
-                    )}
                   </div>
                 )}
               </div>
@@ -506,11 +503,6 @@ export default function Journal() {
                         <div className="diary-date">
                           {formatDisplayDate(currentEntry.entryTime)}
                         </div>
-                        {currentEntry.sentimentScore != null && (
-                          <span className="mood-badge">
-                            💜 Mood: {currentEntry.sentimentScore.toFixed(2)}
-                          </span>
-                        )}
                       </div>
                       {currentEntry.subject && (
                         <p className="diary-subject-input" style={{ borderBottom: 'none', cursor: 'default' }}>

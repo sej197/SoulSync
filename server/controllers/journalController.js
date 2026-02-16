@@ -8,7 +8,7 @@ const getJournalEntries = async(req, res) =>{
         const userId = req.userId;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
-        const skip = (page - 1) * limit;
+        const skip = (page - 1) * limit; // Calculate how many entries to skip based on the current page and limit
 
         const total = await Journal.countDocuments({ user: userId });
         const entries = await Journal.find({
@@ -220,23 +220,18 @@ const getCalendarDates = async(req, res) => {
             matchQuery.entryTime = { $gte: startDate, $lte: endDate };
         }
 
-        const dates = await Journal.aggregate([
-            { $match: matchQuery },
-            {
-                $group: {
-                    _id: {
-                        $dateToString: { format: "%Y-%m-%d", date: "$entryTime" }
-                    },
-                    count: { $sum: 1 }
-                }
-            },
-            { $sort: { _id: 1 } }
-        ]);
+        const entries = await Journal.find(matchQuery).select('entryTime').lean();
 
-        const calendarDates = dates.map(d => ({
-            date: d._id,
-            entryCount: d.count
-        }));
+        const dateMap = {};
+        entries.forEach(e => {
+            const d = new Date(e.entryTime);
+            const localDate = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            dateMap[localDate] = (dateMap[localDate] || 0) + 1;
+        });
+
+        const calendarDates = Object.entries(dateMap) 
+            .sort((a, b) => a[0].localeCompare(b[0]))
+            .map(([date, count]) => ({ date, entryCount: count }));
 
         res.json({ calendarDates });
     }catch(error){

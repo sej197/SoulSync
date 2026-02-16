@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Save, Camera, User, Phone, Calendar, Users } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
-import authapi from '../lib/authapi';
+import { updateProfile } from '../lib/authapi';
 import toast from 'react-hot-toast';
 
 
@@ -89,7 +89,7 @@ const EditProfile = () => {
             return;
         }
     
-        await authapi.patch('/update-profile', updateData);
+        await updateProfile(updateData);
         await getAuthStatus();
         toast.success("Profile updated successfully");
         setLoading(false);

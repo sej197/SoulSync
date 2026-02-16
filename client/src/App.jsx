@@ -13,6 +13,7 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import EditProfile from './pages/EditProfile';
 import Settings from './pages/Settings';
+import Journal from './pages/Journal';
 import AnxietyQuiz from './components/quiz/AnxietyQuiz';
 import DepressionQuiz from './components/quiz/DepressionQuiz';
 import SleepQuiz from './components/quiz/SleepQuiz';
@@ -44,8 +45,8 @@ function App() {
                   </Route>
                   <Route path="/community-chat" element={<ProtectedRoute><CommunityChat /></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
+                  <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
                   <Route path="/insights" element={<Insights />} />
-                  <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                   <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

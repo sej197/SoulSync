@@ -44,14 +44,14 @@ const register = async(req, res) => {
         const token = jwt.sign(
             {id: user._id},
             process.env.JWT_SECRET,
-            {expiresIn: '2h'}
+            {expiresIn: '2D'}
         );
 
         res.cookie('token', token, {
             httpOnly: true, //makes it inaccessible at client side
             secure: process.env.NODE_ENV == 'production', //sent only over https in prod
             sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strict', //allow cross-site cookies in production, strict in development
-            maxAge: 2 * 60 * 60 * 1000 // 2 hrs in ms
+            maxAge: 2 * 24 * 60 * 60 * 1000 // 2 D in ms
         
         })
 
@@ -104,14 +104,14 @@ const login = async(req, res) => {
         const token = jwt.sign(
             { id: user._id },
             process.env.JWT_SECRET,
-            {expiresIn: '2h'}
+            {expiresIn: '2D'}
         );
 
         res.cookie('token', token, {
             httpOnly : true,
             secure: process.env.NODE_ENV == 'production',
             sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strict',
-            maxAge: 2 * 60 * 60 * 1000
+            maxAge: 2 * 24 * 60 * 60 * 1000
         });
         return res.json({
             message: "Login successful"

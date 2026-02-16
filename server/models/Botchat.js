@@ -9,7 +9,7 @@ const botChatSchema = new mongoose.Schema({
         {
             role: {
                 type: String,
-                enum: ["user", "bot"],
+                enum: ["user", "model", "bot"],
                 required: true
             },
             parts: [

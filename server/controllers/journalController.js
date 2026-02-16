@@ -2,6 +2,15 @@ import mongoose from "mongoose";
 import Journal from "../models/Journal.js";
 import RiskScore from "../models/RiskScore.js";
 import axios from "axios";
+import { encrypt, decrypt } from "../utils/encryption.js";
+
+
+function decryptEntry(entry) {
+    const obj = entry.toObject ? entry.toObject() : { ...entry };
+    obj.text = decrypt(obj.text);
+    if (obj.subject) obj.subject = decrypt(obj.subject);
+    return obj;
+}
 
 const getJournalEntries = async(req, res) =>{
     try{
@@ -20,8 +29,10 @@ const getJournalEntries = async(req, res) =>{
         .skip(skip)
         .limit(limit);
 
+        const decryptedEntries = entries.map(decryptEntry);
+
         res.json({
-            entries,
+            entries: decryptedEntries,
             currentPage: page,
             totalPages: Math.ceil(total / limit),
             totalEntries: total
@@ -63,7 +74,8 @@ const getJournalEntryByDate = async(req, res) => {
                 message: "Journal entry not found for the specified date"
             });
         }
-        res.json({entries}); 
+        const decryptedEntries = entries.map(decryptEntry);
+        res.json({entries: decryptedEntries}); 
     }catch(error){
         res.status(500).json({message: "Server error"});
         console.error("Error fetching journal entry by date", error);
@@ -73,7 +85,7 @@ const getJournalEntryByDate = async(req, res) => {
 const createJournalEntry = async(req, res) =>{
     try{
         const userId = req.userId;
-        const {text, entryTime} = req.body;
+        const {text, subject, entryTime} = req.body;
         if(!text){
             return res.status(400).json({
                 message: "Text is required"
@@ -81,7 +93,8 @@ const createJournalEntry = async(req, res) =>{
         }
         const entry = await Journal.create({
             user: userId,
-            text,
+            text: encrypt(text),
+            subject: subject ? encrypt(subject) : null,
             entryTime: entryTime ? new Date(entryTime) : Date.now()
         });
 
@@ -90,7 +103,7 @@ const createJournalEntry = async(req, res) =>{
         try {
             const response = await axios.post(
                 `${process.env.PYTHON_SERVER}/sentiment/analyze`,
-                { text }
+                { text }  // Send plaintext for sentiment analysis
             );
         sentimentScore = response.data.paragraphScore ?? 0;
         }catch(error){
@@ -115,7 +128,7 @@ const createJournalEntry = async(req, res) =>{
 
     res.status(201).json({
         message: "Journal entry created successfully", 
-        entry
+        entry: decryptEntry(entry)
     });
 
 
@@ -168,13 +181,13 @@ const updateJournalEntry = async(req, res) =>{
             });
         }
 
-        if(subject) entry.subject = subject;
+        if(subject) entry.subject = encrypt(subject);
         if(text){
-            entry.text = text;
+            entry.text = encrypt(text);
             try {
                 const response = await axios.post(
                     `${process.env.PYTHON_SERVER}/sentiment/analyze`,
-                    { text: entry.text }
+                    { text }  // Send plaintext for sentiment analysis
                 );
                 entry.sentimentScore = response.data.paragraphScore ?? 0;
             }catch (err) {
@@ -197,7 +210,7 @@ const updateJournalEntry = async(req, res) =>{
         { upsert: true, new: true }
         ); 
         res.json({
-            message: "Journal entry updated successfully", entry
+            message: "Journal entry updated successfully", entry: decryptEntry(entry)
         });
     }catch(error){
         res.status(500).json({

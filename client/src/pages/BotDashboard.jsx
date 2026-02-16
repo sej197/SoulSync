@@ -4,6 +4,7 @@ import { useState } from 'react';
 import './dashboard.css';
 import ChatbotList from '../components/chatbot/ChatbotList';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { fetchUserChats, createChat } from '../lib/chatbotapi';
 
 export default function BotDashboard() {
     const navigate = useNavigate();
@@ -15,24 +16,11 @@ export default function BotDashboard() {
 
     const { data: chatsData, isLoading, error } = useQuery({
         queryKey: ['userChats'],
-        queryFn: async () => {
-            const res = await fetch('http://localhost:5000/api/userchats', { credentials: 'include' });
-            if (!res.ok) throw new Error('Failed to fetch chats');
-            return res.json();
-        }
+        queryFn: fetchUserChats
     });
 
     const createChatMutation = useMutation({
-        mutationFn: async (text) => {
-            const res = await fetch('http://localhost:5000/api/chats', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                credentials: 'include',
-                body: JSON.stringify({ text })
-            });
-            if (!res.ok) throw new Error('Failed to create chat');
-            return res.json();
-        },
+        mutationFn: (text) => createChat(text),
         onSuccess: (data) => {
             queryClient.invalidateQueries({ queryKey: ['userChats'] });
             if (data.chatId) {

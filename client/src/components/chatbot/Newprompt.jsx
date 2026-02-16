@@ -4,6 +4,7 @@ import { IKImage } from "imagekitio-react";
 import { useNavigate } from "react-router-dom";
 import Uploads from "./Uploads";
 import model from "../../lib/gemini";
+import { fetchChatById, createChat, updateChat } from "../../lib/chatbotapi";
 import Markdown from "react-markdown";
 import "./newprompt.css";
 
@@ -32,20 +33,13 @@ export default function Newprompt({ chatId }) {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chat]);
 
-    // 🔥 Load existing chat
+    
     useEffect(() => {
         const fetchChat = async () => {
             if (!activeChatId) return;
 
             try {
-                const res = await fetch(
-                    `http://localhost:5000/api/chats/${activeChatId}`,
-                    { credentials: "include" }
-                );
-
-                if (!res.ok) return;
-
-                const data = await res.json();
+                const data = await fetchChatById(activeChatId);
 
                 const formatted = data.history.map((item) => ({
                     type: item.role === "user" ? "user" : "bot",
@@ -55,7 +49,7 @@ export default function Newprompt({ chatId }) {
 
                 setChat(formatted);
 
-                // ✨ Fix: If the last message is from user (no bot response yet), trigger AI
+                //  Fix: If the last message is from user (no bot response yet), trigger AI
                 if (formatted.length > 0 && formatted[formatted.length - 1].type === "user") {
                     const lastMsg = formatted[formatted.length - 1].text;
                     // Trigger the 'add' logic manually or via a side effect
@@ -95,28 +89,19 @@ export default function Newprompt({ chatId }) {
             ]);
             setAns("");
 
-            // 🟢 Save to DB
-            await fetch(
-                `http://localhost:5000/api/chats/${currentChatId}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({
-                        question: text,
-                        answer: response,
-                        img: img.dbData?.filePath || null
-                    })
-                }
+            
+            await updateChat(
+                currentChatId,
+                text,
+                response,
+                img.dbData?.filePath || null
             );
         } catch (error) {
             console.error("AI response error:", error);
         }
     };
 
-    // 🔥 Main Send Logic
+   
     const add = async (text) => {
         if (!text) return;
 
@@ -125,21 +110,9 @@ export default function Newprompt({ chatId }) {
         let currentChatId = activeChatId;
 
         try {
-            // 🟢 If NEW CHAT → create first
+            
             if (!currentChatId) {
-                const res = await fetch(
-                    "http://localhost:5000/api/chats",
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        credentials: "include",
-                        body: JSON.stringify({ text, img: img.dbData?.filePath || null })
-                    }
-                );
-
-                const data = await res.json();
+                const data = await createChat(text, img.dbData?.filePath || null);
                 currentChatId = data.chatId;
 
                 // Update UI immediately for a snappy feel
@@ -153,7 +126,7 @@ export default function Newprompt({ chatId }) {
                 return;
             }
 
-            // 🟢 Add user message locally
+            
             setChat(prev => [
                 ...prev,
                 { type: "user", text, img: img.dbData }

@@ -21,6 +21,7 @@ import {
 import 'react-calendar/dist/Calendar.css';
 import './journal.css';
 
+
 const formatDisplayDate = (date) => {
   return new Date(date).toLocaleDateString('en-US', {
     weekday: 'long',

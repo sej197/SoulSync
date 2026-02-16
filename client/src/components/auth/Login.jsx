@@ -39,8 +39,8 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-bloom-cream dark:bg-gray-900 text-bloom-primary dark:text-gray-100 font-sans px-4 transition-colors duration-200">
-      <div className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-soft dark:shadow-gray-900/50 transition-colors duration-200">
+    <div className="w-full">
+      <div className="bg-white dark:bg-gray-800 p-8 sm:p-10 rounded-2xl shadow-soft dark:shadow-gray-900/50 transition-colors duration-200">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-serif font-bold text-bloom-primary dark:text-white mb-2">
             Welcome Back

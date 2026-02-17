@@ -3,124 +3,169 @@
   "questions": [
     {
       "id": 1,
-      "category": "mental_health",
+      "category": "anxiety",
       "type": "single_choice",
-      "question": "How are you feeling right now?",
-      "options": ["Very good", "Okay", "Neutral", "Feeling Low", "Very low"]
+      "question": "How calm did your thoughts feel for most of today?",
+      "options": [
+        "Very calm",
+        "Mostly calm",
+        "Occasionally restless",
+        "Often restless",
+        "Constantly tense"
+      ]
     },
     {
       "id": 2,
-      "category": "mental_health",
-      "type": "multiple_choice",
-      "question": "What best describes today?",
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "How often did you feel anxious without a clear reason today?",
       "options": [
-        "Felt anxious",
-        "Felt tired or unmotivated",
-        "Felt calm",
-        "Felt overwhelmed",
-        "Felt hopeful",
-        "Nothing specific"
+        "No anxious moments",
+        "Rare anxious moments",
+        "Sometimes anxious",
+        "Frequently anxious",
+        "Anxious all day"
       ]
     },
     {
       "id": 3,
-      "category": "stress",
-      "type": "multiple_choice",
-      "question": "What caused stress today?",
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "How easy was it for you to relax during your free time?",
       "options": [
-        "College or work",
-        "Family expectations",
-        "Social interactions",
-        "Health concerns",
-        "Financial worries",
-        "No major stress"
+        "Very easy",
+        "Mostly easy",
+        "Somewhat difficult",
+        "Very difficult",
+        "Could not relax at all"
       ]
     },
+
     {
       "id": 4,
-      "category": "stress",
+      "category": "sleep",
       "type": "single_choice",
-      "question": "How intense was your stress today?",
-      "options": ["Low", "Moderate", "High", "Extreme"]
+      "question": "How rested did you feel when you woke up today?",
+      "options": [
+        "Fully rested",
+        "Mostly rested",
+        "Slightly tired",
+        "Very tired",
+        "Completely exhausted"
+      ]
     },
     {
       "id": 5,
       "category": "sleep",
       "type": "single_choice",
-      "question": "How was your sleep last night?",
-      "options": ["Very restful", "Okay", "Poor", "Very poor"]
+      "question": "How easily did you fall asleep last night?",
+      "options": [
+        "Very easily",
+        "Fairly easily",
+        "Took some time",
+        "Very difficult",
+        "Barely slept"
+      ]
     },
     {
       "id": 6,
       "category": "sleep",
-      "type": "multiple_choice",
-      "question": "How was your energy level today?",
+      "type": "single_choice",
+      "question": "How supportive was your sleep for your energy today?",
       "options": [
-        "Very energetic",
-        "Normal energy",
-        "Low energy",
-        "Very tired",
-        "Difficulty focusing"
+        "Very supportive",
+        "Mostly supportive",
+        "Somewhat lacking",
+        "Not supportive",
+        "Very poor sleep"
       ]
     },
+
     {
       "id": 7,
-      "category": "family",
+      "category": "stress",
       "type": "single_choice",
-      "question": "How were things at home today?",
-      "options": ["Supportive", "Normal", "Some tension", "Very stressful"]
+      "question": "How manageable did your tasks and responsibilities feel today?",
+      "options": [
+        "Very manageable",
+        "Mostly manageable",
+        "Somewhat stressful",
+        "Hard to manage",
+        "Completely overwhelming"
+      ]
     },
     {
       "id": 8,
-      "category": "college_job",
+      "category": "stress",
       "type": "single_choice",
-      "question": "How did you feel about college/work today?",
-      "options": ["Motivated", "Neutral", "Slightly stressed", "Very stressed"]
+      "question": "How much stress did you feel throughout the day?",
+      "options": [
+        "No stress",
+        "Low stress",
+        "Moderate stress",
+        "High stress",
+        "Extreme stress"
+      ]
     },
     {
       "id": 9,
-      "category": "college_job",
-      "type": "multiple_choice",
-      "question": "How was your workload today?",
+      "category": "stress",
+      "type": "single_choice",
+      "question": "How often did you feel mentally drained today?",
       "options": [
-        "Manageable",
-        "Heavy but okay",
-        "Overwhelming",
-        "Could not keep up"
+        "Not at all",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Almost constantly"
       ]
     },
+
     {
       "id": 10,
-      "category": "social",
+      "category": "depression",
       "type": "single_choice",
-      "question": "How connected did you feel to others today?",
-      "options": ["Very connected", "Somewhat connected", "Neutral", "Isolated"]
+      "question": "How heavy or low did your mood feel today?",
+      "options": [
+        "Very light",
+        "Mostly light",
+        "Neutral",
+        "Heavy",
+        "Very heavy"
+      ]
     },
     {
       "id": 11,
-      "category": "safety",
+      "category": "depression",
       "type": "single_choice",
-      "question": "Did you feel emotionally overwhelmed today?",
-      "options": ["No", "A little", "A lot"]
-    },
-    {
-      "id": 12,
-      "category": "coping",
-      "type": "multiple_choice",
-      "question": "When feeling low, what usually helps you?",
+      "question": "How interested did you feel in doing your usual activities?",
       "options": [
-        "Talking to someone",
-        "Listening to music",
-        "Sleeping",
-        "Writing or journaling",
-        "Nothing helped today"
+        "Very interested",
+        "Mostly interested",
+        "Slightly interested",
+        "Hardly interested",
+        "No interest at all"
       ]
     },
     {
+      "id": 12,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How hopeful did you feel about the days ahead?",
+      "options": [
+        "Very hopeful",
+        "Somewhat hopeful",
+        "Neutral",
+        "Not very hopeful",
+        "Not hopeful at all"
+      ]
+    },
+
+    {
       "id": 13,
-      "category": "mental_health",
+      "category": "reflection",
       "type": "paragraph",
-      "question": "Briefly describe how your overall mood was today."
+      "question": "In a few lines, how would you describe your day overall?"
     }
   ]
 }

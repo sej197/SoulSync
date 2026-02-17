@@ -1,6 +1,6 @@
 import ImageKit from "imagekit";
 import UserChat from "../models/Botuserchat.js";
-import Chat from "../models/botchat.js";
+import Chat from "../models/Botchat.js";
 
 const imagekit = new ImageKit({
     publicKey: process.env.IMAGEKIT_PUBLIC_KEY,

@@ -24,7 +24,7 @@ const StressQuiz = ({ userId }) => {
     try {
       const payload = quizData.questions.map((q) => ({
         questionId: q.id,
-        answer: answers[q.id]?.[0] || null   
+        answer: answers[q.id]?.[0] || null,
       }));
 
       const res = await axios.post(
@@ -52,19 +52,17 @@ const StressQuiz = ({ userId }) => {
   if (submitted) {
     return (
       <div className="min-h-screen relative overflow-hidden flex items-center justify-center p-4">
-        
-        <div className="absolute inset-0 bg-gradient-to-br from-bloom-cream via-white to-bloom-primary/20">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-bloom-primary/10 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-bloom-dark/5 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-bloom-primary/5 rounded-full blur-3xl"></div>
+        <div className="absolute inset-0 bg-[#F3E5F5]">
+          <div className="absolute top-20 left-20 w-72 h-72 bg-[#FFE0B2] rounded-full blur-3xl opacity-60"></div>
+          <div className="absolute bottom-20 right-20 w-96 h-96 bg-[#B2DFDB] rounded-full blur-3xl opacity-50"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[#FFCCBC] rounded-full blur-3xl opacity-40"></div>
         </div>
 
         <div className="relative max-w-2xl w-full">
           <div className="backdrop-blur-xl bg-white/80 rounded-3xl shadow-2xl p-8 md:p-14 border border-white/50">
             <div className="text-center space-y-8">
-             
               <div className="relative mx-auto w-32 h-32">
-                <div className="relative w-32 h-32 bg-gradient-to-br from-bloom-primary via-bloom-primary to-bloom-dark rounded-full flex items-center justify-center shadow-2xl">
+                <div className="relative w-32 h-32 bg-gradient-to-br from-[#6A1B9A] via-[#8E24AA] to-[#7B1FA2] rounded-full flex items-center justify-center shadow-2xl">
                   <svg
                     className="w-16 h-16 text-white"
                     fill="none"
@@ -82,17 +80,16 @@ const StressQuiz = ({ userId }) => {
               </div>
 
               <div className="space-y-4">
-                <h2 className="text-5xl md:text-6xl font-serif bg-gradient-to-r from-bloom-primary via-bloom-dark to-bloom-primary bg-clip-text text-transparent">
+                <h2 className="text-5xl md:text-6xl font-serif text-[#3E2723]">
                   Well Done
                 </h2>
-                <p className="text-xl text-bloom-muted max-w-md mx-auto">
+                <p className="text-xl text-[#5D4037] max-w-md mx-auto font-medium">
                   Your stress assessment has been recorded
                 </p>
               </div>
 
-             
-              <div className="bg-gradient-to-r from-bloom-primary/10 via-transparent to-bloom-primary/10 rounded-xl p-6 border border-bloom-primary/20">
-                <p className="text-bloom-dark font-serif text-lg italic">
+              <div className="bg-[#F3E5F5] rounded-xl p-6 border border-[#E1BEE7]">
+                <p className="text-[#3E2723] font-serif text-lg italic">
                   "You are calm, capable, and in control" 🌿
                 </p>
               </div>
@@ -107,12 +104,11 @@ const StressQuiz = ({ userId }) => {
 
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-bloom-cream via-white to-bloom-primary/10">
+      <div className="absolute inset-0 bg-[#F3E5F5]">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute top-10 left-10 w-64 h-64 bg-bloom-primary/10 rounded-full blur-3xl" style={{ animation: 'blob 7s infinite' }}></div>
-          <div className="absolute top-40 right-20 w-80 h-80 bg-bloom-dark/5 rounded-full blur-3xl" style={{ animation: 'blob 7s infinite', animationDelay: '2s' }}></div>
-          <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-bloom-primary/5 rounded-full blur-3xl" style={{ animation: 'blob 7s infinite', animationDelay: '4s' }}></div>
+          <div className="absolute top-10 left-10 w-64 h-64 bg-[#FFE0B2] rounded-full blur-3xl opacity-60" style={{ animation: "blob 7s infinite" }}></div>
+          <div className="absolute top-40 right-20 w-80 h-80 bg-[#B2DFDB] rounded-full blur-3xl opacity-50" style={{ animation: "blob 7s infinite", animationDelay: "2s" }}></div>
+          <div className="absolute bottom-20 left-1/3 w-72 h-72 bg-[#FFCCBC] rounded-full blur-3xl opacity-40" style={{ animation: "blob 7s infinite", animationDelay: "4s" }}></div>
         </div>
       </div>
 
@@ -121,53 +117,55 @@ const StressQuiz = ({ userId }) => {
           {/* Header */}
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="text-2xl">🌿</div>
-              <h1 className="text-3xl md:text-4xl font-serif bg-gradient-to-r from-bloom-primary via-bloom-dark to-bloom-primary bg-clip-text text-transparent">
+              <span className="text-2xl">🌿</span>
+              <h1 className="text-3xl md:text-4xl font-serif text-[#3E2723] font-bold">
                 Stress Assessment
               </h1>
-              <div className="text-2xl">🌿</div>
+              <span className="text-2xl">🌿</span>
             </div>
-            <p className="text-bloom-muted text-sm md:text-base">
+            <p className="text-[#5D4037] text-sm md:text-base font-medium opacity-70">
               Understanding your stress levels and triggers
             </p>
           </div>
 
-         
-          <div className="mb-6 bg-white rounded-2xl p-4 shadow-xl border border-white/50">
+          {/* Progress Bar */}
+          <div className="mb-6 bg-white/80 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/60">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-semibold text-bloom-dark">
+              <span className="text-xs font-bold text-[#3E2723]">
                 Question {currentQuestion + 1} of {quizData.questions.length}
               </span>
-              <span className="text-xs font-semibold text-bloom-primary">
+              <span className="text-xs font-bold text-[#6A1B9A]">
                 {Math.round(progress)}% Complete
               </span>
             </div>
-            <div className="relative h-2 bg-bloom-cream/50 rounded-full overflow-hidden">
+            <div className="relative h-2 bg-gray-100 rounded-full overflow-hidden">
               <div
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-bloom-primary to-bloom-dark rounded-full transition-all duration-500 ease-out shadow-lg"
+                className="absolute top-0 left-0 h-full bg-[#6A1B9A] rounded-full transition-all duration-500 ease-out shadow-sm"
                 style={{ width: `${progress}%` }}
-              >
-              </div>
+              ></div>
             </div>
           </div>
 
-         
-          <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border border-white/50 transform transition-all duration-500" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
-           
+          {/* Question Card */}
+          <div
+            className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border border-white/50 transform transition-all duration-500"
+            style={{ animation: "fadeInUp 0.5s ease-out" }}
+          >
+            {/* Question Header */}
             <div className="mb-6">
               <div className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-bloom-primary to-bloom-dark rounded-xl flex items-center justify-center shadow-lg transition-transform">
+                <div className="flex-shrink-0 w-10 h-10 bg-[#6A1B9A] rounded-xl flex items-center justify-center shadow-lg transition-transform">
                   <span className="text-white font-bold text-base">
                     {currentQuestion + 1}
                   </span>
                 </div>
-                <h2 className="flex-1 font-serif text-lg md:text-xl text-bloom-dark leading-relaxed pt-1">
+                <h2 className="flex-1 font-serif text-lg md:text-xl text-[#3E2723] font-bold leading-relaxed pt-1">
                   {q.question}
                 </h2>
               </div>
             </div>
 
-            
+            {/* Options */}
             <div className="space-y-3 mb-6">
               {q.type === "single_choice" &&
                 q.options.map((opt, idx) => {
@@ -189,26 +187,29 @@ const StressQuiz = ({ userId }) => {
                       <div
                         className={`relative flex items-center p-3.5 rounded-xl border-2 transition-all duration-300 ${
                           isSelected
-                            ? "bg-gradient-to-r from-bloom-primary/20 to-bloom-dark/10 border-bloom-primary shadow-lg scale-[1.02]"
-                            : "bg-white/50 border-bloom-cream hover:border-bloom-primary/50 hover:bg-bloom-cream/30 hover:shadow-md"
+                            ? "bg-[#F3E5F5] border-[#6A1B9A] shadow-md scale-[1.01]"
+                            : "bg-white/50 border-gray-100 hover:border-purple-200 hover:bg-purple-50/30 hover:shadow-sm"
                         }`}
                       >
                         <div
                           className={`flex-shrink-0 w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center transition-all ${
                             isSelected
-                              ? "border-bloom-primary bg-bloom-primary"
-                              : "border-bloom-muted/30 bg-white"
+                              ? "border-[#6A1B9A] bg-[#6A1B9A]"
+                              : "border-gray-300 bg-white"
                           }`}
                         >
                           {isSelected && (
-                            <div className="w-2.5 h-2.5 bg-white rounded-full" style={{ animation: 'scaleIn 0.3s ease-out' }}></div>
+                            <div
+                              className="w-2.5 h-2.5 bg-white rounded-full"
+                              style={{ animation: "scaleIn 0.3s ease-out" }}
+                            ></div>
                           )}
                         </div>
                         <span
                           className={`text-sm md:text-base transition-colors ${
                             isSelected
-                              ? "text-bloom-dark font-medium"
-                              : "text-bloom-muted group-hover:text-bloom-dark"
+                              ? "text-[#3E2723] font-bold"
+                              : "text-[#5D4037] font-medium opacity-80 group-hover:opacity-100"
                           }`}
                         >
                           {opt}
@@ -219,15 +220,15 @@ const StressQuiz = ({ userId }) => {
                 })}
             </div>
 
-            {/* Navigation Buttons */}
-            <div className="flex gap-4 justify-between items-center pt-4 border-t border-bloom-cream">
+            {/* Navigation */}
+            <div className="flex gap-4 justify-between items-center pt-4 border-t border-purple-100">
               <button
                 onClick={() => goToQuestion(Math.max(0, currentQuestion - 1))}
                 disabled={currentQuestion === 0}
-                className={`group flex items-center gap-2 px-5 py-2.5 rounded-xl font-medium transition-all text-sm ${
+                className={`group flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all text-sm ${
                   currentQuestion === 0
-                    ? "opacity-40 cursor-not-allowed bg-bloom-cream text-bloom-muted"
-                    : "bg-white text-bloom-dark hover:bg-bloom-cream shadow-md hover:shadow-lg"
+                    ? "opacity-40 cursor-not-allowed bg-gray-100 text-gray-400"
+                    : "bg-white text-[#3E2723] hover:bg-purple-50 shadow-md hover:shadow-lg border border-purple-100"
                 }`}
               >
                 <svg
@@ -253,7 +254,7 @@ const StressQuiz = ({ userId }) => {
                       Math.min(quizData.questions.length - 1, currentQuestion + 1)
                     )
                   }
-                  className="group flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-bloom-primary to-bloom-dark text-white rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm"
+                  className="group flex items-center gap-2 px-6 py-2.5 bg-[#6A1B9A] hover:bg-[#4A148C] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm"
                 >
                   Next
                   <svg
@@ -273,7 +274,7 @@ const StressQuiz = ({ userId }) => {
               ) : (
                 <button
                   onClick={handleSubmit}
-                  className="group flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-bloom-primary to-bloom-dark text-white rounded-xl font-medium shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm"
+                  className="group flex items-center gap-2 px-6 py-2.5 bg-[#6A1B9A] hover:bg-[#4A148C] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm"
                 >
                   <span>Submit Assessment</span>
                   <svg
@@ -294,6 +295,7 @@ const StressQuiz = ({ userId }) => {
             </div>
           </div>
 
+          {/* Dot Navigation */}
           <div className="mt-6 flex justify-center gap-2">
             {quizData.questions.map((_, idx) => (
               <button
@@ -301,10 +303,10 @@ const StressQuiz = ({ userId }) => {
                 onClick={() => goToQuestion(idx)}
                 className={`h-2.5 rounded-full transition-all duration-300 ${
                   idx === currentQuestion
-                    ? "bg-bloom-primary w-7 shadow-md"
+                    ? "bg-[#6A1B9A] w-7 shadow-md"
                     : answers[quizData.questions[idx].id]
-                    ? "bg-bloom-dark/50 w-2.5"
-                    : "bg-bloom-cream w-2.5"
+                    ? "bg-[#3E2723]/50 w-2.5"
+                    : "bg-[#E1BEE7] w-2.5"
                 }`}
               ></button>
             ))}

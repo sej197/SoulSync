@@ -137,8 +137,8 @@ export default function Home() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-3 px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 ${activeTab === tab.id
-                    ? 'bg-[#3E2723] text-white shadow-lg scale-105'
-                    : 'bg-[#F5F5F5] text-[#757575] hover:bg-[#EEEEEE] hover:text-[#424242]'
+                  ? 'bg-[#3E2723] text-white shadow-lg scale-105'
+                  : 'bg-[#F5F5F5] text-[#757575] hover:bg-[#EEEEEE] hover:text-[#424242]'
                   }`}
               >
                 <tab.icon className={`w-5 h-5 ${activeTab !== tab.id ? tab.color : ''}`} />
@@ -297,7 +297,7 @@ export default function Home() {
       </div>
 
       {/* Info Cards Section */}
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-4 py-20 relative z-10">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-serif font-bold text-[#3E2723] mb-4">Why choose SoulSync?</h2>
           <div className="w-24 h-2 bg-[#FFCC80] rounded-full mx-auto opacity-60"></div>
@@ -331,7 +331,7 @@ export default function Home() {
               </div>
               <h3 className="text-3xl font-serif font-bold text-[#3E2723] mb-4">WHO Standards</h3>
               <p className="text-[#5D4037] text-lg leading-relaxed mb-8">
-                                According to the World Health Organization, mental health is "a state of well-being in which an individual realizes his or her own abilities, can cope with the normal stresses of life, and can work productively.
+                According to the World Health Organization, mental health is "a state of well-being in which an individual realizes his or her own abilities, can cope with the normal stresses of life, and can work productively.
               </p>
               <Link to="/about" className="text-[#8E24AA] font-bold text-lg flex items-center gap-2 group-hover:gap-3 transition-all">
                 Read Guidelines <ArrowRight size={20} />

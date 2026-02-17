@@ -8,7 +8,6 @@ import riskRoutes from "./routes/riskRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import journalRoutes from "./routes/journalRoutes.js";
 import dailyQuizRoutes from "./routes/dailyQuizRoutes.js";
-import userAuth from "./middleware/authmiddleware.js";
 import chatRoutes from "./routes/chatbotRoutes.js";
 
 dotenv.config();
@@ -35,7 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/risk", riskRoutes);
 app.use("/api/quiz", dailyQuizRoutes);
 app.use("/api/journal", journalRoutes);
-app.use("/api", chatRoutes);
+app.use("/api/chatbot", chatRoutes);
 
 // Connect DB & start server
 connectDB().then(() => {

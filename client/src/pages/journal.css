@@ -107,6 +107,7 @@
   padding: 0.55em 0.35em;
   color: #4a5568;
   position: relative;
+  overflow: visible !important;
   transition: all 0.2s ease;
 }
 
@@ -136,18 +137,21 @@
 }
 
 .calendar-has-entry::after {
-  content: '●';
+  content: '';
   position: absolute;
-  bottom: 2px;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 7px;
-  color: #8fb5a3;
-  line-height: 1;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: #8fb5a3;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .react-calendar__tile--active.calendar-has-entry::after {
-  color: white;
+  background-color: white;
 }
 
 /* ── Diary Panel ── */

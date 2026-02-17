@@ -5,12 +5,12 @@
       "id": 1,
       "category": "anxiety",
       "type": "single_choice",
-      "question": "How calm did your thoughts feel for most of the day?",
+      "question": "How calm did your thoughts feel for most of today?",
       "options": [
         "Very calm",
         "Mostly calm",
         "Occasionally restless",
-        "Often uneasy",
+        "Often restless",
         "Constantly tense"
       ]
     },
@@ -18,26 +18,26 @@
       "id": 2,
       "category": "anxiety",
       "type": "single_choice",
-      "question": "How often did you feel a sense of unease without a clear reason?",
+      "question": "How often did you feel anxious without a clear reason today?",
       "options": [
-        "Not at all",
-        "Rarely",
-        "Sometimes",
-        "Frequently",
-        "Almost all day"
+        "No anxious moments",
+        "Rare anxious moments",
+        "Sometimes anxious",
+        "Frequently anxious",
+        "Anxious all day"
       ]
     },
     {
       "id": 3,
       "category": "anxiety",
       "type": "single_choice",
-      "question": "How easy was it to relax when you had free time today?",
+      "question": "How easy was it for you to relax during your free time?",
       "options": [
         "Very easy",
         "Mostly easy",
         "Somewhat difficult",
         "Very difficult",
-        "Could not relax"
+        "Could not relax at all"
       ]
     },
 
@@ -45,39 +45,39 @@
       "id": 4,
       "category": "sleep",
       "type": "single_choice",
-      "question": "How rested did you feel after waking up?",
+      "question": "How rested did you feel when you woke up today?",
       "options": [
         "Fully rested",
         "Mostly rested",
-        "Somewhat tired",
+        "Slightly tired",
         "Very tired",
-        "Exhausted"
+        "Completely exhausted"
       ]
     },
     {
       "id": 5,
       "category": "sleep",
       "type": "single_choice",
-      "question": "How smoothly did you fall asleep last night?",
+      "question": "How easily did you fall asleep last night?",
       "options": [
-        "Very smoothly",
+        "Very easily",
         "Fairly easily",
         "Took some time",
         "Very difficult",
-        "Hardly slept"
+        "Barely slept"
       ]
     },
     {
       "id": 6,
       "category": "sleep",
       "type": "single_choice",
-      "question": "How well did your sleep support your energy today?",
+      "question": "How supportive was your sleep for your energy today?",
       "options": [
-        "Very well",
-        "Well enough",
-        "Somewhat poorly",
-        "Poorly",
-        "Very poorly"
+        "Very supportive",
+        "Mostly supportive",
+        "Somewhat lacking",
+        "Not supportive",
+        "Very poor sleep"
       ]
     },
 
@@ -85,11 +85,11 @@
       "id": 7,
       "category": "stress",
       "type": "single_choice",
-      "question": "How manageable did your responsibilities feel today?",
+      "question": "How manageable did your tasks and responsibilities feel today?",
       "options": [
         "Very manageable",
         "Mostly manageable",
-        "Somewhat demanding",
+        "Somewhat stressful",
         "Hard to manage",
         "Completely overwhelming"
       ]
@@ -98,13 +98,13 @@
       "id": 8,
       "category": "stress",
       "type": "single_choice",
-      "question": "How much pressure did you feel as the day went on?",
+      "question": "How much stress did you feel throughout the day?",
       "options": [
-        "None",
-        "A little",
-        "Moderate",
-        "High",
-        "Extreme"
+        "No stress",
+        "Low stress",
+        "Moderate stress",
+        "High stress",
+        "Extreme stress"
       ]
     },
     {
@@ -125,10 +125,10 @@
       "id": 10,
       "category": "depression",
       "type": "single_choice",
-      "question": "How heavy did your mood feel today?",
+      "question": "How heavy or low did your mood feel today?",
       "options": [
         "Very light",
-        "Light",
+        "Mostly light",
         "Neutral",
         "Heavy",
         "Very heavy"
@@ -138,12 +138,12 @@
       "id": 11,
       "category": "depression",
       "type": "single_choice",
-      "question": "How easy was it to find interest in things today?",
+      "question": "How interested did you feel in doing your usual activities?",
       "options": [
-        "Very easy",
-        "Mostly easy",
-        "Somewhat difficult",
-        "Very difficult",
+        "Very interested",
+        "Mostly interested",
+        "Slightly interested",
+        "Hardly interested",
         "No interest at all"
       ]
     },
@@ -151,7 +151,7 @@
       "id": 12,
       "category": "depression",
       "type": "single_choice",
-      "question": "How hopeful did you feel about the rest of the week?",
+      "question": "How hopeful did you feel about the days ahead?",
       "options": [
         "Very hopeful",
         "Somewhat hopeful",
@@ -165,7 +165,7 @@
       "id": 13,
       "category": "reflection",
       "type": "paragraph",
-      "question": "In a few lines, describe how today felt for you overall."
+      "question": "In a few lines, how would you describe your day overall?"
     }
   ]
 }

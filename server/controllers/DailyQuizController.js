@@ -2,79 +2,88 @@ import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 const submitDailyQuiz = async (req, res) => {
   try {
-     const userId = req.userId; 
-        const today = new Date().toISOString().split("T")[0]
+    const userId = req.userId; 
+    const today = new Date().toISOString().split("T")[0]
 
     const { answers } = req.body; 
 
-    const optionScores = {
-      // feelings
-      "Very good": 0,
-      "Okay": 0.25,
+  const optionScores = {
+     
+      "Very calm": 0,
+      "Mostly calm": 0.25,
+      "Occasionally restless": 0.5,
+      "Often restless": 0.75,
+      "Constantly tense": 1,
+
+      "No anxious moments": 0,
+      "Rare anxious moments": 0.25,
+      "Sometimes anxious": 0.5,
+      "Frequently anxious": 0.75,
+      "Anxious all day": 1,
+
+      "Very easy": 0,
+      "Mostly easy": 0.25,
+      "Somewhat difficult": 0.5,
+      "Very difficult": 0.75,
+      "Could not relax at all": 1,
+
+      "Fully rested": 0,
+      "Mostly rested": 0.25,
+      "Slightly tired": 0.5,
+      "Very tired": 0.75,
+      "Completely exhausted": 1,
+
+      "Very easily": 0,
+      "Fairly easily": 0.25,
+      "Took some time": 0.5,
+      "Very difficult": 0.75,
+      "Barely slept": 1,
+
+      "Very supportive": 0,
+      "Mostly supportive": 0.25,
+      "Somewhat lacking": 0.5,
+      "Not supportive": 0.75,
+      "Very poor sleep": 1,
+
+      
+      "Very manageable": 0,
+      "Mostly manageable": 0.25,
+      "Somewhat stressful": 0.5,
+      "Hard to manage": 0.75,
+      "Completely overwhelming": 1,
+
+      "No stress": 0,
+      "Low stress": 0.25,
+      "Moderate stress": 0.5,
+      "High stress": 0.75,
+      "Extreme stress": 1,
+
+      "Not at all": 0,
+      "Rarely": 0.25,
+      "Sometimes": 0.5,
+      "Often": 0.75,
+      "Almost constantly": 1,
+
+      "Very light": 0,
+      "Mostly light": 0.25,
       "Neutral": 0.5,
-      "Feeling Low": 0.75,
-      "Very low": 1,
+      "Heavy": 0.75,
+      "Very heavy": 1,
 
-      // mental state
-      "Felt calm": 0,
-      "Felt hopeful": 0.1,
-      "Nothing specific": 0.2,
-      "Felt tired or unmotivated": 0.6,
-      "Felt anxious": 0.8,
-      "Felt overwhelmed": 1,
+      "Very interested": 0,
+      "Mostly interested": 0.25,
+      "Slightly interested": 0.5,
+      "Hardly interested": 0.75,
+      "No interest at all": 1,
 
-      // stress intensity
-      "Low": 0,
-      "Moderate": 0.25,
-      "High": 0.75,
-      "Extreme": 1,
-
-      // sleep
-      "Very restful": 0,
-      "Poor": 0.7,
-      "Very poor": 1,
-
-      // energy
-      "Very energetic": 0,
-      "Normal energy": 0.3,
-      "Low energy": 0.6,
-      "Very tired": 0.8,
-      "Difficulty focusing": 1,
-
-      // family
-      "Supportive": 0,
-      "Normal": 0.3,
-      "Some tension": 0.6,
-      "Very stressful": 1,
-
-      // work
-      "Motivated": 0,
-      "Slightly stressed": 0.6,
-      "Very stressed": 1,
-
-      // workload
-      "Manageable": 0.2,
-      "Heavy but okay": 0.5,
-      "Overwhelming": 0.8,
-      "Could not keep up": 1,
-
-      // social
-      "Very connected": 0,
-      "Somewhat connected": 0.3,
-      "Isolated": 1,
-
-      // emotional overwhelm
-      "No": 0,
-      "A little": 0.5,
-      "A lot": 1,
-
-      // coping
-      "Talking to someone": 0,
-      "Listening to music": 0.2,
-      "Sleeping": 0.4,
-      "Writing or journaling": 0.1,
-      "Nothing helped today": 1,
+      "Very hopeful": 0,
+      "Somewhat hopeful": 0.25,
+      "Neutral": 0.5,
+      "Not very hopeful": 0.75,
+      "Not hopeful at all": 1
     };
+
+
 
     const getScore = (answer) => {
       if (Array.isArray(answer)) {
@@ -92,17 +101,15 @@ const submitDailyQuiz = async (req, res) => {
       return 0;
     };
 
-    let mental = 0,
+    let anxiety = 0,
       stress = 0,
       sleep = 0,
-      social = 0,
-      reflection = 0;
+      depression = 0
 
-    let mentalCount = 0,
+    let anxietyCount = 0,
       stressCount = 0,
       sleepCount = 0,
-      socialCount = 0,
-      reflectionCount = 0;
+      depressionCount = 0
 
     let paragraphScore = 0;
 
@@ -127,20 +134,22 @@ const submitDailyQuiz = async (req, res) => {
 
           const data = await response.json();
           paragraphScore = data.paragraphScore ?? 0;
+          ans.sentimentScore = paragraphScore;
         } catch (error) {
           console.error("Sentiment API error:", error.message);
           paragraphScore = 0;
+          ans.sentimentScore = 0;
         }
 
-        continue; // skip category scoring
+        continue; 
       }
 
       const score = getScore(userAnswer);
 
       switch (ans.category) {
-        case "mental_health":
-          mental += score;
-          mentalCount++;
+        case "anxiety":
+          anxiety += score;
+          anxietyCount++;
           break;
 
         case "stress":
@@ -153,36 +162,26 @@ const submitDailyQuiz = async (req, res) => {
           sleepCount++;
           break;
 
-        case "family":
-        case "college_job":
-        case "social":
-          social += score;
-          socialCount++;
+        case "depression":
+          depression += score;
+          depressionCount++;
           break;
 
-        case "safety":
-        case "coping":
-          reflection += score;
-          reflectionCount++;
-          break;
       }
     }
-
-    mental = mentalCount ? mental / mentalCount : 0;
+    anxiety = anxietyCount ? anxiety / anxietyCount : 0;
     stress = stressCount ? stress / stressCount : 0;
     sleep = sleepCount ? sleep / sleepCount : 0;
-    social = socialCount ? social / socialCount : 0;
-    reflection = reflectionCount ? reflection / reflectionCount : 0;
+    depression = depressionCount ? depression / depressionCount : 0;
 
     const finalScore = Number(
       (
-        (mental +
+        (anxiety +
           stress +
           sleep +
-          social +
-          reflection +
+          depression +
           paragraphScore) /
-        6
+        5
       ).toFixed(2)
     );
 
@@ -192,12 +191,11 @@ const submitDailyQuiz = async (req, res) => {
       date: new Date(),
       answers,
       scores: {
-        mentalHealthScore: mental,
+        anxietyScore:anxiety,
         stressScore: stress,
-        sleepScore: sleep,
-        socialScore: social,
-        reflectionScore: reflection,
-        paragraphScore: paragraphScore,
+        sleepScore:sleep,
+        depressionScore: depression,
+        paragraphScore: paragraphScore
       },
       finalScore,
     });

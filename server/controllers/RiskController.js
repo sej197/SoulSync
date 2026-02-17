@@ -7,6 +7,7 @@ import DailyQuiz from "../models/DailyQuiz.js";
 // ============================================
 
 const calculateDecayRate = (daysOld) => {
+  if (daysOld <= 7) return 1.0;
   if (daysOld > 14) return 0.0;
   return 1 - (daysOld - 7) / 7;
 };
@@ -30,27 +31,22 @@ const calculateProxyFromDailyQuiz = (dailyQuizScores) => {
     reflectionScore = 0,
   } = dailyQuizScores;
 
-  // Convert 0-1 scale to 0-100 scale
+  // These are already in 0-1 range, convert to 0-100
   return {
-    stress: Math.round(stressScore * 100),
-    sleep: Math.round(sleepScore * 100),
-    depression: Math.round(
-      ((1 - mentalHealthScore) * 0.5 +
-        (1 - socialScore) * 0.3 +
-        (1 - reflectionScore) * 0.2) *
-        100,
-    ),
-    anxiety: Math.round(
-      ((1 - socialScore) * 0.4 +
-        stressScore * 0.4 +
-        (1 - reflectionScore) * 0.2) *
-        100,
-    ),
+    stress: stressScore, // Keep as 0-1 for internal calculation
+    sleep: sleepScore,
+    depression:
+      (1 - mentalHealthScore) * 0.5 +
+      (1 - socialScore) * 0.3 +
+      (1 - reflectionScore) * 0.2,
+    anxiety:
+      (1 - socialScore) * 0.4 +
+      stressScore * 0.4 +
+      (1 - reflectionScore) * 0.2,
   };
 };
 
 const getClinicalScore = async (userId, quizType, today, proxyScores) => {
-  // Map quiz types to DailyQuiz enum values
   const quizTypeMap = {
     depression: "depression",
     anxiety: "anxiety",
@@ -58,17 +54,15 @@ const getClinicalScore = async (userId, quizType, today, proxyScores) => {
     sleep: "sleep",
   };
 
-  // Find most recent clinical quiz from DailyQuiz collection
   const recentQuiz = await DailyQuiz.findOne({
     userId: userId,
     quizType: quizTypeMap[quizType],
     finalScore: { $ne: null },
   }).sort({ date: -1 });
 
-  // No quiz found - use proxy from daily quiz
   if (!recentQuiz) {
     return {
-      score: proxyScores[quizType] || 0,
+      score: proxyScores[quizType] || 0, // 0-1 range
       date: null,
     };
   }
@@ -76,14 +70,13 @@ const getClinicalScore = async (userId, quizType, today, proxyScores) => {
   const quizDate = new Date(recentQuiz.date).toISOString().split("T")[0];
   const daysOld = getDaysDifference(quizDate, today);
 
-  // Convert finalScore (0-1) to 0-100 scale
-  const score = Math.round(recentQuiz.finalScore * 100);
+  // finalScore is in 0-1 range
+  const score = recentQuiz.finalScore;
 
-  // Old (7-14 days) - apply decay
   if (daysOld <= 14) {
     const decayRate = calculateDecayRate(daysOld);
     return {
-      score: Math.round(score * decayRate),
+      score: score * decayRate, // Keep in 0-1 range
       date: quizDate,
     };
   }
@@ -95,16 +88,18 @@ const getClinicalScore = async (userId, quizType, today, proxyScores) => {
 };
 
 const getRiskLevel = (score) => {
-  if (score < 30) return "LOW";
-  if (score < 50) return "MODERATE";
-  if (score < 70) return "HIGH";
+  // Score is in 0-1 range
+  if (score < 0.3) return "LOW";
+  if (score < 0.5) return "MODERATE";
+  if (score < 0.7) return "HIGH";
   return "CRITICAL";
 };
 
 const getTrend = (current, previous) => {
   if (!previous) return "unknown";
-  if (current > previous + 10) return "declining";
-  if (current < previous - 10) return "improving";
+  // Both scores in 0-1 range
+  if (current > previous + 0.1) return "declining";
+  if (current < previous - 0.1) return "improving";
   return "stable";
 };
 
@@ -113,8 +108,9 @@ const getTopFactors = (scores) => {
 
   for (const { key, label, threshold } of RISK_LABELS) {
     const score = scores[key];
-    if (score && score >= threshold * 100) {
-      factors.push(`${label} (${Math.round(score)}/100)`);
+    // score is in 0-1 range, threshold is also 0-1
+    if (score && score >= threshold) {
+      factors.push(`${label} (${(score * 100).toFixed(2)})`);
     }
   }
 
@@ -142,7 +138,6 @@ const getRecommendations = (factors) => {
   return recs;
 };
 
-
 const generateInsights = (
   velocity,
   volatility,
@@ -153,30 +148,33 @@ const generateInsights = (
   const insights = [];
   const alerts = [];
 
+  // velocity is in 0-1 range per day, convert to 0-100 for display
+  const velocityPercent = velocity * 100;
+
   // VELOCITY ANALYSIS
-  if (velocity > 7) {
+  if (velocityPercent > 7) {
     alerts.push({
       type: "URGENT",
       severity: "high",
       message: "⚠️ Rapid deterioration detected",
-      detail: `Your wellness score is declining by ${velocity.toFixed(1)} points/day. Immediate attention recommended.`,
+      detail: `Your wellness score is declining by ${velocityPercent.toFixed(1)} points/day. Immediate attention recommended.`,
       action: "Take a comprehensive mental health assessment now",
     });
-  } else if (velocity > 3) {
+  } else if (velocityPercent > 3) {
     alerts.push({
       type: "WARNING",
       severity: "medium",
       message: "📉 Declining trend detected",
-      detail: `Your scores have been worsening over the past week (+${velocity.toFixed(1)} points/day).`,
+      detail: `Your scores have been worsening over the past week (+${velocityPercent.toFixed(1)} points/day).`,
       action: "Consider taking a depression or anxiety assessment",
     });
-  } else if (velocity < -7) {
+  } else if (velocityPercent < -7) {
     insights.push({
       type: "POSITIVE",
       message: "✅ Significant improvement",
-      detail: `Your wellness is improving rapidly (-${Math.abs(velocity).toFixed(1)} points/day). Keep up the great work!`,
+      detail: `Your wellness is improving rapidly (-${Math.abs(velocityPercent).toFixed(1)} points/day). Keep up the great work!`,
     });
-  } else if (velocity < -3) {
+  } else if (velocityPercent < -3) {
     insights.push({
       type: "POSITIVE",
       message: "📈 Steady improvement",
@@ -214,16 +212,16 @@ const generateInsights = (
     });
   }
 
-  // COMBINED RISK ANALYSIS
-  if (velocity > 5 && currentScore >= 60) {
+  // COMBINED RISK ANALYSIS (scores in 0-1 range)
+  if (velocityPercent > 5 && currentScore >= 0.6) {
     alerts.push({
       type: "CRITICAL",
       severity: "critical",
       message: "🚨 CRITICAL: High risk with worsening trend",
-      detail: `Score: ${currentScore} (${riskLevel}) and rapidly increasing. You may need immediate support.`,
+      detail: `Score: ${(currentScore * 100).toFixed(2)} (${riskLevel}) and rapidly increasing. You may need immediate support.`,
       action: "Contact a mental health professional or crisis hotline",
     });
-  } else if (velocity > 3 && currentScore >= 50 && volatility > 25) {
+  } else if (velocityPercent > 3 && currentScore >= 0.5 && volatility > 25) {
     alerts.push({
       type: "URGENT",
       severity: "high",
@@ -236,18 +234,18 @@ const generateInsights = (
   }
 
   // EARLY WARNING
-  if (velocity > 4 && currentScore < 60) {
+  if (velocityPercent > 4 && currentScore < 0.6) {
     alerts.push({
       type: "EARLY_WARNING",
       severity: "medium",
       message: "💡 Early warning",
-      detail: `While your current score (${currentScore}) is moderate, the rapid increase suggests risk may escalate soon.`,
+      detail: `While your current score (${(currentScore * 100).toFixed(2)}) is moderate, the rapid increase suggests risk may escalate soon.`,
       action: "Proactive intervention recommended - take stress/anxiety quiz",
     });
   }
 
   // RECOVERY MONITORING
-  if (previousScore >= 65 && currentScore < 50 && velocity < -2) {
+  if (previousScore >= 0.65 && currentScore < 0.5 && velocityPercent < -2) {
     insights.push({
       type: "RECOVERY",
       message: "🌱 Recovery progress",
@@ -258,7 +256,7 @@ const generateInsights = (
   }
 
   // RELAPSE WARNING
-  if (previousScore < 45 && currentScore >= 55 && velocity > 3) {
+  if (previousScore < 0.45 && currentScore >= 0.55 && velocityPercent > 3) {
     alerts.push({
       type: "RELAPSE_WARNING",
       severity: "medium",
@@ -280,10 +278,8 @@ export const calculateOverallRisk = async (req, res) => {
     const { userId } = req.params;
     const today = new Date().toISOString().split("T")[0];
 
-    // Get today's risk score (if exists)
     let todayRisk = await RiskScore.findOne({ user: userId, date: today });
 
-    // If no risk score exists, create one
     if (!todayRisk) {
       todayRisk = new RiskScore({
         user: userId,
@@ -291,7 +287,6 @@ export const calculateOverallRisk = async (req, res) => {
       });
     }
 
-    // Get previous score for trend
     const previous = await RiskScore.findOne({
       user: userId,
       date: { $lt: today },
@@ -299,7 +294,6 @@ export const calculateOverallRisk = async (req, res) => {
 
     const previousScore = previous ? previous.overall_score : null;
 
-    // Get today's daily quiz to extract component scores
     const todayDailyQuiz = await DailyQuiz.findOne({
       userId: userId,
       quizType: "daily",
@@ -309,13 +303,9 @@ export const calculateOverallRisk = async (req, res) => {
       },
     });
 
-    // Extract component scores from daily quiz
     const dailyQuizScores = todayDailyQuiz?.scores || null;
-
-    // Calculate proxy scores from daily quiz
     const proxyScores = calculateProxyFromDailyQuiz(dailyQuizScores);
 
-    // Get clinical scores (with decay/proxy fallback)
     const depressionData = await getClinicalScore(
       userId,
       "depression",
@@ -341,7 +331,7 @@ export const calculateOverallRisk = async (req, res) => {
       proxyScores,
     );
 
-    // Compile all scores
+    // All scores in 0-1 range for calculation
     const scores = {
       depression_quiz_score: depressionData.score,
       anxiety_quiz_score: anxietyData.score,
@@ -349,15 +339,13 @@ export const calculateOverallRisk = async (req, res) => {
       sleep_quiz_score: sleepData.score,
       journal_score: todayRisk.journal_score || 0,
       chatbot_score: todayRisk.chatbot_score || 0,
-      quiz_score: todayDailyQuiz?.finalScore
-        ? todayDailyQuiz.finalScore * 100
-        : todayRisk.quiz_score || 0,
+      quiz_score: todayDailyQuiz?.finalScore || todayRisk.quiz_score || 0,
       community_score: todayRisk.community_score
-        ? 100 - todayRisk.community_score
-        : 0,
+        ? 1 - todayRisk.community_score
+        : 0, // Invert if needed
     };
 
-    // Calculate weighted overall score
+    // Calculate weighted overall score (result in 0-1 range)
     let totalWeight = 0;
     let weightedSum = 0;
 
@@ -368,14 +356,13 @@ export const calculateOverallRisk = async (req, res) => {
       }
     }
 
-    const overallScore =
-      totalWeight > 0 ? Math.round(weightedSum / totalWeight) : 0;
+    const overallScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
     const riskLevel = getRiskLevel(overallScore);
     const trend = getTrend(overallScore, previousScore);
     const topFactors = getTopFactors(scores);
     const recommendations = getRecommendations(topFactors);
 
-    // Calculate velocity & volatility from last 7 days
+    // Calculate velocity & volatility
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
@@ -391,24 +378,23 @@ export const calculateOverallRisk = async (req, res) => {
     if (recentScores.length >= 2) {
       const scoreValues = recentScores.map((r) => r.overall_score);
 
-      // Velocity
+      // Velocity (in 0-1 range per day)
       let totalChange = 0;
       for (let i = 1; i < scoreValues.length; i++) {
         totalChange += scoreValues[i] - scoreValues[i - 1];
       }
-      velocity = Math.round((totalChange / (scoreValues.length - 1)) * 10) / 10;
+      velocity = totalChange / (scoreValues.length - 1);
 
-      // Volatility
+      // Volatility (percentage)
       const mean =
         scoreValues.reduce((sum, s) => sum + s, 0) / scoreValues.length;
       const variance =
         scoreValues.reduce((sum, s) => sum + Math.pow(s - mean, 2), 0) /
         scoreValues.length;
       const stdDev = Math.sqrt(variance);
-      volatility = mean > 0 ? Math.round((stdDev / mean) * 100 * 10) / 10 : 0;
+      volatility = mean > 0 ? (stdDev / mean) * 100 : 0;
     }
 
-    // Generate insights from velocity & volatility
     const { insights, alerts } = generateInsights(
       velocity,
       volatility,
@@ -417,7 +403,7 @@ export const calculateOverallRisk = async (req, res) => {
       riskLevel,
     );
 
-    // Update or create risk score
+    // Save to DB (in 0-1 range)
     await RiskScore.findOneAndUpdate(
       { user: userId, date: today },
       {
@@ -442,10 +428,10 @@ export const calculateOverallRisk = async (req, res) => {
       { upsert: true, new: true },
     );
 
-    // Response with insights
+    // Response - convert to 0-100 for frontend display
     res.json({
       daily: {
-        score: overallScore,
+        score: parseFloat((overallScore * 100).toFixed(2)),
         level: riskLevel,
         trend: trend,
         top_factors: topFactors,
@@ -473,7 +459,6 @@ export const calculateOverallRisk = async (req, res) => {
   }
 };
 
-// Weekly and monthly insights remain the same...
 export const weeklyInsights = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -510,23 +495,26 @@ export const weeklyInsights = async (req, res) => {
       const firstScore = dailyScores[0].overall_score;
       const lastScore = dailyScores[totalDays - 1].overall_score;
 
-      if (lastScore < firstScore - 10) trend = "improving";
-      else if (lastScore > firstScore + 10) trend = "declining";
+      if (lastScore < firstScore - 0.1) trend = "improving";
+      else if (lastScore > firstScore + 0.1) trend = "declining";
     }
 
+    // Convert to 0-100 for frontend with 2 decimals
     const chartData = dailyScores.map((day) => ({
       date: day.date,
-      overall: day.overall_score || 0,
-      depression: day.depression_quiz_score || 0,
-      anxiety: day.anxiety_quiz_score || 0,
-      stress: day.stress_quiz_score || 0,
-      sleep: day.sleep_quiz_score || 0,
+      overall: parseFloat(((day.overall_score || 0) * 100).toFixed(2)),
+      depression: parseFloat(
+        ((day.depression_quiz_score || 0) * 100).toFixed(2),
+      ),
+      anxiety: parseFloat(((day.anxiety_quiz_score || 0) * 100).toFixed(2)),
+      stress: parseFloat(((day.stress_quiz_score || 0) * 100).toFixed(2)),
+      sleep: parseFloat(((day.sleep_quiz_score || 0) * 100).toFixed(2)),
       level: day.risk_level,
     }));
 
     res.json({
       summary: {
-        avg_score: Math.round(avgScore),
+        avg_score: parseFloat((avgScore * 100).toFixed(2)),
         trend: trend,
         days_tracked: totalDays,
       },
@@ -578,7 +566,7 @@ export const monthlyInsights = async (req, res) => {
 
       weeklyData.push({
         week: Math.floor(i / 7) + 1,
-        avg_score: Math.round(weekAvg),
+        avg_score: parseFloat((weekAvg * 100).toFixed(2)),
         start_date: weekScores[0].date,
         end_date: weekScores[weekScores.length - 1].date,
       });
@@ -589,25 +577,28 @@ export const monthlyInsights = async (req, res) => {
       const firstScore = monthlyScores[0].overall_score;
       const lastScore = monthlyScores[totalDays - 1].overall_score;
 
-      if (lastScore < firstScore - 10) trend = "improving";
-      else if (lastScore > firstScore + 10) trend = "declining";
+      if (lastScore < firstScore - 0.1) trend = "improving";
+      else if (lastScore > firstScore + 0.1) trend = "declining";
     }
 
+    // Convert to 0-100 for frontend with 2 decimals
     const chartData = monthlyScores.map((day) => ({
       date: day.date,
-      overall: day.overall_score || 0,
-      depression: day.depression_quiz_score || 0,
-      anxiety: day.anxiety_quiz_score || 0,
-      stress: day.stress_quiz_score || 0,
-      sleep: day.sleep_quiz_score || 0,
+      overall: parseFloat(((day.overall_score || 0) * 100).toFixed(2)),
+      depression: parseFloat(
+        ((day.depression_quiz_score || 0) * 100).toFixed(2),
+      ),
+      anxiety: parseFloat(((day.anxiety_quiz_score || 0) * 100).toFixed(2)),
+      stress: parseFloat(((day.stress_quiz_score || 0) * 100).toFixed(2)),
+      sleep: parseFloat(((day.sleep_quiz_score || 0) * 100).toFixed(2)),
     }));
 
     res.json({
       summary: {
-        avg_score: Math.round(avgScore),
+        avg_score: parseFloat((avgScore * 100).toFixed(2)),
         trend: trend,
         days_tracked: totalDays,
-        consistency: Math.round((totalDays / 30) * 100),
+        consistency: parseFloat(((totalDays / 30) * 100).toFixed(2)),
       },
       weekly_overview: weeklyData,
       chart_data: chartData,

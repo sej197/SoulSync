@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+
+  server:
+    build: ./server
+    container_name: soulsync-server
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./server/.env
+    depends_on:
+      - python
+
+  python:
+    build: ./python-server
+    container_name: soulsync-python
+    ports:
+      - "8000:8000"
+
+  client:
+    build: ./client
+    container_name: soulsync-client
+    ports:
+      - "5173:5173"
+    depends_on:
+      - server
+    stdin_open: true
+    tty: true

@@ -15,19 +15,15 @@ export const fetchChatById = async (chatId) => {
     return res.data;
 };
 
-export const createChat = async (text, img = null) => {
-    const res = await chatbotapi.post('/chats', { text, img });
+export const createChat = async (text) => {
+    const res = await chatbotapi.post('/chats', { text });
     return res.data;
 };
 
-export const updateChat = async (chatId, question, answer, img = null) => {
-    const res = await chatbotapi.put(`/chats/${chatId}`, { question, answer, img });
+export const updateChat = async (chatId, question, answer) => {
+    const res = await chatbotapi.put(`/chats/${chatId}`, { question, answer });
     return res.data;
 };
 
-export const getUploadAuth = async () => {
-    const res = await chatbotapi.get('/upload');
-    return res.data;
-};
 
 export default chatbotapi;

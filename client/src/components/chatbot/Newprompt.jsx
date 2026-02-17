@@ -1,8 +1,5 @@
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { IKImage } from "imagekitio-react";
-import { useNavigate } from "react-router-dom";
-import Uploads from "./Uploads";
 import model from "../../lib/gemini";
 import { fetchChatById, createChat, updateChat } from "../../lib/chatbotapi";
 import Markdown from "react-markdown";
@@ -14,12 +11,6 @@ export default function Newprompt({ chatId }) {
 
     const [ques, setQues] = useState("");
     const [ans, setAns] = useState("");
-    const [img, setImg] = useState({
-        isLoading: false,
-        error: "",
-        dbData: {},
-        aiData: {}
-    });
     const [chat, setChat] = useState([]);
     const endRef = useRef(null);
 
@@ -33,7 +24,7 @@ export default function Newprompt({ chatId }) {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [chat]);
 
-    
+
     useEffect(() => {
         const fetchChat = async () => {
             if (!activeChatId) return;
@@ -43,8 +34,7 @@ export default function Newprompt({ chatId }) {
 
                 const formatted = data.history.map((item) => ({
                     type: item.role === "user" ? "user" : "bot",
-                    text: item.parts[0].text,
-                    img: item.img ? { filePath: item.img } : null
+                    text: item.parts[0].text
                 }));
 
                 setChat(formatted);
@@ -68,10 +58,7 @@ export default function Newprompt({ chatId }) {
     // Split 'add' into user part and AI part to reuse the AI part
     const addAIResponse = async (text, currentChatId) => {
         try {
-            const payload =
-                Object.keys(img.aiData).length > 0
-                    ? [img.aiData, { text }]
-                    : text;
+            const payload = text;
 
             const result = await chatModel.sendMessageStream(payload);
 
@@ -89,19 +76,18 @@ export default function Newprompt({ chatId }) {
             ]);
             setAns("");
 
-            
+
             await updateChat(
                 currentChatId,
                 text,
-                response,
-                img.dbData?.filePath || null
+                response
             );
         } catch (error) {
             console.error("AI response error:", error);
         }
     };
 
-   
+
     const add = async (text) => {
         if (!text) return;
 
@@ -110,13 +96,13 @@ export default function Newprompt({ chatId }) {
         let currentChatId = activeChatId;
 
         try {
-            
+
             if (!currentChatId) {
-                const data = await createChat(text, img.dbData?.filePath || null);
+                const data = await createChat(text);
                 currentChatId = data.chatId;
 
                 // Update UI immediately for a snappy feel
-                setChat([{ type: "user", text, img: img.dbData }]);
+                setChat([{ type: "user", text }]);
 
                 // Redirect to real chat page
                 navigate(`/chatbot/${currentChatId}`);
@@ -126,10 +112,10 @@ export default function Newprompt({ chatId }) {
                 return;
             }
 
-            
+
             setChat(prev => [
                 ...prev,
-                { type: "user", text, img: img.dbData }
+                { type: "user", text }
             ]);
 
             await addAIResponse(text, currentChatId);
@@ -138,13 +124,6 @@ export default function Newprompt({ chatId }) {
             console.error("Chat error:", error);
         }
 
-        // Reset image
-        setImg({
-            isLoading: false,
-            error: "",
-            dbData: {},
-            aiData: {}
-        });
     };
 
     const handleSubmit = async (e) => {
@@ -160,24 +139,8 @@ export default function Newprompt({ chatId }) {
                 {chat.map((m, idx) => (
                     <div key={idx} className={`message-row ${m.type}`}>
                         {m.type === "user" && (
-                            <div className={`message-user ${m.img?.filePath ? "no-bg" : ""}`}>
+                            <div className="message-user">
                                 {m.text}
-                            </div>
-                        )}
-
-                        {m.img?.filePath && (
-                            <div className="image-wrapper">
-                                {m.img.filePath.startsWith("data:") ? (
-                                    <img src={m.img.filePath} className="message-img" alt="preview" />
-                                ) : (
-                                    <IKImage
-                                        urlEndpoint={import.meta.env.VITE_IMAGEKIT_ENDPOINT}
-                                        path={m.img.filePath}
-                                        width={120}
-                                        height={120}
-                                        className="message-img"
-                                    />
-                                )}
                             </div>
                         )}
 
@@ -193,7 +156,6 @@ export default function Newprompt({ chatId }) {
             </div>
 
             <form className="new-form" onSubmit={handleSubmit}>
-                <Uploads setImg={setImg} setChat={setChat} />
 
                 <input
                     type="text"

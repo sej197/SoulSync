@@ -1,20 +1,9 @@
 // j:\sayalee\innovateyou\SoulSync\server\controllers\chatbotController.js
-import ImageKit from "imagekit";
+import { encrypt, decrypt } from "../utils/encryption.js";
 import UserChat from "../models/Botuserchat.js";
 import Chat from "../models/Botchat.js";
 import { setCache, getCache, deleteCachePattern, invalidateChatCache, cacheKeys } from "../utils/cacheUtils.js";
 
-const imagekit = new ImageKit({
-    publicKey: process.env.IMAGEKIT_PUBLIC_KEY,
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
-    urlEndpoint: process.env.IMAGEKIT_URL_ENDPOINT
-});
-
-// GET /api/upload
-export const getUploadAuth = (req, res) => {
-    const result = imagekit.getAuthenticationParameters();
-    res.json(result);
-};
 
 // POST /api/chats
 export const createChat = async (req, res) => {
@@ -29,8 +18,7 @@ export const createChat = async (req, res) => {
             history: [
                 {
                     role: "user",
-                    parts: [{ text }],
-                    img: req.body.img || null
+                    parts: [{ text: encrypt(text) }]
                 }
             ]
         });
@@ -45,7 +33,7 @@ export const createChat = async (req, res) => {
                 chats: [
                     {
                         _id: newChat._id,
-                        title: text.substring(0, 30),
+                        title: encrypt(text.substring(0, 30)),
                         createdAt: newChat.createdAt
                     }
                 ]
@@ -59,7 +47,7 @@ export const createChat = async (req, res) => {
                     $push: {
                         chats: {
                             _id: newChat._id,
-                            title: text.substring(0, 30),
+                            title: encrypt(text.substring(0, 30)),
                             createdAt: newChat.createdAt
                         }
                     }
@@ -86,13 +74,18 @@ export const getUserChats = async (req, res) => {
         // Check cache first
         const cacheKey = cacheKeys.chatList(userId);
         const cachedChats = await getCache(cacheKey);
-        if(cachedChats) {
+        if (cachedChats) {
             return res.status(200).json(cachedChats);
         }
 
         const userChat = await UserChat.findOne({ userId });
 
-        const response = { chats: userChat ? userChat.chats : [] };
+        const response = {
+            chats: userChat ? userChat.chats.map(c => ({
+                ...c.toObject(),
+                title: decrypt(c.title)
+            })) : []
+        };
 
         // Cache for 30 minutes
         await setCache(cacheKey, response, 1800);
@@ -111,7 +104,7 @@ export const getChatById = async (req, res) => {
         // Check cache first
         const cacheKey = cacheKeys.chat(req.params.id);
         const cachedChat = await getCache(cacheKey);
-        if(cachedChat) {
+        if (cachedChat) {
             return res.status(200).json(cachedChat);
         }
 
@@ -124,10 +117,24 @@ export const getChatById = async (req, res) => {
             return res.status(404).json({ message: "Chat not found" });
         }
 
-        // Cache for 1 hour
-        await setCache(cacheKey, chat, 3600);
+        // Decrypt history
+        const decryptedHistory = chat.history.map(item => ({
+            ...item.toObject(),
+            parts: item.parts.map(p => ({
+                ...p.toObject(),
+                text: decrypt(p.text)
+            }))
+        }));
 
-        res.status(200).json(chat);
+        const decryptedChat = {
+            ...chat.toObject(),
+            history: decryptedHistory
+        };
+
+        // Cache for 1 hour
+        await setCache(cacheKey, decryptedChat, 3600);
+
+        res.status(200).json(decryptedChat);
 
     } catch (error) {
         console.error("Error fetching chat:", error);
@@ -147,12 +154,11 @@ export const updateChat = async (req, res) => {
                     history: [
                         {
                             role: "user",
-                            parts: [{ text: question }],
-                            img: req.body.img || null
+                            parts: [{ text: encrypt(question) }]
                         },
                         {
                             role: "model",
-                            parts: [{ text: answer }]
+                            parts: [{ text: encrypt(answer) }]
                         }
                     ]
                 }

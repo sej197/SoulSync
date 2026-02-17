@@ -3,7 +3,7 @@
 
 .journal-page {
   min-height: calc(100vh - 68px);
-  background: linear-gradient(135deg, #faf8f5 0%, #f5f0e8 30%, #eee8f3 60%, #e8eaf5 100%);
+  background: #F3E5F5;
   padding: 2rem 1rem;
   position: relative;
   overflow: hidden;
@@ -33,8 +33,15 @@
 }
 
 @keyframes floaty {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-12px) rotate(5deg); }
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-12px) rotate(5deg);
+  }
 }
 
 /* ── Calendar Panel ── */
@@ -253,12 +260,10 @@
   flex: 1;
   padding: 1rem 1.5rem 1rem 2.75rem;
   position: relative;
-  background-image: repeating-linear-gradient(
-    transparent,
-    transparent 31px,
-    rgba(190, 180, 160, 0.12) 31px,
-    rgba(190, 180, 160, 0.12) 32px
-  );
+  background-image: repeating-linear-gradient(transparent,
+      transparent 31px,
+      rgba(190, 180, 160, 0.12) 31px,
+      rgba(190, 180, 160, 0.12) 32px);
   background-position-y: 7px;
 }
 
@@ -571,6 +576,7 @@
     opacity: 0;
     transform: scale(0.95) translateY(8px);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -649,12 +655,10 @@
   }
 
   .diary-body {
-    background-image: repeating-linear-gradient(
-      transparent,
-      transparent 27px,
-      rgba(190, 180, 160, 0.12) 27px,
-      rgba(190, 180, 160, 0.12) 28px
-    );
+    background-image: repeating-linear-gradient(transparent,
+        transparent 27px,
+        rgba(190, 180, 160, 0.12) 27px,
+        rgba(190, 180, 160, 0.12) 28px);
   }
 
   .diary-binding {

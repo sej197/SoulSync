@@ -1,5 +1,7 @@
+// j:\sayalee\innovateyou\SoulSync\server\controllers\AnxietyQuizController.js
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
+import { setCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
 
 const submitAnxietyQuiz = async (req, res) => {
   try {
@@ -129,6 +131,15 @@ const submitAnxietyQuiz = async (req, res) => {
       },
       { upsert: true, new: true }
     );
+
+    // Cache the result
+    await setCache(cacheKeys.quizScore(userId, 'anxiety', today), {
+      message: "Anxiety quiz submitted successfully",
+      anxietyScore
+    }, 86400);
+
+    // Invalidate quiz cache
+    await invalidateQuizCache(userId);
 
     res.status(201).json({
       message: "Anxiety quiz submitted successfully",

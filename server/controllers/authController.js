@@ -1,9 +1,11 @@
+// j:\sayalee\innovateyou\SoulSync\server\controllers\authController.js
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js"
 import RiskScore from "../models/RiskScore.js";
 import welcomeEmail from "../emails/welcomeEmail.js";
 import transporter from "../config/nodemailer.js";
+import { setCache, getCache, deleteCache, invalidateUserCache, cacheKeys } from "../utils/cacheUtils.js";
 
 const register = async(req, res) => {
     const {username, email, password, gender, emergency_contacts, contact, age} = req.body;
@@ -48,11 +50,10 @@ const register = async(req, res) => {
         );
 
         res.cookie('token', token, {
-            httpOnly: true, //makes it inaccessible at client side
-            secure: process.env.NODE_ENV == 'production', //sent only over https in prod
-            sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strict', //allow cross-site cookies in production, strict in development
-            maxAge: 2 * 24 * 60 * 60 * 1000 // 2 D in ms
-        
+            httpOnly: true,
+            secure: process.env.NODE_ENV == 'production',
+            sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strict',
+            maxAge: 2 * 24 * 60 * 60 * 1000
         })
 
         const {subject, text} = welcomeEmail(user.username);
@@ -64,9 +65,22 @@ const register = async(req, res) => {
             text
         }
         transporter.sendMail(mailOptions).catch(error => {
-            console.error("Error sending mail", err)
-
+            console.error("Error sending mail", error)
         });
+
+        // Cache the new user
+        await setCache(cacheKeys.user(user._id), {
+            id: user._id,
+            name: user.username,
+            email: user.email,
+            age: user.age,
+            badges: user.badges,
+            gender: user.gender,
+            contact: user.contact,
+            emergency_contacts: user.emergency_contacts,
+            communities: user.communities,
+            streak: user.streak,
+        }, 7200); // 2 hours
 
         return res.json({
             message: "User registered successfully!"
@@ -113,6 +127,21 @@ const login = async(req, res) => {
             sameSite: process.env.NODE_ENV == 'production' ? 'none' : 'strict',
             maxAge: 2 * 24 * 60 * 60 * 1000
         });
+
+        // Cache the authenticated user
+        await setCache(cacheKeys.user(user._id), {
+            id: user._id,
+            name: user.username,
+            email: user.email,
+            age: user.age,
+            badges: user.badges,
+            gender: user.gender,
+            contact: user.contact,
+            emergency_contacts: user.emergency_contacts,
+            communities: user.communities,
+            streak: user.streak,
+        }, 7200);
+
         return res.json({
             message: "Login successful"
         });
@@ -124,6 +153,11 @@ const login = async(req, res) => {
 
 const logout = async(req, res) => {
     try{
+        // Clear user cache on logout
+        if(req.userId) {
+            await deleteCache(cacheKeys.user(req.userId));
+        }
+        
         res.clearCookie('token', {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -145,28 +179,43 @@ const isAuthenticated = async(req, res) => {
                 isAuthenticated: false,
             });
         }
-        const user = await User.findById(req.userId).select('-password');//password not fetched even in hashed format
+
+        // Check cache first
+        const cachedUser = await getCache(cacheKeys.user(req.userId));
+        if(cachedUser) {
+            return res.json({
+                isAuthenticated: true,
+                user: cachedUser
+            });
+        }
+
+        const user = await User.findById(req.userId).select('-password');
 
         if(!user){
             return res.json({
                 isAuthenticated: false
             });
-        } 
+        }
+
+        const userData = {
+            id: user._id,
+            name: user.username,
+            email: user.email,
+            age: user.age,
+            badges: user.badges,
+            gender: user.gender,
+            contact: user.contact,
+            emergency_contacts: user.emergency_contacts,
+            communities: user.communities,
+            streak: user.streak,
+        };
+
+        // Cache the user
+        await setCache(cacheKeys.user(req.userId), userData, 7200);
+
         return res.json({
             isAuthenticated: true,
-            user: {
-                id: user._id,
-                name: user.username,
-                email: user.email,
-                age: user.age,
-                badges: user.badges,
-                gender: user.gender,
-                contact: user.contact,
-                emergency_contacts: user.emergency_contacts,
-                communities: user.communities,
-                streak: user.streak,
-                
-            }
+            user: userData
         });
         
     }catch(error){
@@ -198,20 +247,26 @@ const updateProfile = async(req, res) => {
 
         const updatedUser = await User.findByIdAndUpdate(req.userId, updates, {new: true}).select('-password');
 
+        const userData = {
+            id: updatedUser._id,
+            name: updatedUser.username,
+            email: updatedUser.email,
+            age: updatedUser.age,
+            badges: updatedUser.badges,
+            gender: updatedUser.gender,
+            contact: updatedUser.contact,
+            emergency_contacts: updatedUser.emergency_contacts,
+            communities: updatedUser.communities,
+            streak: updatedUser.streak,
+        };
+
+        // Invalidate and update cache
+        await invalidateUserCache(req.userId);
+        await setCache(cacheKeys.user(req.userId), userData, 7200);
+
         return res.json({
             message: "Profile updated successfully",    
-            user: {
-                id: updatedUser._id,
-                name: updatedUser.username,
-                email: updatedUser.email,
-                age: updatedUser.age,
-                badges: updatedUser.badges,
-                gender: updatedUser.gender,
-                contact: updatedUser.contact,
-                emergency_contacts: updatedUser.emergency_contacts,
-                communities: updatedUser.communities,
-                streak: updatedUser.streak,
-            }
+            user: userData
         });
 
     }catch(error){
@@ -219,4 +274,5 @@ const updateProfile = async(req, res) => {
         console.error("Error updating profile", error);
     }
 }
+
 export {register, logout, login, isAuthenticated, updateProfile};

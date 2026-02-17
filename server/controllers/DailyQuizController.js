@@ -1,5 +1,8 @@
+// j:\sayalee\innovateyou\SoulSync\server\controllers\DailyQuizController.js
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
+import { setCache, getCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+
 const submitDailyQuiz = async (req, res) => {
   try {
     const userId = req.userId; 
@@ -7,8 +10,7 @@ const submitDailyQuiz = async (req, res) => {
 
     const { answers } = req.body; 
 
-  const optionScores = {
-     
+    const optionScores = {
       "Very calm": 0,
       "Mostly calm": 0.25,
       "Occasionally restless": 0.5,
@@ -45,7 +47,6 @@ const submitDailyQuiz = async (req, res) => {
       "Not supportive": 0.75,
       "Very poor sleep": 1,
 
-      
       "Very manageable": 0,
       "Mostly manageable": 0.25,
       "Somewhat stressful": 0.5,
@@ -82,8 +83,6 @@ const submitDailyQuiz = async (req, res) => {
       "Not very hopeful": 0.75,
       "Not hopeful at all": 1
     };
-
-
 
     const getScore = (answer) => {
       if (Array.isArray(answer)) {
@@ -151,71 +150,91 @@ const submitDailyQuiz = async (req, res) => {
           anxiety += score;
           anxietyCount++;
           break;
-
         case "stress":
           stress += score;
           stressCount++;
           break;
-
         case "sleep":
           sleep += score;
           sleepCount++;
           break;
-
         case "depression":
           depression += score;
           depressionCount++;
           break;
-
       }
     }
-    anxiety = anxietyCount ? anxiety / anxietyCount : 0;
-    stress = stressCount ? stress / stressCount : 0;
-    sleep = sleepCount ? sleep / sleepCount : 0;
-    depression = depressionCount ? depression / depressionCount : 0;
 
-    const finalScore = Number(
-      (
-        (anxiety +
-          stress +
-          sleep +
-          depression +
-          paragraphScore) /
-        5
-      ).toFixed(2)
-    );
+    anxiety = anxietyCount > 0 ? anxiety / anxietyCount : 0;
+    stress = stressCount > 0 ? stress / stressCount : 0;
+    sleep = sleepCount > 0 ? sleep / sleepCount : 0;
+    depression = depressionCount > 0 ? depression / depressionCount : 0;
+
+    const mentalHealthScore = (anxiety + stress + (1 - sleep) + depression) / 4;
+    const socialScore = 0.5;
+    const reflectionScore = Math.max(0, 1 - paragraphScore);
+
+    const quizScore = (mentalHealthScore * 0.5 + socialScore * 0.3 + reflectionScore * 0.2);
+
+    const transformedAnswers = answers.map(a => ({
+      questionId: a.questionId,
+      selectedOptions: Array.isArray(a.selectedOptions) ? a.selectedOptions : [a.selectedOption || a.textAnswer]
+    }));
 
     const quiz = await DailyQuiz.create({
       userId,
-      quizType:"daily",
+      quizType: "daily",
       date: new Date(),
-      answers,
+      answers: transformedAnswers,
       scores: {
-        anxietyScore:anxiety,
+        anxietyScore: anxiety,
         stressScore: stress,
-        sleepScore:sleep,
+        sleepScore: sleep,
         depressionScore: depression,
-        paragraphScore: paragraphScore
+        mentalHealthScore,
+        socialScore,
+        reflectionScore,
       },
-      finalScore,
+      finalScore: quizScore
     });
-     await RiskScore.findOneAndUpdate(
-          { user: userId, date: today },
-          {
-            $set: {
-              quiz_score: finalScore,
-              quiz_date: today
-            }
-          },
-          { upsert: true, new: true }
-        );
+
+    await RiskScore.findOneAndUpdate(
+      { user: userId, date: today },
+      {
+        $set: {
+          quiz_score: quizScore,
+          anxiety_score: anxiety,
+          stress_score: stress,
+          sleep_score: sleep,
+          depression_score: depression,
+          quiz_date: today
+        }
+      },
+      { upsert: true, new: true }
+    );
+
+    // Cache the quiz result
+    await setCache(cacheKeys.dailyQuiz(userId, today), {
+      message: "Daily quiz submitted successfully",
+      score: quizScore,
+      scores: quiz.scores
+    }, 86400); // Cache for 24 hours
+
+    // Invalidate quiz history cache
+    await invalidateQuizCache(userId);
+
     res.status(201).json({
-      message: "quiz submitted successfully",
-      // finalScore,
-      // paragraphScore   
+      message: "Daily quiz submitted successfully",
+      score: quizScore,
+      scores: quiz.scores
     });
+
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("Error submitting daily quiz:", error);
+    res.status(500).json({
+      message: "Internal server error",
+      error: error.message
+    });
   }
 };
 

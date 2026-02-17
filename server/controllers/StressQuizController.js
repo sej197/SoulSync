@@ -1,10 +1,14 @@
+// j:\sayalee\innovateyou\SoulSync\server\controllers\StressQuizController.js
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
+import { setCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+
 const submitStressQuiz = async (req, res) => {
   try {
     const userId = req.userId;
     const { answers } = req.body;
     const today = new Date().toISOString().split("T")[0]
+    
     if (!answers || answers.length === 0)
       return res.status(400).json({ message: "At least one answer is required" });
 
@@ -30,6 +34,7 @@ const submitStressQuiz = async (req, res) => {
     });
 
     const stressScore = +(totalScore / answers.length).toFixed(2);
+    
     const transformedAnswers = answers.map(a => ({
         questionId: a.questionId,
         selectedOptions: [a.answer] 
@@ -43,7 +48,8 @@ const submitStressQuiz = async (req, res) => {
       score: { stressScore },
       finalScore: stressScore
     });
-     await RiskScore.findOneAndUpdate(
+    
+    await RiskScore.findOneAndUpdate(
       { user: userId, date: today },
       {
         $set: {
@@ -53,6 +59,16 @@ const submitStressQuiz = async (req, res) => {
       },
       { upsert: true, new: true }
     );
+
+    // Cache the result
+    await setCache(cacheKeys.quizScore(userId, 'stress', today), {
+      message: "Stress quiz submitted successfully",
+      stressScore
+    }, 86400);
+
+    // Invalidate quiz cache
+    await invalidateQuizCache(userId);
+
     res.status(201).json({
       message: "Stress quiz submitted successfully",
       stressScore

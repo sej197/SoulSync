@@ -1,11 +1,15 @@
+// j:\sayalee\innovateyou\SoulSync\server\controllers\DepressionQuizController.js
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
+import { setCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+
 const submitDepressionQuiz = async (req, res) => {
     try {
         const userId = req.userId;
         const {answers} = req.body;
-         const today = new Date().toISOString().split("T")[0]
-         const optionScores = {
+        const today = new Date().toISOString().split("T")[0]
+        
+        const optionScores = {
             "Not at all": 0,
             "Slightly": 0.25,
             "Moderately": 0.5,
@@ -47,18 +51,23 @@ const submitDepressionQuiz = async (req, res) => {
             "Low": 0.75,
             "Very low": 1
         };
+        
         let totalScore = 0;
         let questionCount = 0;
+        
         for(let i = 0; i < answers.length; i++){
             const userAnswer = answers[i].answer;
             totalScore += optionScores[userAnswer] || 0;
             questionCount++;
         }
+        
         const depressionScore = Number((totalScore / questionCount).toFixed(2));
+        
         const transformedAnswers = answers.map(a => ({
             questionId: a.questionId,
             selectedOptions: [a.answer] 
         }));
+        
         await DailyQuiz.create({
             userId, 
             quizType: "depression",
@@ -69,16 +78,27 @@ const submitDepressionQuiz = async (req, res) => {
             },
             finalScore : depressionScore,
         })
-         await RiskScore.findOneAndUpdate(
-              { user: userId, date: today },
-              {
+        
+        await RiskScore.findOneAndUpdate(
+            { user: userId, date: today },
+            {
                 $set: {
                     depression_quiz_score: depressionScore,
                     depression_quiz_date: today
                 }
-              },
-              { upsert: true, new: true }
-            );
+            },
+            { upsert: true, new: true }
+        );
+
+        // Cache the result
+        await setCache(cacheKeys.quizScore(userId, 'depression', today), {
+            message:"depression quiz submitted successfully",
+            depressionScore
+        }, 86400);
+
+        // Invalidate quiz cache
+        await invalidateQuizCache(userId);
+
         res.status(201).json({
             message:"depression quiz submitted successfully",
             depressionScore
@@ -91,4 +111,5 @@ const submitDepressionQuiz = async (req, res) => {
         });
     }
 }
+
 export default submitDepressionQuiz;

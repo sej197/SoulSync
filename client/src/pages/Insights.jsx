@@ -118,10 +118,10 @@ export default function Insights() {
         {/* Header */}
         <div className="mb-10 text-center md:text-left flex flex-col md:flex-row justify-between items-end gap-6">
           <div>
-            <div className="inline-block px-3 py-1 bg-white/60 backdrop-blur-sm rounded-full text-xs font-bold text-[#EF6C00] mb-3 shadow-sm border border-orange-100">
+            <div className="inline-block px-3 py-1 bg-white/60 backdrop-blur-sm rounded-full text-xs font-bold text-[#7B1FA2] mb-3 shadow-sm border border-purple-200">
               📈 YOUR PROGRESS
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold font-serif mb-3 text-[#3E2723]">
+            <h1 className="text-4xl md:text-5xl font-bold font-serif mb-3 text-[#4A148C]">
               Mental Wellness Insights
             </h1>
             <p className="text-slate-500 text-lg max-w-xl">Track your emotional journey, discover patterns, and celebrate your growth.</p>
@@ -133,7 +133,7 @@ export default function Insights() {
               <button
                 key={tab}
                 className={`px-6 py-2.5 rounded-xl font-bold transition-all duration-300 capitalize text-sm ${activeTab === tab
-                  ? 'bg-[#3E2723] text-white shadow-lg scale-105'
+                  ? 'bg-[#4A148C] text-white shadow-lg scale-105'
                   : 'text-slate-500 hover:text-slate-700 hover:bg-white/50'
                   }`}
                 onClick={() => setActiveTab(tab)}

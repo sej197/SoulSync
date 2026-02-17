@@ -11,6 +11,10 @@ services:
       - ./server/.env
     depends_on:
       - python
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
 
   python:
     build: ./python-server
@@ -27,3 +31,15 @@ services:
       - server
     stdin_open: true
     tty: true
+
+  redis:
+    image: redis:7
+    container_name: soulsync-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:

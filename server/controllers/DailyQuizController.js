@@ -1,13 +1,14 @@
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, getCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 
 const submitDailyQuiz = async (req, res) => {
   try {
-    const userId = req.userId; 
+    const userId = req.userId;
     const today = new Date().toISOString().split("T")[0]
 
-    const { answers } = req.body; 
+    const { answers } = req.body;
 
     const optionScores = {
       "Very calm": 0,
@@ -139,7 +140,7 @@ const submitDailyQuiz = async (req, res) => {
           ans.sentimentScore = 0;
         }
 
-        continue; 
+        continue;
       }
 
       const score = getScore(userAnswer);
@@ -222,10 +223,14 @@ const submitDailyQuiz = async (req, res) => {
     // Invalidate quiz history cache
     await invalidateQuizCache(userId);
 
+    // Check for badges asynchronously but await for response data
+    const newlyAwarded = await checkAndAwardBadges(userId, 'quiz');
+
     res.status(201).json({
       message: "Daily quiz submitted successfully",
       score: quizScore,
-      scores: quiz.scores
+      scores: quiz.scores,
+      newlyAwarded
     });
 
   } catch (error) {

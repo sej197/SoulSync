@@ -5,6 +5,7 @@ import Chat from "../models/Botchat.js";
 import RiskScore from "../models/RiskScore.js";
 import axios from "axios";
 import { setCache, getCache, deleteCachePattern, invalidateChatCache, cacheKeys } from "../utils/cacheUtils.js";
+import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
@@ -165,12 +166,15 @@ export const createChat = async (req, res) => {
             log("[createChat] AI Generation error: " + error.message);
         }
 
-        log("[createChat] Success. Sending response.");
+        // Check for badges
+        const newlyAwarded = await checkAndAwardBadges(userId, 'chat');
+
         res.status(201).json({
             chatId: newChat._id,
             aiResponse,
             riskAlert: sentimentScore > 0.7,
-            alertMessage: sentimentScore > 0.7 ? "We've noticed you might be going through a tough time. Remember, SoulSync is here for you, but please consider reaching out to a professional or a loved one if you feel overwhelmed." : null
+            alertMessage: sentimentScore > 0.7 ? "We've noticed you might be going through a tough time. Remember, SoulSync is here for you, but please consider reaching out to a professional or a loved one if you feel overwhelmed." : null,
+            newlyAwarded
         });
 
     } catch (error) {

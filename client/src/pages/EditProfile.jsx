@@ -47,62 +47,62 @@ const EditProfile = () => {
     e.preventDefault();
     setErrors({});
     setLoading(true);
-    
-    try{
-        const updateData = {};
-        const newErrors = {};
-        if (formData.username && formData.username !== user.name) {
-            updateData.username = formData.username.trim();
-        }
 
-        if (formData.age && Number(formData.age) !== user.age) {
-            updateData.age = Number(formData.age);
-        }
+    try {
+      const updateData = {};
+      const newErrors = {};
+      if (formData.username && formData.username !== user.name) {
+        updateData.username = formData.username.trim();
+      }
 
-        if (formData.gender && formData.gender !== user.gender) {
-            updateData.gender = formData.gender;
-        }
+      if (formData.age && Number(formData.age) !== user.age) {
+        updateData.age = Number(formData.age);
+      }
 
-        if (formData.contact && formData.contact !== user.contact) {
-            updateData.contact = formData.contact.trim();
-        }
+      if (formData.gender && formData.gender !== user.gender) {
+        updateData.gender = formData.gender;
+      }
 
-        const emergencyContacts = [formData.emergencyContact1, formData.emergencyContact2];
+      if (formData.contact && formData.contact !== user.contact) {
+        updateData.contact = formData.contact.trim();
+      }
 
-        if (
+      const emergencyContacts = [formData.emergencyContact1, formData.emergencyContact2];
+
+      if (
         emergencyContacts[0] !== user.emergency_contacts?.[0] ||
         emergencyContacts[1] !== user.emergency_contacts?.[1]
-        ) {
+      ) {
         updateData.emergency_contacts = emergencyContacts.filter(Boolean);
-        }
+      }
 
-    
-        if (Object.keys(newErrors).length > 0) {
-            setErrors(newErrors);
-            setLoading(false);
-            return;
-        }
-    
-        if (Object.keys(updateData).length === 0) {
-            setErrors({ general: 'Please provide at least one field to update' });
-            setLoading(false);
-            return;
-        }
-    
-        await updateProfile(updateData);
-        await getAuthStatus();
-        toast.success("Profile updated successfully");
+
+      if (Object.keys(newErrors).length > 0) {
+        setErrors(newErrors);
         setLoading(false);
-        navigate('/profile');
-  
-    }catch(error){
-        const errorMessage = error.response?.data?.message || 'An error occurred while updating profile';
-        setErrors({ general: errorMessage });
-        toast.error(errorMessage);
-        console.error("Error updating profile", error);
+        return;
+      }
+
+      if (Object.keys(updateData).length === 0) {
+        setErrors({ general: 'Please provide at least one field to update' });
         setLoading(false);
+        return;
+      }
+
+      await updateProfile(updateData);
+      await getAuthStatus();
+      toast.success("Profile updated successfully");
+      setLoading(false);
+      navigate('/profile');
+
+    } catch (error) {
+      const errorMessage = error.response?.data?.message || 'An error occurred while updating profile';
+      setErrors({ general: errorMessage });
+      toast.error(errorMessage);
+      console.error("Error updating profile", error);
+      setLoading(false);
     }
-}
+  }
 
   if (!user) {
     return (
@@ -122,7 +122,7 @@ const EditProfile = () => {
       <div className="container mx-auto px-4 py-8 max-w-3xl">
         {/* Header */}
         <div className="mb-8">
-          <Link 
+          <Link
             to="/profile"
             className="inline-flex items-center gap-2 text-bloom-primary hover:text-bloom-dark transition-colors mb-4 font-medium"
           >
@@ -135,7 +135,7 @@ const EditProfile = () => {
 
         {/* Profile Card */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-soft border border-bloom-secondary/20 overflow-hidden">
-          
+
           {/* Profile Picture Section */}
           <div className="bg-gradient-to-r from-bloom-primary/20 to-bloom-secondary/20 p-8 border-b border-bloom-secondary/20">
             <div className="flex items-center gap-6">
@@ -147,7 +147,7 @@ const EditProfile = () => {
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <button 
+                <button
                   type="button"
                   className="absolute bottom-0 right-0 p-2 bg-bloom-primary text-white rounded-full shadow-lg hover:bg-bloom-primary/90 transition-all"
                 >
@@ -163,26 +163,26 @@ const EditProfile = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="p-8 space-y-6">
-            
+
             {/* Basic Information */}
             <div>
               <h3 className="text-lg font-serif font-semibold text-bloom-dark mb-4 flex items-center gap-2">
                 <User className="w-5 h-5 text-bloom-primary" />
                 Basic Information
               </h3>
-              
+
               <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
                   💡 Update only the fields you want to change. Leave fields empty to keep current values.
                 </p>
               </div>
-              
+
               {errors.general && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
                   <p className="text-sm text-red-600">{errors.general}</p>
                 </div>
               )}
-              
+
               <div className="space-y-4">
                 {/* Username */}
                 <div>
@@ -198,7 +198,7 @@ const EditProfile = () => {
                   {errors.username && <p className="text-red-500 text-xs mt-1.5">{errors.username}</p>}
                 </div>
 
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-bloom-dark mb-2">Age <span className="text-gray-400 text-xs">(optional)</span></label>
@@ -244,7 +244,7 @@ const EditProfile = () => {
                 <Phone className="w-5 h-5 text-bloom-primary" />
                 Contact Information
               </h3>
-              
+
               <div className="space-y-4">
                 {/* Phone Number */}
                 <div>
@@ -276,7 +276,7 @@ const EditProfile = () => {
                 <Users className="w-5 h-5 text-bloom-primary" />
                 Emergency Contacts
               </h3>
-              
+
               <div className="bg-bloom-secondary/15 p-5 rounded-lg border border-bloom-secondary/30 space-y-4">
                 <p className="text-xs text-blue-600 mb-3 font-medium">💡 Leave empty to keep existing emergency contacts</p>
                 <div>
@@ -287,7 +287,7 @@ const EditProfile = () => {
                     value={formData.emergencyContact1 || ''}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 rounded-lg bg-white/75 border border-bloom-secondary/30 text-bloom-dark placeholder-gray-400 focus:bg-white focus:border-bloom-primary focus:ring-3 focus:ring-bloom-primary/20 outline-none transition-all duration-200"
-                    
+
                   />
                 </div>
 
@@ -301,7 +301,7 @@ const EditProfile = () => {
                     value={formData.emergencyContact2 || ''}
                     onChange={handleInputChange}
                     className="w-full px-4 py-3 rounded-lg bg-white/75 border border-bloom-secondary/30 text-bloom-dark placeholder-gray-400 focus:bg-white focus:border-bloom-primary focus:ring-3 focus:ring-bloom-primary/20 outline-none transition-all duration-200"
-                    
+
                   />
                 </div>
               </div>
@@ -317,7 +317,7 @@ const EditProfile = () => {
                 <Save className="w-5 h-5" />
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>
-              
+
               <Link
                 to="/profile"
                 className="px-6 py-3 rounded-lg border-2 border-bloom-secondary/40 text-bloom-dark hover:bg-bloom-secondary/10 font-medium transition-all duration-200 flex items-center justify-center"

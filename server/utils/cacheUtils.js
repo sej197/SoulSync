@@ -71,23 +71,23 @@ export const cacheKeys = {
   user: (userId) => `user:${userId}`,
   userProfile: (userId) => `user:${userId}:profile`,
   userAuth: (userId) => `user:${userId}:auth`,
-  
+
   // Quiz cache
   quizScore: (userId, quizType, date) => `quiz:${userId}:${quizType}:${date}`,
   dailyQuiz: (userId, date) => `quiz:${userId}:daily:${date}`,
   quizHistory: (userId) => `quiz:${userId}:history`,
-  
+
   // Journal cache
   journalEntries: (userId, page) => `journal:${userId}:entries:${page}`,
   journalEntry: (userId, entryId) => `journal:${userId}:${entryId}`,
   journalDate: (userId, date) => `journal:${userId}:date:${date}`,
   calendarDates: (userId, month, year) => `journal:${userId}:calendar:${month}:${year}`,
-  
+
   // Risk cache
   riskDaily: (userId, date) => `risk:${userId}:daily:${date}`,
   riskWeekly: (userId) => `risk:${userId}:weekly`,
   riskMonthly: (userId) => `risk:${userId}:monthly`,
-  
+
   // Chat cache
   chatList: (userId) => `chat:${userId}:list`,
   chat: (chatId) => `chat:${chatId}`,
@@ -99,7 +99,7 @@ export const cacheKeys = {
  */
 export const invalidateUserCache = async (userId) => {
   try {
-    await deleteCachePattern(`user:${userId}:*`);
+    await deleteCachePattern(`user:${userId}*`);
   } catch (error) {
     console.error(`Error invalidating user cache for ${userId}:`, error);
   }

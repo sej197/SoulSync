@@ -79,6 +79,16 @@ export default function Newprompt({ chatId }) {
                         position: "top-center",
                     });
                 }
+
+                // Show badge notifications
+                if (data.newlyAwarded && data.newlyAwarded.length > 0) {
+                    data.newlyAwarded.forEach(badge => {
+                        toast.success(`New Badge Earned: ${badge.name}! 🏆`, {
+                            duration: 5000,
+                            icon: '🎉',
+                        });
+                    });
+                }
                 return;
             }
 
@@ -93,6 +103,16 @@ export default function Newprompt({ chatId }) {
                 toast.error(data.alertMessage, {
                     duration: 6000,
                     position: "top-center",
+                });
+            }
+
+            // Show badge notifications
+            if (data.newlyAwarded && data.newlyAwarded.length > 0) {
+                data.newlyAwarded.forEach(badge => {
+                    toast.success(`New Badge Earned: ${badge.name}! 🏆`, {
+                        duration: 5000,
+                        icon: '🎉',
+                    });
                 });
             }
 

@@ -1,13 +1,14 @@
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 
 const submitDepressionQuiz = async (req, res) => {
     try {
         const userId = req.userId;
-        const {answers} = req.body;
+        const { answers } = req.body;
         const today = new Date().toISOString().split("T")[0]
-        
+
         const optionScores = {
             "Not at all": 0,
             "Slightly": 0.25,
@@ -50,34 +51,34 @@ const submitDepressionQuiz = async (req, res) => {
             "Low": 0.75,
             "Very low": 1
         };
-        
+
         let totalScore = 0;
         let questionCount = 0;
-        
-        for(let i = 0; i < answers.length; i++){
+
+        for (let i = 0; i < answers.length; i++) {
             const userAnswer = answers[i].answer;
             totalScore += optionScores[userAnswer] || 0;
             questionCount++;
         }
-        
+
         const depressionScore = Number((totalScore / questionCount).toFixed(2));
-        
+
         const transformedAnswers = answers.map(a => ({
             questionId: a.questionId,
-            selectedOptions: [a.answer] 
+            selectedOptions: [a.answer]
         }));
-        
+
         await DailyQuiz.create({
-            userId, 
+            userId,
             quizType: "depression",
             date: new Date(),
-            answers:transformedAnswers,
-            score:{
+            answers: transformedAnswers,
+            score: {
                 depressionScore
             },
-            finalScore : depressionScore,
+            finalScore: depressionScore,
         })
-        
+
         await RiskScore.findOneAndUpdate(
             { user: userId, date: today },
             {
@@ -91,16 +92,20 @@ const submitDepressionQuiz = async (req, res) => {
 
         // Cache the result
         await setCache(cacheKeys.quizScore(userId, 'depression', today), {
-            message:"depression quiz submitted successfully",
+            message: "depression quiz submitted successfully",
             depressionScore
         }, 86400);
 
         // Invalidate quiz cache
         await invalidateQuizCache(userId);
 
+        // Check for badges
+        const newlyAwarded = await checkAndAwardBadges(userId, 'quiz');
+
         res.status(201).json({
-            message:"depression quiz submitted successfully",
-            depressionScore
+            message: "depression quiz submitted successfully",
+            depressionScore,
+            newlyAwarded
         })
     } catch (error) {
         console.error("Error submitting depression quiz:", error);

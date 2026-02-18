@@ -1,10 +1,10 @@
 import { ArrowUp } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
-import model from "../../lib/gemini";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { fetchChatById, createChat, updateChat } from "../../lib/chatbotapi";
 import Markdown from "react-markdown";
+import toast from "react-hot-toast";
 import "./newprompt.css";
-
+import { useNavigate } from "react-router-dom";
 export default function Newprompt({ chatId }) {
     const navigate = useNavigate();
     const activeChatId = chatId;
@@ -14,10 +14,9 @@ export default function Newprompt({ chatId }) {
     const [chat, setChat] = useState([]);
     const endRef = useRef(null);
 
-    const chatModel = model.startChat({
-        history: [],
-        generationConfig: {}
-    });
+    useEffect(() => {
+        console.log("[Newprompt] Component mounted. ChatId:", activeChatId);
+    }, []);
 
     // Auto scroll
     useEffect(() => {
@@ -27,108 +26,87 @@ export default function Newprompt({ chatId }) {
 
     useEffect(() => {
         const fetchChat = async () => {
-            if (!activeChatId) return;
+            if (!activeChatId || activeChatId === "new") {
+                setChat([]);
+                return;
+            };
 
             try {
                 const data = await fetchChatById(activeChatId);
 
-                const formatted = data.history.map((item) => ({
+                const formatted = (data.history || []).map((item) => ({
                     type: item.role === "user" ? "user" : "bot",
-                    text: item.parts[0].text
+                    text: item.parts && item.parts.length > 0 ? item.parts[0].text : ""
                 }));
 
                 setChat(formatted);
 
-                //  Fix: If the last message is from user (no bot response yet), trigger AI
-                if (formatted.length > 0 && formatted[formatted.length - 1].type === "user") {
-                    const lastMsg = formatted[formatted.length - 1].text;
-                    // Trigger the 'add' logic manually or via a side effect
-                    // To avoid infinite loops, we can track if we've already responded to this ID
-                    addAIResponse(lastMsg, activeChatId);
-                }
-
             } catch (err) {
                 console.error("Error loading chat:", err);
+                toast.error("Failed to load chat history.");
             }
         };
 
         fetchChat();
     }, [activeChatId]);
 
-    // Split 'add' into user part and AI part to reuse the AI part
-    const addAIResponse = async (text, currentChatId) => {
-        try {
-            const payload = text;
-
-            const result = await chatModel.sendMessageStream(payload);
-
-            let response = "";
-            for await (const chunk of result.stream) {
-                const textChunk = chunk.text();
-                response += textChunk;
-                setAns(response);
-            }
-
-            // Add bot message locally
-            setChat(prev => [
-                ...prev,
-                { type: "bot", text: response }
-            ]);
-            setAns("");
-
-
-            await updateChat(
-                currentChatId,
-                text,
-                response
-            );
-        } catch (error) {
-            console.error("AI response error:", error);
-        }
-    };
-
-
     const add = async (text) => {
         if (!text) return;
-
+        console.log("[Newprompt] Sending message (backend AI mode):", text);
         setQues("");
 
         let currentChatId = activeChatId;
 
         try {
+            // Add user message locally for immediate UI update
+            setChat(prev => [...prev, { type: "user", text }]);
 
-            if (!currentChatId) {
+            if (!currentChatId || currentChatId === "new") {
                 const data = await createChat(text);
                 currentChatId = data.chatId;
 
-                // Update UI immediately for a snappy feel
-                setChat([{ type: "user", text }]);
+                // Add bot response returned from server
+                if (data.aiResponse) {
+                    setChat(prev => [...prev, { type: "bot", text: data.aiResponse }]);
+                }
 
                 // Redirect to real chat page
                 navigate(`/chatbot/${currentChatId}`);
 
-                // Continue to AI response
-                await addAIResponse(text, currentChatId);
+                if (data && data.riskAlert) {
+                    toast.error(data.alertMessage, {
+                        duration: 6000,
+                        position: "top-center",
+                    });
+                }
                 return;
             }
 
+            // For existing chats
+            const data = await updateChat(currentChatId, text, "processing..."); // answer is ignored by backend now for actual gen but kept for API compatibility
 
-            setChat(prev => [
-                ...prev,
-                { type: "user", text }
-            ]);
+            if (data.aiResponse) {
+                setChat(prev => [...prev, { type: "bot", text: data.aiResponse }]);
+            }
 
-            await addAIResponse(text, currentChatId);
+            if (data && data.riskAlert) {
+                toast.error(data.alertMessage, {
+                    duration: 6000,
+                    position: "top-center",
+                });
+            }
 
         } catch (error) {
             console.error("Chat error:", error);
+            toast.error("Failed to send message.");
         }
-
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const text = e.target.text.value;
+        const text = ques || e.target.text.value;
+        console.log("[Newprompt] handleSubmit triggered. Text:", text, "ChatId:", activeChatId);
+        alert("[Newprompt] Submitting: " + text);
         if (!text) return;
         add(text);
     };

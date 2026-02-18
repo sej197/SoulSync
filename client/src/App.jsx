@@ -26,7 +26,8 @@ const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif
 
 
 function App() {
- 
+  console.log("[App] Rendering. Time:", new Date().toLocaleTimeString());
+
 
   return (
     <Router>
@@ -38,7 +39,7 @@ function App() {
         <Route
           element={
             <div className="min-h-screen flex flex-col font-sans bg-base-100">
-              <Navbar  />
+              <Navbar />
               <main className="flex-grow">
                 <Routes>
                   <Route path="/" element={<Home />} />

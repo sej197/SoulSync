@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AuthLayout from './components/layout/AuthLayout';
@@ -25,6 +26,8 @@ const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif
 
 
 function App() {
+ 
+
   return (
     <Router>
       <Routes>
@@ -35,7 +38,7 @@ function App() {
         <Route
           element={
             <div className="min-h-screen flex flex-col font-sans bg-base-100">
-              <Navbar />
+              <Navbar  />
               <main className="flex-grow">
                 <Routes>
                   <Route path="/" element={<Home />} />

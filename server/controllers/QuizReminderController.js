@@ -33,4 +33,17 @@ const sendDailyQuizReminders = async () => {
         }
     }
 }
-export {sendDailyQuizReminders, getUsersForReminders};
+ const   subscribeToReminders = async(req, res) => {
+    try {
+        const { userId } = req.params;
+        const subscription = req.body;
+
+       
+        return res.status(201).json({ success: true, message: "Subscribed to daily reminders" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ success: false, message: "Server error" });
+    }
+}
+
+export {sendDailyQuizReminders, getUsersForReminders, subscribeToReminders};

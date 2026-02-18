@@ -4,3 +4,4 @@ textblob
 pydantic
 google-genai
 python-dotenv
+groq

@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@esbuild/linux-x64": "^0.27.3",
     "@google/generative-ai": "^0.24.1",
     "@tanstack/react-query": "^5.90.21",
     "@tiptap/extension-placeholder": "^3.19.0",

@@ -27,6 +27,7 @@
     "nodemailer": "^8.0.1",
     "nodemon": "^3.1.11",
     "redis": "^5.11.0",
+    "redis-server": "^1.2.2",
     "web-push": "^3.6.7"
   }
 }

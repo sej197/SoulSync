@@ -1,4 +1,3 @@
-// j:\sayalee\innovateyou\SoulSync\server\controllers\RiskController.js
 import { RISK_WEIGHTS, RISK_LABELS } from "../config/riskConfig.js";
 import RiskScore from "../models/RiskScore.js";
 import DailyQuiz from "../models/DailyQuiz.js";

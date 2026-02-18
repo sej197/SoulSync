@@ -1,4 +1,3 @@
-// j:\sayalee\innovateyou\SoulSync\server\controllers\DailyQuizController.js
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, getCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";

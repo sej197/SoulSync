@@ -1,4 +1,3 @@
-// j:\sayalee\innovateyou\SoulSync\server\controllers\journalController.js
 import mongoose from "mongoose";
 import Journal from "../models/Journal.js";
 import RiskScore from "../models/RiskScore.js";

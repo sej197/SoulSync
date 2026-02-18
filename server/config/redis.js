@@ -1,4 +1,3 @@
-// j:\sayalee\innovateyou\SoulSync\server\config\redis.js
 import { createClient } from "redis";
 
 const redisClient = createClient({
@@ -6,16 +5,10 @@ const redisClient = createClient({
     host: process.env.REDIS_HOST || "localhost",
     port: process.env.REDIS_PORT || 6379,
   },
-  password: process.env.REDIS_PASSWORD || undefined,
 });
 
-redisClient.on("error", (err) => {
-  console.log("Redis Client Error:", err);
-});
-
-redisClient.on("connect", () => {
-  console.log("Redis connected successfully");
-});
+redisClient.on("error", (err) => console.log("Redis Client Error:", err));
+redisClient.on("connect", () => console.log("Redis connected successfully"));
 
 (async () => {
   try {

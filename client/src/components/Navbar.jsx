@@ -52,7 +52,33 @@ const Navbar = () => {
 
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                         <li><Link to="/community-chat">Community Chat</Link></li>
-                        <li><Link to="/daily-quiz">Daily Quiz</Link></li>
+                        <li>
+                            <details>
+                                <summary>Daily Quiz</summary>
+                                <ul className="p-2 bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-200 dark:border-gray-700 min-w-[160px]">
+                                    <li>
+                                        <Link to="/daily-quiz/anxiety" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                            Anxiety Quiz
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/daily-quiz/depression" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                            Depression Quiz
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/daily-quiz/stress" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                            Stress Quiz
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/daily-quiz/sleep" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                            Sleep Quiz
+                                        </Link>
+                                    </li>
+                                </ul>
+                            </details>
+                        </li>
                         <li><Link to="/journal">Journal</Link></li>
                         <li><Link to="/insights">Insights</Link></li>
                         <li><Link to="/about">About Us</Link></li>
@@ -83,7 +109,38 @@ const Navbar = () => {
                         <Link to="/community-chat">Community Chat</Link>
                     </li>
                     <li>
-                        <Link to="/daily-quiz">Daily Quiz</Link>
+                        <details>
+                            <summary className="list-none before:hidden after:hidden marker:hidden">
+                                Quiz
+                            </summary>
+                            <ul className="p-2 bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-200 dark:border-gray-700 min-w-[160px]">
+                                <li>
+                                    <Link to="/daily-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        Daily Quiz
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/anxiety-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        Anxiety Quiz
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/depression-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        Depression Quiz
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/stress-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        Stress Quiz
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link to="/sleep-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        Sleep Quiz
+                                    </Link>
+                                </li>
+                            </ul>
+                        </details>
                     </li>
                     <li><Link to="/journal">Journal</Link></li>
                     <li>

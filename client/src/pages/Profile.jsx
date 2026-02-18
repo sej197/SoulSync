@@ -3,6 +3,7 @@ import { User, Mail, MapPin, Calendar, Edit2, Camera } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import StreakStats from '../components/StreakStats';
 
 const Profile = () => {
     const { user } = useContext(AuthContext);
@@ -53,22 +54,18 @@ const Profile = () => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                             
                             <div className="md:col-span-2 space-y-6">
+                                <StreakStats />
+
                                 <section>
-                                    <h2 className="text-lg font-bold mb-3 font-serif border-b border-base-300 pb-2">Overview</h2>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="p-4 bg-base-200 rounded-xl">
-                                            <p className="text-sm opacity-70">Current Streak</p>
-                                            <p className="text-2xl font-bold text-primary">{user.streak || 0} Days 🔥</p>
-                                        </div>
-                                        <div className="p-4 bg-base-200 rounded-xl">
-                                            <p className="text-sm opacity-70">Risk Level</p>
-                                            <p className={`text-2xl font-bold ${user.current_risk?.level === 'LOW' ? 'text-success' :
-                                                    user.current_risk?.level === 'MODERATE' ? 'text-warning' :
-                                                        user.current_risk?.level === 'HIGH' ? 'text-error' : 'text-base-content'
-                                                }`}>
-                                                {user.current_risk?.level || 'N/A'}
-                                            </p>
-                                        </div>
+                                    <h2 className="text-lg font-bold mb-3 font-serif border-b border-base-300 pb-2">Risk Assessment</h2>
+                                    <div className="p-4 bg-base-200 rounded-xl">
+                                        <p className="text-sm opacity-70 mb-2">Current Risk Level</p>
+                                        <p className={`text-2xl font-bold ${user.current_risk?.level === 'LOW' ? 'text-success' :
+                                                user.current_risk?.level === 'MODERATE' ? 'text-warning' :
+                                                    user.current_risk?.level === 'HIGH' ? 'text-error' : 'text-base-content'
+                                            }`}>
+                                            {user.current_risk?.level || 'N/A'}
+                                        </p>
                                     </div>
                                 </section>
 

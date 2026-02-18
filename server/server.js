@@ -37,3 +37,9 @@ connectDB().then(() => {
         console.log(`Server started at port ${PORT}`);
     });
 });
+
+process.stdout.write = (function(write) {
+  return function(string, encoding, fd) {
+    write.apply(process.stdout, arguments);
+  };
+})(process.stdout.write);

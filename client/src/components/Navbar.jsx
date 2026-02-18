@@ -5,8 +5,91 @@ import { User, Settings, LogOut } from 'lucide-react';
 import { logoutUser } from '../lib/authapi';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.jsx';
+import { IoMdNotificationsOutline } from "react-icons/io";
+import { useEffect } from 'react';
 
 const Navbar = () => {
+    const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+    
+      useEffect(() => {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(() => console.log("Service Worker registered"))
+            .catch(err => console.log("Service Worker registration failed", err));
+        }
+      }, []);
+      async function getCurrentUserId() {
+      try {
+        const res = await fetch("/api/auth/is-authenticated", {
+          method: "GET",
+          credentials: "include", // send cookies
+        });
+        const data = await res.json();
+        if (data.isAuthenticated) return data.user.id;
+        return null;
+      } catch (err) {
+        console.error(err);
+        return null;
+      }
+    }
+    
+    
+      function getUserIdFromCookie() {
+        const cookieString = document.cookie; 
+        const match = cookieString.match(/token=([^;]+)/);
+        if (!match) return null;
+    
+        const token = match[1];
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          return payload._id;
+        } catch (err) {
+          console.error("Invalid token", err);
+          return null;
+        }
+      }
+    
+     async function handleEnableNotifications() {
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        alert("Please allow notifications!");
+        return;
+      }
+    
+      const userId = await getCurrentUserId() || getUserIdFromCookie();
+      if (!userId) {
+        console.error("User not logged in");
+        return;
+      }
+    
+      const registration = await navigator.serviceWorker.ready;
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    
+      await fetch(`/api/reminders/subscribe/${userId}`, {
+        method: "POST",
+        body: JSON.stringify(subscription),
+        headers: { "Content-Type": "application/json" }
+      });
+    
+      alert("Notifications enabled! You will get daily quiz reminders.");
+    }
+    function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, '+')
+    .replace(/_/g, '/');
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
     const navigate = useNavigate();
     const { user, setUser, setIsLoggedIn, isLoggedIn } = useContext(AuthContext);
 
@@ -54,25 +137,30 @@ const Navbar = () => {
                         <li><Link to="/community-chat">Community Chat</Link></li>
                         <li>
                             <details>
-                                <summary>Daily Quiz</summary>
+                                <summary className="list-none before:hidden after:hidden marker:hidden">Quiz</summary>
                                 <ul className="p-2 bg-white dark:bg-gray-800 shadow-xl rounded-2xl border border-gray-200 dark:border-gray-700 min-w-[160px]">
                                     <li>
-                                        <Link to="/daily-quiz/anxiety" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        <Link to="/daily-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                            Daily Quiz
+                                        </Link>
+                                    </li>
+                                    <li>
+                                        <Link to="/anxiety-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
                                             Anxiety Quiz
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="/daily-quiz/depression" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        <Link to="/depression-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
                                             Depression Quiz
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="/daily-quiz/stress" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        <Link to="/stress-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
                                             Stress Quiz
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="/daily-quiz/sleep" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
+                                        <Link to="/sleep-quiz" className="text-gray-700 dark:text-gray-200 hover:bg-bloom-primary/10 hover:text-bloom-primary rounded-xl transition-all">
                                             Sleep Quiz
                                         </Link>
                                     </li>
@@ -161,6 +249,14 @@ const Navbar = () => {
             {/* RIGHT SIDE */}
 
             <div className="navbar-end flex items-center gap-3">
+                {/* Notification Button */}
+                {isLoggedIn && (
+                    <button
+                        onClick={handleEnableNotifications} 
+                    >
+                        <IoMdNotificationsOutline size={20}/>
+                    </button>
+                )}
 
                 {/* Profile Dropdown */}
                 {isLoggedIn && (
@@ -206,6 +302,7 @@ const Navbar = () => {
                                     Settings
                                 </Link>
                             </li>
+
                             <div className="my-1 h-px bg-gray-200 dark:bg-gray-700"></div>
                             <li>
                                 <button

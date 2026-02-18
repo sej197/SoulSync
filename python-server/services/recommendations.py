@@ -1,22 +1,21 @@
 import json
 import os
 import sys
-from google import genai
-from google.genai import types
+import groq
 
-# Initialize client only if API key is available
-api_key = os.environ.get("GEMINI_API_KEY")
-print(f"[recommendations.py] GEMINI_API_KEY loaded: {bool(api_key)}", file=sys.stderr)
 
-try:
-    client = genai.Client(api_key=api_key) if api_key else None
-    if client:
-        print(f"[recommendations.py] Gemini client initialized successfully", file=sys.stderr)
-    else:
-        print(f"[recommendations.py] WARNING: No API key found, Gemini client will be None", file=sys.stderr)
-except Exception as e:
-    print(f"[recommendations.py] ERROR initializing Gemini client: {str(e)}", file=sys.stderr)
-    client = None
+def get_client():
+    api_key = os.environ.get("GROQ_API_KEY")
+    print(f"[recommendations.py] GROQ_API_KEY loaded: {bool(api_key)}", file=sys.stderr)
+    if not api_key:
+        raise ValueError("GROQ API key not configured. Please set GROQ_API_KEY environment variable.")
+    try:
+        client = groq.Groq(api_key=api_key)
+        print(f"[recommendations.py] GROQ client initialized successfully", file=sys.stderr)
+        return client
+    except Exception as e:
+        print(f"[recommendations.py] ERROR initializing GROQ client: {str(e)}", file=sys.stderr)
+        raise ValueError(f"Failed to initialize GROQ client: {str(e)}")
 
 
 def build_prompt(data: dict) -> str:
@@ -74,11 +73,29 @@ Respond ONLY with valid JSON in this exact format (no markdown, no extra text, n
   "coping_steps": ["step 1 with specific detail", "step 2 with specific detail"]
 }}"""
 
-
 def get_recommendations(data: dict) -> dict:
-    if not client:
-        raise ValueError("Gemini API key not configured. Please set GEMINI_API_KEY environment variable.")
-    
+    client = get_client()
+    prompt = build_prompt(data)
+
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",  
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+        max_tokens=500,
+    )
+
+    raw = response.choices[0].message.content.strip()
+
+    if raw.startswith("```"):
+        lines = raw.split("\n")
+        raw = "\n".join(line for line in lines if not line.strip().startswith("```")).strip()
+
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"LLM returned invalid JSON: {e}\nRaw: {raw}")
+    client = get_client()
+
     prompt = build_prompt(data)
 
     response = client.models.generate_content(
@@ -86,8 +103,8 @@ def get_recommendations(data: dict) -> dict:
         contents=prompt,
         config=types.GenerateContentConfig(
             temperature=0.7,
-            max_output_tokens=600,
-        ),
+            max_output_tokens=500,  # increase this, 250 was too low
+        )
     )
 
     raw = response.text.strip()
@@ -100,4 +117,8 @@ def get_recommendations(data: dict) -> dict:
             if not line.strip().startswith("```")
         ).strip()
 
-    return json.loads(raw)
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError as e:
+        print(f"[recommendations.py] JSON parse error: {e}\nRaw response: {raw}", file=sys.stderr)
+        raise ValueError(f"Gemini returned invalid JSON: {e}\nRaw response: {raw}")

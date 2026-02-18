@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Optional
 from services.recommendations import get_recommendations
-
+import traceback
 router = APIRouter()
 
 
@@ -20,4 +20,6 @@ async def recommendations(body: RecommendationRequest):
         result = get_recommendations(body.dict())
         return result
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
+    

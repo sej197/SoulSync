@@ -7,6 +7,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { useEffect } from 'react';
+import StreakIndicator from './StreakIndicator';
 
 const Navbar = () => {
     const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
@@ -249,6 +250,11 @@ const Navbar = () => {
             {/* RIGHT SIDE */}
 
             <div className="navbar-end flex items-center gap-3">
+                {/* Streak Indicator */}
+                {isLoggedIn && (
+                    <StreakIndicator />
+                )}
+
                 {/* Notification Button */}
                 {isLoggedIn && (
                     <button

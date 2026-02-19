@@ -3,29 +3,25 @@ import RiskScore from "../models/RiskScore.js";
 import DailyQuiz from "../models/DailyQuiz.js";
 import { setCache, getCache, cacheKeys } from "../utils/cacheUtils.js";
 
-// ─── HELPLINE RESOURCES ──────────────────────────────────────────────────────
-// Update HELPLINE.page to your actual frontend helplines page route
 const HELPLINE = {
   page: "/support/helplines",
   resources: [
-    { name: "iCall (India)",           number: "9152987821",    available: "Mon–Sat, 8am–10pm" },
-    { name: "Vandrevala Foundation",   number: "1860-2662-345", available: "24/7" },
-    { name: "AASRA",                   number: "9820466627",    available: "24/7" },
+    { name: "iCall (India)", number: "9152987821", available: "Mon–Sat, 8am–10pm" },
+    { name: "Vandrevala Foundation", number: "1860-2662-345", available: "24/7" },
+    { name: "AASRA", number: "9820466627", available: "24/7" },
   ],
 };
 
-// Update these to your actual frontend quiz routes
 const QUIZ_ROUTES = {
   depression: "/quiz/depression",
-  anxiety:    "/quiz/anxiety",
-  stress:     "/quiz/stress",
-  sleep:      "/quiz/sleep",
+  anxiety: "/quiz/anxiety",
+  stress: "/quiz/stress",
+  sleep: "/quiz/sleep",
 };
 
-// ─── DECAY ───────────────────────────────────────────────────────────────────
 const calculateDecayRate = (daysOld) => {
-  if (daysOld <= 7)  return 1.0;
-  if (daysOld > 14)  return 0.0;
+  if (daysOld <= 7) return 1.0;
+  if (daysOld > 14) return 0.0;
   return 1 - (daysOld - 7) / 7;
 };
 
@@ -42,17 +38,17 @@ const calculateProxyFromDailyQuiz = (dailyQuizScores) => {
 
   const {
     mentalHealthScore = 0,
-    stressScore       = 0,
-    sleepScore        = 0,
-    socialScore       = 0,
-    reflectionScore   = 0,
+    stressScore = 0,
+    sleepScore = 0,
+    socialScore = 0,
+    reflectionScore = 0,
   } = dailyQuizScores;
 
   return {
-    stress:     stressScore,
-    sleep:      sleepScore,
+    stress: stressScore,
+    sleep: sleepScore,
     depression: (1 - mentalHealthScore) * 0.5 + (1 - socialScore) * 0.3 + (1 - reflectionScore) * 0.2,
-    anxiety:    (1 - socialScore) * 0.4 + stressScore * 0.4 + (1 - reflectionScore) * 0.2,
+    anxiety: (1 - socialScore) * 0.4 + stressScore * 0.4 + (1 - reflectionScore) * 0.2,
   };
 };
 
@@ -70,12 +66,12 @@ const getClinicalScore = async (userId, quizType, today, proxyScores) => {
   }
 
   const quizDate = new Date(recentQuiz.date).toISOString().split("T")[0];
-  const daysOld  = getDaysDifference(quizDate, today);
+  const daysOld = getDaysDifference(quizDate, today);
 
   if (daysOld <= 14) {
     return {
       score: recentQuiz.finalScore * calculateDecayRate(daysOld),
-      date:  quizDate,
+      date: quizDate,
     };
   }
 
@@ -113,8 +109,8 @@ const getTopFactors = (scores) => {
 // ─── DISENGAGEMENT SCORE ─────────────────────────────────────────────────────
 const calculateDisengagementScore = (daysSinceCheckin, lastKnownScore) => {
   if (daysSinceCheckin === 0) return 0;
-  const basePenalty    = Math.min(daysSinceCheckin * 0.08, 0.6);
-  const riskAmplifier  = lastKnownScore ? 1 + lastKnownScore : 1;
+  const basePenalty = Math.min(daysSinceCheckin * 0.08, 0.6);
+  const riskAmplifier = lastKnownScore ? 1 + lastKnownScore : 1;
   return Math.min(basePenalty * riskAmplifier, 1.0);
 };
 
@@ -124,16 +120,16 @@ const calculateBaseline = async (userId, today) => {
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
   const history = await RiskScore.find({
-    user:          userId,
-    date:          { $gte: thirtyDaysAgo.toISOString().split("T")[0], $lt: today },
+    user: userId,
+    date: { $gte: thirtyDaysAgo.toISOString().split("T")[0], $lt: today },
     overall_score: { $ne: null },
-    is_imputed:    { $ne: true },
+    is_imputed: { $ne: true },
   }).select("overall_score");
 
   if (history.length < 10) return { baseline_score: null, std_dev: null };
 
-  const vals     = history.map((r) => r.overall_score);
-  const mean     = vals.reduce((s, v) => s + v, 0) / vals.length;
+  const vals = history.map((r) => r.overall_score);
+  const mean = vals.reduce((s, v) => s + v, 0) / vals.length;
   const variance = vals.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / vals.length;
 
   return { baseline_score: parseFloat(mean.toFixed(4)), std_dev: Math.sqrt(variance) };
@@ -144,8 +140,8 @@ const getConsecutiveHighRiskDays = async (userId, today, currentLevel) => {
   if (currentLevel !== "HIGH" && currentLevel !== "CRITICAL") return 0;
 
   const recent = await RiskScore.find({
-    user:       userId,
-    date:       { $lt: today },
+    user: userId,
+    date: { $lt: today },
     risk_level: { $in: ["HIGH", "CRITICAL"] },
   })
     .sort({ date: -1 })
@@ -166,9 +162,9 @@ const getQuizSuggestions = (scores, riskLevel) => {
 
   const cfg = [
     { key: "depression_quiz_score", threshold: 0.55, quiz: "depression", label: "Depression Assessment (PHQ-9)" },
-    { key: "anxiety_quiz_score",    threshold: 0.50, quiz: "anxiety",    label: "Anxiety Assessment (GAD-7)" },
-    { key: "stress_quiz_score",     threshold: 0.55, quiz: "stress",     label: "Stress Assessment (PSS)" },
-    { key: "sleep_quiz_score",      threshold: 0.50, quiz: "sleep",      label: "Sleep Quality Assessment" },
+    { key: "anxiety_quiz_score", threshold: 0.50, quiz: "anxiety", label: "Anxiety Assessment (GAD-7)" },
+    { key: "stress_quiz_score", threshold: 0.55, quiz: "stress", label: "Stress Assessment (PSS)" },
+    { key: "sleep_quiz_score", threshold: 0.50, quiz: "sleep", label: "Sleep Quality Assessment" },
   ];
 
   return cfg
@@ -179,9 +175,9 @@ const getQuizSuggestions = (scores, riskLevel) => {
     .map(({ key, quiz, label, threshold }) => ({
       quiz_type: quiz,
       label,
-      reason:    `Your ${quiz} indicators are elevated`,
-      route:     QUIZ_ROUTES[quiz],
-      priority:  scores[key] >= 0.7 ? "high" : "medium",
+      reason: `Your ${quiz} indicators are elevated`,
+      route: QUIZ_ROUTES[quiz],
+      priority: scores[key] >= 0.7 ? "high" : "medium",
     }))
     .sort((a, b) => (a.priority === "high" && b.priority !== "high" ? -1 : 1));
 };
@@ -189,27 +185,27 @@ const getQuizSuggestions = (scores, riskLevel) => {
 // ─── CLINICAL ASSISTANCE NUDGE ───────────────────────────────────────────────
 const getClinicalAssistance = (riskLevel, consecutiveHighRiskDays, alerts) => {
   const hasCritical = alerts.some((a) => a.severity === "critical");
-  const hasHigh     = alerts.some((a) => a.severity === "high");
+  const hasHigh = alerts.some((a) => a.severity === "high");
 
   if (riskLevel === "CRITICAL" || consecutiveHighRiskDays >= 3 || hasCritical) {
     return {
-      show:          true,
-      urgency:       "critical",
-      message:       "Your mental health scores suggest you may benefit from speaking with a professional. You don't have to face this alone — reaching out is a sign of strength.",
-      cta:           "View helplines & support resources",
+      show: true,
+      urgency: "critical",
+      message: "Your mental health scores suggest you may benefit from speaking with a professional. You don't have to face this alone — reaching out is a sign of strength.",
+      cta: "View helplines & support resources",
       helpline_page: HELPLINE.page,
-      helplines:     HELPLINE.resources,
+      helplines: HELPLINE.resources,
     };
   }
 
   if (riskLevel === "HIGH" || consecutiveHighRiskDays >= 2 || hasHigh) {
     return {
-      show:          true,
-      urgency:       "high",
-      message:       "We've noticed some concerning patterns in your check-ins. Consider talking to someone — a counselor or a trusted person can make a real difference.",
-      cta:           "Find support near you",
+      show: true,
+      urgency: "high",
+      message: "We've noticed some concerning patterns in your check-ins. Consider talking to someone — a counselor or a trusted person can make a real difference.",
+      cta: "Find support near you",
       helpline_page: HELPLINE.page,
-      helplines:     HELPLINE.resources,
+      helplines: HELPLINE.resources,
     };
   }
 
@@ -220,9 +216,9 @@ const getClinicalAssistance = (riskLevel, consecutiveHighRiskDays, alerts) => {
 const getLLMResult = async (payload) => {
   try {
     const res = await fetch(`${process.env.PYTHON_SERVER}/api/recommendations`, {
-      method:  "POST",
+      method: "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify(payload),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(`FastAPI ${res.status}`);
     console.log("LLM response received for risk context:", payload);
@@ -233,7 +229,7 @@ const getLLMResult = async (payload) => {
     const staticSteps = getStaticRecommendations(payload.top_factors);
     return {
       motivational_message: getStaticMotivationalMessage(payload.risk_level),
-      coping_steps:         staticSteps.length > 0 ? staticSteps : ["Take a moment to breathe deeply", "Check in with a trusted friend or counselor"],
+      coping_steps: staticSteps.length > 0 ? staticSteps : ["Take a moment to breathe deeply", "Check in with a trusted friend or counselor"],
     };
   }
 };
@@ -241,9 +237,9 @@ const getLLMResult = async (payload) => {
 const getStaticMotivationalMessage = (riskLevel) => {
   const messages = {
     CRITICAL: "Your wellbeing matters. Please reach out to a mental health professional or crisis hotline for immediate support.",
-    HIGH:     "You're facing a challenging time, but you're not alone. Take it one step at a time.",
+    HIGH: "You're facing a challenging time, but you're not alone. Take it one step at a time.",
     MODERATE: "You're actively checking in on yourself — that's a positive step. Keep taking care.",
-    LOW:      "Great job maintaining your wellbeing! Keep up these positive habits.",
+    LOW: "Great job maintaining your wellbeing! Keep up these positive habits.",
   };
   return messages[riskLevel] || "Remember to prioritize your mental health and reach out if you need support.";
 };
@@ -264,45 +260,45 @@ const getStaticRecommendations = (factors = []) => {
 // ─── INSIGHTS + ALERTS ───────────────────────────────────────────────────────
 const generateInsights = (velocity, volatility, currentScore, previousScore, riskLevel) => {
   const insights = [];
-  const alerts   = [];
-  const vp       = velocity * 100; // velocity percent
+  const alerts = [];
+  const vp = velocity * 100; // velocity percent
 
   // Velocity-based
   if (vp > 7) {
-    alerts.push({ type: "URGENT",   severity: "high",   message: "⚠️ Rapid deterioration detected",  detail: `Declining by ${vp.toFixed(1)} pts/day. Immediate attention recommended.`,          action: "Take a comprehensive mental health assessment now" });
+    alerts.push({ type: "URGENT", severity: "high", message: "⚠️ Rapid deterioration detected", detail: `Declining by ${vp.toFixed(1)} pts/day. Immediate attention recommended.`, action: "Take a comprehensive mental health assessment now" });
   } else if (vp > 3) {
-    alerts.push({ type: "WARNING",  severity: "medium", message: "📉 Declining trend detected",       detail: `Scores worsening over the past week (+${vp.toFixed(1)} pts/day).`,                action: "Consider taking a depression or anxiety assessment" });
+    alerts.push({ type: "WARNING", severity: "medium", message: "📉 Declining trend detected", detail: `Scores worsening over the past week (+${vp.toFixed(1)} pts/day).`, action: "Consider taking a depression or anxiety assessment" });
   } else if (vp < -7) {
     insights.push({ type: "POSITIVE", message: "✅ Significant improvement", detail: `Improving rapidly (-${Math.abs(vp).toFixed(1)} pts/day). Keep it up!` });
   } else if (vp < -3) {
-    insights.push({ type: "POSITIVE", message: "📈 Steady improvement",      detail: "Scores are getting better. Continue your current wellness practices." });
+    insights.push({ type: "POSITIVE", message: "📈 Steady improvement", detail: "Scores are getting better. Continue your current wellness practices." });
   } else {
-    insights.push({ type: "INFO",     message: "➡️ Stable pattern",          detail: "Your wellness scores are relatively consistent this week." });
+    insights.push({ type: "INFO", message: "➡️ Stable pattern", detail: "Your wellness scores are relatively consistent this week." });
   }
 
   // Volatility-based
   if (volatility > 35) {
-    alerts.push({ type: "ATTENTION",    severity: "medium", message: "🎭 High mood instability",       detail: `Scores vary by ${volatility.toFixed(1)}% day-to-day — possible mood swings.`, action: "Consider a mood disorder screening" });
+    alerts.push({ type: "ATTENTION", severity: "medium", message: "🎭 High mood instability", detail: `Scores vary by ${volatility.toFixed(1)}% day-to-day — possible mood swings.`, action: "Consider a mood disorder screening" });
   } else if (volatility > 20) {
-    insights.push({ type: "INFO",       message: "📊 Moderate mood fluctuation", detail: `Daily scores vary ${volatility.toFixed(1)}%. Normal but worth monitoring.` });
+    insights.push({ type: "INFO", message: "📊 Moderate mood fluctuation", detail: `Daily scores vary ${volatility.toFixed(1)}%. Normal but worth monitoring.` });
   } else {
-    insights.push({ type: "POSITIVE",   message: "🎯 Stable mood pattern",       detail: "Consistent scores — good emotional stability." });
+    insights.push({ type: "POSITIVE", message: "🎯 Stable mood pattern", detail: "Consistent scores — good emotional stability." });
   }
 
   // Combination rules
   if (vp > 5 && currentScore >= 0.6) {
-    alerts.push({ type: "CRITICAL",        severity: "critical", message: "🚨 CRITICAL: High risk + worsening trend",   detail: `Score ${(currentScore * 100).toFixed(2)} (${riskLevel}) rapidly increasing.`, action: "Contact a mental health professional or crisis hotline" });
+    alerts.push({ type: "CRITICAL", severity: "critical", message: "🚨 CRITICAL: High risk + worsening trend", detail: `Score ${(currentScore * 100).toFixed(2)} (${riskLevel}) rapidly increasing.`, action: "Contact a mental health professional or crisis hotline" });
   } else if (vp > 3 && currentScore >= 0.5 && volatility > 25) {
-    alerts.push({ type: "URGENT",          severity: "high",     message: "⚠️ Multiple risk factors",                   detail: "Declining scores with unstable mood patterns.",                              action: "Schedule a check-in with a counselor" });
+    alerts.push({ type: "URGENT", severity: "high", message: "⚠️ Multiple risk factors", detail: "Declining scores with unstable mood patterns.", action: "Schedule a check-in with a counselor" });
   }
   if (vp > 4 && currentScore < 0.6) {
-    alerts.push({ type: "EARLY_WARNING",   severity: "medium",   message: "💡 Early warning",                           detail: `Score ${(currentScore * 100).toFixed(2)} is moderate but rising fast.`,    action: "Take stress/anxiety quiz now" });
+    alerts.push({ type: "EARLY_WARNING", severity: "medium", message: "💡 Early warning", detail: `Score ${(currentScore * 100).toFixed(2)} is moderate but rising fast.`, action: "Take stress/anxiety quiz now" });
   }
   if (previousScore >= 0.65 && currentScore < 0.5 && vp < -2) {
-    insights.push({ type: "RECOVERY",      message: "🌱 Recovery progress",  detail: "Moving away from high-risk levels. Excellent progress!",       action: "Continue current interventions" });
+    insights.push({ type: "RECOVERY", message: "🌱 Recovery progress", detail: "Moving away from high-risk levels. Excellent progress!", action: "Continue current interventions" });
   }
   if (previousScore < 0.45 && currentScore >= 0.55 && vp > 3) {
-    alerts.push({ type: "RELAPSE_WARNING", severity: "medium",   message: "⚠️ Possible relapse pattern", detail: "After improvement, scores are rising again.", action: "Review what changed — stress, sleep, medication" });
+    alerts.push({ type: "RELAPSE_WARNING", severity: "medium", message: "⚠️ Possible relapse pattern", detail: "After improvement, scores are rising again.", action: "Review what changed — stress, sleep, medication" });
   }
 
   return { insights, alerts };
@@ -316,11 +312,11 @@ export const calculateOverallRisk = async (req, res) => {
   try {
     const { userId } = req.params;
     const today = new Date().toISOString().split("T")[0];
-    
+
     console.log("🔍 [calculateOverallRisk] Called for userId:", userId, "date:", today);
 
     const cacheKey = cacheKeys.riskDaily(userId, today);
-    const cached   = await getCache(cacheKey);
+    const cached = await getCache(cacheKey);
     if (cached) {
       console.log("✅ [calculateOverallRisk] Cache HIT - returning cached data");
       return res.json(cached);
@@ -330,7 +326,7 @@ export const calculateOverallRisk = async (req, res) => {
     let todayRisk = await RiskScore.findOne({ user: userId, date: today });
     if (!todayRisk) todayRisk = new RiskScore({ user: userId, date: today });
 
-    const previous      = await RiskScore.findOne({ user: userId, date: { $lt: today } }).sort({ date: -1 });
+    const previous = await RiskScore.findOne({ user: userId, date: { $lt: today } }).sort({ date: -1 });
     const previousScore = previous?.overall_score ?? null;
 
     // ── Daily quiz ──
@@ -339,24 +335,24 @@ export const calculateOverallRisk = async (req, res) => {
       quizType: "daily",
       date: {
         $gte: new Date(today),
-        $lt:  new Date(new Date(today).setDate(new Date(today).getDate() + 1)),
+        $lt: new Date(new Date(today).setDate(new Date(today).getDate() + 1)),
       },
     });
 
     const userCheckedInToday = !!todayDailyQuiz;
-    const proxyScores        = calculateProxyFromDailyQuiz(todayDailyQuiz?.scores ?? null);
+    const proxyScores = calculateProxyFromDailyQuiz(todayDailyQuiz?.scores ?? null);
 
     // ── Clinical scores (parallel) ──
     const [depressionData, anxietyData, stressData, sleepData] = await Promise.all([
       getClinicalScore(userId, "depression", today, proxyScores),
-      getClinicalScore(userId, "anxiety",    today, proxyScores),
-      getClinicalScore(userId, "stress",     today, proxyScores),
-      getClinicalScore(userId, "sleep",      today, proxyScores),
+      getClinicalScore(userId, "anxiety", today, proxyScores),
+      getClinicalScore(userId, "stress", today, proxyScores),
+      getClinicalScore(userId, "sleep", today, proxyScores),
     ]);
 
     // ── Disengagement ──
-    const lastCheckinDate   = previous?.last_checkin_date ?? previous?.date ?? null;
-    const daysSinceCheckin  = userCheckedInToday ? 0
+    const lastCheckinDate = previous?.last_checkin_date ?? previous?.date ?? null;
+    const daysSinceCheckin = userCheckedInToday ? 0
       : lastCheckinDate ? getDaysDifference(lastCheckinDate, today) : 0;
     const disengagementScore = calculateDisengagementScore(daysSinceCheckin, previousScore);
 
@@ -365,14 +361,14 @@ export const calculateOverallRisk = async (req, res) => {
     // 0     = measured zero   → included in weighted sum
     const scores = {
       depression_quiz_score: depressionData.score,
-      anxiety_quiz_score:    anxietyData.score,
-      stress_quiz_score:     stressData.score,
-      sleep_quiz_score:      sleepData.score,
-      journal_score:         todayRisk.journal_score  ?? null,
-      chatbot_score:         todayRisk.chatbot_score  ?? null,
-      quiz_score:            todayDailyQuiz?.finalScore ?? todayRisk.quiz_score ?? null,
-      community_score:       todayRisk.community_score != null ? 1 - todayRisk.community_score : null,
-      disengagement_score:   disengagementScore,
+      anxiety_quiz_score: anxietyData.score,
+      stress_quiz_score: stressData.score,
+      sleep_quiz_score: sleepData.score,
+      journal_score: todayRisk.journal_score ?? null,
+      chatbot_score: todayRisk.chatbot_score ?? null,
+      quiz_score: todayDailyQuiz?.finalScore ?? todayRisk.quiz_score ?? null,
+      community_score: todayRisk.community_score != null ? 1 - todayRisk.community_score : null,
+      disengagement_score: disengagementScore,
     };
 
     // ── Normalised weighted average (null excluded, 0 included) ──
@@ -385,13 +381,13 @@ export const calculateOverallRisk = async (req, res) => {
     }
     const overallScore = totalWeight > 0 ? weightedSum / totalWeight : 0;
 
-    const riskLevel  = getRiskLevel(overallScore);
-    const trend      = getTrend(overallScore, previousScore);
+    const riskLevel = getRiskLevel(overallScore);
+    const trend = getTrend(overallScore, previousScore);
     const topFactors = getTopFactors(scores);
 
     // ── Personal baseline ──
     const { baseline_score, std_dev } = await calculateBaseline(userId, today);
-    const baseline_deviation  = baseline_score !== null
+    const baseline_deviation = baseline_score !== null
       ? parseFloat((overallScore - baseline_score).toFixed(4)) : null;
     const isAbovePersonalBaseline =
       baseline_deviation !== null && std_dev !== null && baseline_deviation > 1.5 * std_dev;
@@ -401,8 +397,8 @@ export const calculateOverallRisk = async (req, res) => {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
     const recentScores = await RiskScore.find({
-      user:          userId,
-      date:          { $gte: sevenDaysAgo.toISOString().split("T")[0], $lte: today },
+      user: userId,
+      date: { $gte: sevenDaysAgo.toISOString().split("T")[0], $lte: today },
       overall_score: { $ne: null },
     }).sort({ date: 1 });
 
@@ -418,11 +414,11 @@ export const calculateOverallRisk = async (req, res) => {
       }
       velocity = totalDailyRate / pairs;
 
-      const vals     = recentScores.map((r) => r.overall_score);
+      const vals = recentScores.map((r) => r.overall_score);
       velocityDataPoints = vals.length;
-      const mean     = vals.reduce((s, v) => s + v, 0) / vals.length;
+      const mean = vals.reduce((s, v) => s + v, 0) / vals.length;
       const variance = vals.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / vals.length;
-      volatility     = mean > 0 ? (Math.sqrt(variance) / mean) * 100 : 0;
+      volatility = mean > 0 ? (Math.sqrt(variance) / mean) * 100 : 0;
     }
 
     // ── Consecutive high risk days ──
@@ -433,11 +429,11 @@ export const calculateOverallRisk = async (req, res) => {
 
     if (daysSinceCheckin >= 3) {
       alerts.push({
-        type:     "DISENGAGEMENT",
+        type: "DISENGAGEMENT",
         severity: daysSinceCheckin >= 5 ? "high" : "medium",
-        message:  `📵 ${daysSinceCheckin} days without a check-in`,
-        detail:   "We miss you. Even a quick check-in helps us support you better.",
-        action:   "Complete a quick mood check today",
+        message: `📵 ${daysSinceCheckin} days without a check-in`,
+        detail: "We miss you. Even a quick check-in helps us support you better.",
+        action: "Complete a quick mood check today",
       });
     }
 
@@ -445,39 +441,39 @@ export const calculateOverallRisk = async (req, res) => {
       alerts.push({
         type: "ABOVE_BASELINE", severity: "medium",
         message: "📊 Higher than your usual",
-        detail:  "Today's score is notably above your personal average.",
-        action:  "Reflect on what's been different lately",
+        detail: "Today's score is notably above your personal average.",
+        action: "Reflect on what's been different lately",
       });
     }
 
     if (consecutiveHighRiskDays >= 2) {
       alerts.push({
-        type:     "PERSISTENT_HIGH_RISK",
+        type: "PERSISTENT_HIGH_RISK",
         severity: consecutiveHighRiskDays >= 3 ? "high" : "medium",
-        message:  `🔴 ${consecutiveHighRiskDays} consecutive high-risk days`,
-        detail:   `You've been in a high-risk zone for ${consecutiveHighRiskDays} days in a row.`,
-        action:   consecutiveHighRiskDays >= 3
+        message: `🔴 ${consecutiveHighRiskDays} consecutive high-risk days`,
+        detail: `You've been in a high-risk zone for ${consecutiveHighRiskDays} days in a row.`,
+        action: consecutiveHighRiskDays >= 3
           ? "Please consider reaching out to a mental health professional"
           : "Take a clinical assessment to understand what's driving this",
       });
     }
 
     // ── Quiz suggestions + clinical assistance ──
-    const quizSuggestions   = getQuizSuggestions(scores, riskLevel);
+    const quizSuggestions = getQuizSuggestions(scores, riskLevel);
     const clinicalAssistance = getClinicalAssistance(riskLevel, consecutiveHighRiskDays, alerts);
 
     // ── LLM (cached 24h by risk context) ──
     const llmCacheKey = `llm:${riskLevel}:${trend}:${topFactors.join(",")}`;
-    let llmResult     = await getCache(llmCacheKey);
+    let llmResult = await getCache(llmCacheKey);
     console.log("📊 LLM cache lookup for key:", llmCacheKey, "Result:", llmResult ? "HIT" : "MISS");
     console.log("📊 llm result object:", llmResult);
     if (!llmResult) {
       console.log("🤖 [LLM] Calling getLLMResult with:", { riskLevel, trend, topFactors, daysSinceCheckin, consecutiveHighRiskDays });
       llmResult = await getLLMResult({
-        risk_level:                 riskLevel,
+        risk_level: riskLevel,
         trend,
-        top_factors:                topFactors,
-        days_since_checkin:         daysSinceCheckin,
+        top_factors: topFactors,
+        days_since_checkin: daysSinceCheckin,
         consecutive_high_risk_days: consecutiveHighRiskDays,
       });
       console.log("🤖 [LLM] Got response:", llmResult);
@@ -495,53 +491,53 @@ export const calculateOverallRisk = async (req, res) => {
       { user: userId, date: today },
       {
         depression_quiz_score: depressionData.score,
-        depression_quiz_date:  depressionData.date,
-        anxiety_quiz_score:    anxietyData.score,
-        anxiety_quiz_date:     anxietyData.date,
-        stress_quiz_score:     stressData.score,
-        stress_quiz_date:      stressData.date,
-        sleep_quiz_score:      sleepData.score,
-        sleep_quiz_date:       sleepData.date,
-        journal_score:         todayRisk.journal_score,
-        chatbot_score:         todayRisk.chatbot_score,
-        quiz_score:            scores.quiz_score,
-        community_score:       todayRisk.community_score,
-        overall_score:         overallScore,
-        risk_level:            riskLevel,
-        top_factors:           topFactors,
-        previous_score:        previousScore,
+        depression_quiz_date: depressionData.date,
+        anxiety_quiz_score: anxietyData.score,
+        anxiety_quiz_date: anxietyData.date,
+        stress_quiz_score: stressData.score,
+        stress_quiz_date: stressData.date,
+        sleep_quiz_score: sleepData.score,
+        sleep_quiz_date: sleepData.date,
+        journal_score: todayRisk.journal_score,
+        chatbot_score: todayRisk.chatbot_score,
+        quiz_score: scores.quiz_score,
+        community_score: todayRisk.community_score,
+        overall_score: overallScore,
+        risk_level: riskLevel,
+        top_factors: topFactors,
+        previous_score: previousScore,
         trend,
-        days_since_checkin:    daysSinceCheckin,
-        last_checkin_date:     userCheckedInToday ? today : (lastCheckinDate ?? null),
-        is_imputed:            !userCheckedInToday,
-        disengagement_score:   disengagementScore,
+        days_since_checkin: daysSinceCheckin,
+        last_checkin_date: userCheckedInToday ? today : (lastCheckinDate ?? null),
+        is_imputed: !userCheckedInToday,
+        disengagement_score: disengagementScore,
         baseline_score,
         baseline_deviation,
-        velocity_data_points:  velocityDataPoints,
+        velocity_data_points: velocityDataPoints,
       },
       { upsert: true, new: true }
     );
 
     const response = {
       daily: {
-        score:                parseFloat((overallScore * 100).toFixed(2)),
-        level:                riskLevel,
+        score: parseFloat((overallScore * 100).toFixed(2)),
+        level: riskLevel,
         trend,
-        top_factors:          topFactors,
+        top_factors: topFactors,
         motivational_message: llmResult.motivational_message,
-        recommendations:      llmResult.coping_steps,
+        recommendations: llmResult.coping_steps,
       },
       insights,
       alerts,
-      quiz_suggestions:    quizSuggestions,
+      quiz_suggestions: quizSuggestions,
       clinical_assistance: clinicalAssistance,
       pattern_analysis: {
-        velocity_interpretation:    velocity > 0 ? "Worsening" : velocity < 0 ? "Improving" : "Stable",
-        velocity_reliable:          velocityDataPoints >= 4,
-        mood_stability:             volatility > 30 ? "Unstable" : volatility > 20 ? "Moderate" : "Stable",
-        above_personal_baseline:    isAbovePersonalBaseline,
+        velocity_interpretation: velocity > 0 ? "Worsening" : velocity < 0 ? "Improving" : "Stable",
+        velocity_reliable: velocityDataPoints >= 4,
+        mood_stability: volatility > 30 ? "Unstable" : volatility > 20 ? "Moderate" : "Stable",
+        above_personal_baseline: isAbovePersonalBaseline,
         consecutive_high_risk_days: consecutiveHighRiskDays,
-        early_intervention_needed:  alerts.some((a) => a.severity === "high" || a.severity === "critical"),
+        early_intervention_needed: alerts.some((a) => a.severity === "high" || a.severity === "critical"),
       },
     };
 
@@ -560,11 +556,11 @@ export const calculateOverallRisk = async (req, res) => {
 export const weeklyInsights = async (req, res) => {
   try {
     const { userId } = req.params;
-    const cacheKey   = cacheKeys.riskWeekly(userId);
-    const cached     = await getCache(cacheKey);
+    const cacheKey = cacheKeys.riskWeekly(userId);
+    const cached = await getCache(cacheKey);
     if (cached) return res.json(cached);
 
-    const today       = new Date();
+    const today = new Date();
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(today.getDate() - 7);
 
@@ -579,7 +575,7 @@ export const weeklyInsights = async (req, res) => {
       return res.status(404).json({ message: "No data available for the past week" });
 
     const totalDays = dailyScores.length;
-    const avgScore  = dailyScores.reduce((s, d) => s + (d.overall_score || 0), 0) / totalDays;
+    const avgScore = dailyScores.reduce((s, d) => s + (d.overall_score || 0), 0) / totalDays;
 
     // Linear regression trend (more accurate than first-vs-last)
     let trend = "stable";
@@ -591,23 +587,23 @@ export const weeklyInsights = async (req, res) => {
         den += Math.pow(i - xMean, 2);
       });
       const slope = den !== 0 ? num / den : 0;
-      if (slope > 0.01)       trend = "declining";
+      if (slope > 0.01) trend = "declining";
       else if (slope < -0.01) trend = "improving";
     }
 
     const chartData = dailyScores.map((d) => ({
-      date:       d.date,
-      overall:    parseFloat(((d.overall_score || 0) * 100).toFixed(2)),
+      date: d.date,
+      overall: parseFloat(((d.overall_score || 0) * 100).toFixed(2)),
       depression: parseFloat(((d.depression_quiz_score || 0) * 100).toFixed(2)),
-      anxiety:    parseFloat(((d.anxiety_quiz_score || 0) * 100).toFixed(2)),
-      stress:     parseFloat(((d.stress_quiz_score || 0) * 100).toFixed(2)),
-      sleep:      parseFloat(((d.sleep_quiz_score || 0) * 100).toFixed(2)),
-      level:      d.risk_level,
+      anxiety: parseFloat(((d.anxiety_quiz_score || 0) * 100).toFixed(2)),
+      stress: parseFloat(((d.stress_quiz_score || 0) * 100).toFixed(2)),
+      sleep: parseFloat(((d.sleep_quiz_score || 0) * 100).toFixed(2)),
+      level: d.risk_level,
       is_imputed: d.is_imputed ?? false,
     }));
 
     const response = {
-      summary:    { avg_score: parseFloat((avgScore * 100).toFixed(2)), trend, days_tracked: totalDays },
+      summary: { avg_score: parseFloat((avgScore * 100).toFixed(2)), trend, days_tracked: totalDays },
       chart_data: chartData,
     };
 
@@ -626,11 +622,11 @@ export const weeklyInsights = async (req, res) => {
 export const monthlyInsights = async (req, res) => {
   try {
     const { userId } = req.params;
-    const cacheKey   = cacheKeys.riskMonthly(userId);
-    const cached     = await getCache(cacheKey);
+    const cacheKey = cacheKeys.riskMonthly(userId);
+    const cached = await getCache(cacheKey);
     if (cached) return res.json(cached);
 
-    const today        = new Date();
+    const today = new Date();
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(today.getDate() - 30);
 
@@ -645,25 +641,25 @@ export const monthlyInsights = async (req, res) => {
       return res.status(404).json({ message: "No data available for the past month" });
 
     const totalDays = monthlyScores.length;
-    const avgScore  = monthlyScores.reduce((s, d) => s + (d.overall_score || 0), 0) / totalDays;
+    const avgScore = monthlyScores.reduce((s, d) => s + (d.overall_score || 0), 0) / totalDays;
 
     const weeklyData = [];
     for (let i = 0; i < monthlyScores.length; i += 7) {
-      const week    = monthlyScores.slice(i, i + 7);
+      const week = monthlyScores.slice(i, i + 7);
       const weekAvg = week.reduce((s, d) => s + (d.overall_score || 0), 0) / week.length;
       weeklyData.push({
-        week:       Math.floor(i / 7) + 1,
-        avg_score:  parseFloat((weekAvg * 100).toFixed(2)),
+        week: Math.floor(i / 7) + 1,
+        avg_score: parseFloat((weekAvg * 100).toFixed(2)),
         start_date: week[0].date,
-        end_date:   week[week.length - 1].date,
+        end_date: week[week.length - 1].date,
       });
     }
 
     let trend = "stable";
     if (totalDays >= 2) {
       const first = monthlyScores[0].overall_score;
-      const last  = monthlyScores[totalDays - 1].overall_score;
-      if (last < first - 0.1)      trend = "improving";
+      const last = monthlyScores[totalDays - 1].overall_score;
+      if (last < first - 0.1) trend = "improving";
       else if (last > first + 0.1) trend = "declining";
     }
 
@@ -671,24 +667,24 @@ export const monthlyInsights = async (req, res) => {
     const realCheckins = monthlyScores.filter((d) => !d.is_imputed).length;
 
     const chartData = monthlyScores.map((d) => ({
-      date:       d.date,
-      overall:    parseFloat(((d.overall_score || 0) * 100).toFixed(2)),
+      date: d.date,
+      overall: parseFloat(((d.overall_score || 0) * 100).toFixed(2)),
       depression: parseFloat(((d.depression_quiz_score || 0) * 100).toFixed(2)),
-      anxiety:    parseFloat(((d.anxiety_quiz_score || 0) * 100).toFixed(2)),
-      stress:     parseFloat(((d.stress_quiz_score || 0) * 100).toFixed(2)),
-      sleep:      parseFloat(((d.sleep_quiz_score || 0) * 100).toFixed(2)),
+      anxiety: parseFloat(((d.anxiety_quiz_score || 0) * 100).toFixed(2)),
+      stress: parseFloat(((d.stress_quiz_score || 0) * 100).toFixed(2)),
+      sleep: parseFloat(((d.sleep_quiz_score || 0) * 100).toFixed(2)),
       is_imputed: d.is_imputed ?? false,
     }));
 
     const response = {
       summary: {
-        avg_score:   parseFloat((avgScore * 100).toFixed(2)),
+        avg_score: parseFloat((avgScore * 100).toFixed(2)),
         trend,
         days_tracked: totalDays,
-        consistency:  parseFloat(((realCheckins / 30) * 100).toFixed(2)),
+        consistency: parseFloat(((realCheckins / 30) * 100).toFixed(2)),
       },
       weekly_overview: weeklyData,
-      chart_data:      chartData,
+      chart_data: chartData,
     };
 
     await setCache(cacheKey, response, 43200);
@@ -707,7 +703,7 @@ export const updateSilentUsers = async () => {
   const today = new Date().toISOString().split("T")[0];
   try {
     const usersWithHistory = await RiskScore.distinct("user", { date: { $lt: today } });
-    const usersWithToday   = new Set(
+    const usersWithToday = new Set(
       (await RiskScore.distinct("user", { date: today })).map(String)
     );
     const silentIds = usersWithHistory.filter((id) => !usersWithToday.has(String(id)));
@@ -718,33 +714,33 @@ export const updateSilentUsers = async () => {
       const previous = await RiskScore.findOne({ user: userId, date: { $lt: today } }).sort({ date: -1 });
       if (!previous) continue;
 
-      const lastCheckinDate    = previous.last_checkin_date ?? previous.date;
-      const daysSinceCheckin   = getDaysDifference(lastCheckinDate, today);
+      const lastCheckinDate = previous.last_checkin_date ?? previous.date;
+      const daysSinceCheckin = getDaysDifference(lastCheckinDate, today);
       const disengagementScore = calculateDisengagementScore(daysSinceCheckin, previous.overall_score);
-      const previousOverall    = previous.overall_score ?? 0;
-      const imputedScore       = Math.min(previousOverall + disengagementScore * 0.1, 1.0);
+      const previousOverall = previous.overall_score ?? 0;
+      const imputedScore = Math.min(previousOverall + disengagementScore * 0.1, 1.0);
 
       bulkOps.push({
         updateOne: {
           filter: { user: userId, date: today },
           update: {
             $set: {
-              overall_score:         imputedScore,
-              risk_level:            getRiskLevel(imputedScore),
-              trend:                 getTrend(imputedScore, previousOverall),
-              previous_score:        previousOverall,
-              days_since_checkin:    daysSinceCheckin,
-              last_checkin_date:     lastCheckinDate,
-              is_imputed:            true,
-              disengagement_score:   disengagementScore,
+              overall_score: imputedScore,
+              risk_level: getRiskLevel(imputedScore),
+              trend: getTrend(imputedScore, previousOverall),
+              previous_score: previousOverall,
+              days_since_checkin: daysSinceCheckin,
+              last_checkin_date: lastCheckinDate,
+              is_imputed: true,
+              disengagement_score: disengagementScore,
               depression_quiz_score: previous.depression_quiz_score,
-              depression_quiz_date:  previous.depression_quiz_date,
-              anxiety_quiz_score:    previous.anxiety_quiz_score,
-              anxiety_quiz_date:     previous.anxiety_quiz_date,
-              stress_quiz_score:     previous.stress_quiz_score,
-              stress_quiz_date:      previous.stress_quiz_date,
-              sleep_quiz_score:      previous.sleep_quiz_score,
-              sleep_quiz_date:       previous.sleep_quiz_date,
+              depression_quiz_date: previous.depression_quiz_date,
+              anxiety_quiz_score: previous.anxiety_quiz_score,
+              anxiety_quiz_date: previous.anxiety_quiz_date,
+              stress_quiz_score: previous.stress_quiz_score,
+              stress_quiz_date: previous.stress_quiz_date,
+              sleep_quiz_score: previous.sleep_quiz_score,
+              sleep_quiz_date: previous.sleep_quiz_date,
             },
           },
           upsert: true,

@@ -89,7 +89,12 @@ const userSchema = new mongoose.Schema(
            type: Number, 
            default: 0 
         }
-    }
+    },
+    //community
+    communities: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Community"
+  }]
   }
 );
 

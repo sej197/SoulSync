@@ -21,9 +21,8 @@ import SleepQuiz from './components/quiz/SleepQuiz';
 import StressQuiz from './components/quiz/StressQuiz';
 import DailyQuiz from './components/quiz/DailyQuiz';
 import Helplines from './pages/Helplines';
-const CommunityChat = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Community Chat Coming Soon</div>;
-// const DailyQuiz = () => <div className="p-20 text-center text-2xl font-serif text-gray-600">Daily Quiz Coming Soon</div>;
-
+import CommunityExplore from './pages/CommunityExplore';
+import CommunityLanding from './pages/CommunityLanding';
 
 function App() {
   console.log("[App] Rendering. Time:", new Date().toLocaleTimeString());
@@ -48,7 +47,8 @@ function App() {
                     <Route path=":id" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                     <Route path="new" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                   </Route>
-                  <Route path="/community-chat" element={<ProtectedRoute><CommunityChat /></ProtectedRoute>} />
+                  <Route path="/communities" element={<ProtectedRoute><CommunityLanding/></ProtectedRoute>} />
+                  <Route path="/communities/explore" element={<ProtectedRoute><CommunityExplore/></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
                   <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
                   <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />

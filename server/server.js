@@ -10,7 +10,7 @@ import journalRoutes from "./routes/journalRoutes.js";
 import dailyQuizRoutes from "./routes/dailyQuizRoutes.js";
 import chatRoutes from "./routes/chatbotRoutes.js";
 import quizReminderRoutes from "./routes/QuizReminderRoutes.js";
-
+import communityRoutes from "./routes/CommunityRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -37,6 +37,7 @@ app.use("/api/quiz", dailyQuizRoutes);
 app.use("/api/journal", journalRoutes);
 app.use("/api/chatbot", chatRoutes);
 app.use("/api/reminders", quizReminderRoutes);
+app.use("/api/community", communityRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

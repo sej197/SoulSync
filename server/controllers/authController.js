@@ -85,12 +85,7 @@ const register = async (req, res) => {
         return res.json({
             message: "User registered successfully!"
         })
-<<<<<<< HEAD
     }catch(error){
-=======
-    } catch (error) {
-        res.status(500).json({ message: "Server error" });
->>>>>>> 5e4f2a4de12008c3196bef9632a4a1e5c68f1b25
         console.error("Error during registration process", error);
         res.status(500).json({message: "Server error"});
     }

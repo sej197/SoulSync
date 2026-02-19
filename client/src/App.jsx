@@ -23,6 +23,7 @@ import DailyQuiz from './components/quiz/DailyQuiz';
 import Helplines from './pages/Helplines';
 import CommunityExplore from './pages/CommunityExplore';
 import CommunityLanding from './pages/CommunityLanding';
+import CommunityPage from './pages/CommunityPage';
 
 function App() {
   console.log("[App] Rendering. Time:", new Date().toLocaleTimeString());
@@ -49,6 +50,7 @@ function App() {
                   </Route>
                   <Route path="/communities" element={<ProtectedRoute><CommunityLanding/></ProtectedRoute>} />
                   <Route path="/communities/explore" element={<ProtectedRoute><CommunityExplore/></ProtectedRoute>} />
+                  <Route path="/communities/:communityId" element={<ProtectedRoute><CommunityPage/></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
                   <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
                   <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />

@@ -12,7 +12,7 @@ const safetySetting = [
 ]
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_PUBLIC_KEY);
 const model = genAI.getGenerativeModel({
-    model: "models/gemini-2.5-pro",
+    model: "gemini-pro",
     safetySettings: safetySetting
 });
 export default model;

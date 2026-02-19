@@ -1,6 +1,7 @@
 import { useNavigate, Outlet, useLocation } from 'react-router-dom';
 import { MessageSquarePlus, History, Heart, ArrowRight, Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import toast from 'react-hot-toast';
 import './dashboard.css';
 import ChatbotList from '../components/chatbot/ChatbotList';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -9,6 +10,7 @@ import { fetchUserChats, createChat } from '../lib/chatbotapi';
 export default function BotDashboard() {
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [ques, setQues] = useState("");
     const location = useLocation();
     const isMainDashboard = location.pathname === "/chatbot";
 
@@ -22,23 +24,40 @@ export default function BotDashboard() {
     const createChatMutation = useMutation({
         mutationFn: (text) => createChat(text),
         onSuccess: (data) => {
+            console.log("[BotDashboard] Mutation success. Data:", data);
             queryClient.invalidateQueries({ queryKey: ['userChats'] });
             if (data.chatId) {
                 navigate(`/chatbot/${data.chatId}`);
             }
+            if (data.riskAlert) {
+                toast.error(data.alertMessage, {
+                    duration: 6000,
+                    position: "top-center",
+                });
+            }
+        },
+        onError: (err) => {
+            console.error("[BotDashboard] Mutation error:", err);
+            toast.error("Failed to start chat.");
         }
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const text = e.target.text.value;
+        const text = ques || e.target.text.value;
+        console.log("[BotDashboard] handleSubmit triggered. Text:", text);
+        alert("[BotDashboard] Submitting: " + text);
         if (!text) return;
 
         createChatMutation.mutate(text);
+        setQues("");
         e.target.reset();
     };
 
     const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+
+    const inputRef = useRef(null);
+    const focusInput = () => inputRef.current?.focus();
 
     return (
         <div className={`dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
@@ -69,19 +88,19 @@ export default function BotDashboard() {
                         </div>
 
                         <div className="cards">
-                            <div className="options">
+                            <div className="options" onClick={focusInput}>
                                 <div className="icon-wrapper purple">
                                     <MessageSquarePlus className="icon" />
                                 </div>
                                 <span>Create a new chat</span>
                             </div>
-                            <div className="options">
+                            <div className="options" onClick={() => setIsSidebarOpen(true)}>
                                 <div className="icon-wrapper orange">
                                     <History className="icon" />
                                 </div>
                                 <span>Previous memoirs</span>
                             </div>
-                            <div className="options">
+                            <div className="options" onClick={focusInput}>
                                 <div className="icon-wrapper teal">
                                     <Heart className="icon" />
                                 </div>
@@ -92,11 +111,14 @@ export default function BotDashboard() {
                         <div className="formContainer">
                             <form onSubmit={handleSubmit}>
                                 <input
+                                    ref={inputRef}
                                     type="text"
                                     name="text"
+                                    value={ques}
+                                    onChange={(e) => setQues(e.target.value)}
                                     placeholder="Ask me anything!"
                                 />
-                                <button className="sendButton">
+                                <button type="submit" className="sendButton">
                                     <ArrowRight size={20} />
                                 </button>
                             </form>

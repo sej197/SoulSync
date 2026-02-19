@@ -112,17 +112,17 @@ const BindingDots = () => (
 );
 
 export default function Journal() {
-  const [mode, setMode] = useState('write');      
+  const [mode, setMode] = useState('write');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [calendarDates, setCalendarDates] = useState([]);
   const [activeMonth, setActiveMonth] = useState(new Date());
 
-  
+
   const [subject, setSubject] = useState('');
   const [existingEntry, setExistingEntry] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  
+
   const [entries, setEntries] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -130,10 +130,10 @@ export default function Journal() {
   const [flipIndex, setFlipIndex] = useState(0);
   const [loadingEntries, setLoadingEntries] = useState(false);
 
-  
+
   const [loadingDate, setLoadingDate] = useState(false);
 
-  
+
   const isToday = toLocalDateStr(selectedDate) === todayStr();
   // Past day = not today
   const isPastDay = !isToday;
@@ -155,7 +155,7 @@ export default function Journal() {
     },
   });
 
-  
+
   useEffect(() => {
     if (!editor) return;
     if (isPastDay) {
@@ -165,7 +165,7 @@ export default function Journal() {
     }
   }, [isPastDay, editor]);
 
-  
+
   const loadCalendarDates = useCallback(async (date) => {
     try {
       const month = date.getMonth() + 1;
@@ -181,7 +181,7 @@ export default function Journal() {
     loadCalendarDates(activeMonth);
   }, [activeMonth, loadCalendarDates]);
 
-  
+
   const loadEntryForDate = useCallback(async (date) => {
     setLoadingDate(true);
     const dateIsToday = toLocalDateStr(date) === todayStr();
@@ -219,7 +219,7 @@ export default function Journal() {
     }
   }, [selectedDate, mode, editor, loadEntryForDate]);
 
-  
+
   const loadEntries = useCallback(async (page = 1) => {
     setLoadingEntries(true);
     try {
@@ -241,13 +241,13 @@ export default function Journal() {
     }
   }, [mode, loadEntries]);
 
-  
+
   const handleDateClick = (date) => {
     setSelectedDate(date);
     setMode('write');
   };
 
-  
+
   const handleSave = async () => {
     if (isPastDay) {
       toast.error("You can only write for today!");
@@ -271,6 +271,16 @@ export default function Journal() {
         const data = await createJournalEntry(text, subject);
         setExistingEntry(data.entry);
         toast.success('Saved! 💕');
+
+        // Show badge notifications
+        if (data.newlyAwarded && data.newlyAwarded.length > 0) {
+          data.newlyAwarded.forEach(badge => {
+            toast.success(`New Badge Earned: ${badge.name}! 🏆`, {
+              duration: 5000,
+              icon: '🎉',
+            });
+          });
+        }
       }
       loadCalendarDates(activeMonth);
     } catch (err) {
@@ -279,7 +289,7 @@ export default function Journal() {
     setSaving(false);
   };
 
-  
+
   const handleDelete = async () => {
     if (!existingEntry || isPastDay) return;
     try {
@@ -294,7 +304,7 @@ export default function Journal() {
     }
   };
 
-  
+
   const currentEntry = entries[flipIndex];
 
   const flipPrev = () => {

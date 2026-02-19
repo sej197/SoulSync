@@ -1,10 +1,11 @@
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 
 const submitAnxietyQuiz = async (req, res) => {
   try {
-    const userId = req.userId; 
+    const userId = req.userId;
     const { answers } = req.body;
 
     if (!userId) {
@@ -140,9 +141,13 @@ const submitAnxietyQuiz = async (req, res) => {
     // Invalidate quiz cache
     await invalidateQuizCache(userId);
 
+    // Check for badges
+    const newlyAwarded = await checkAndAwardBadges(userId, 'quiz');
+
     res.status(201).json({
       message: "Anxiety quiz submitted successfully",
-      anxietyScore
+      anxietyScore,
+      newlyAwarded
     });
 
   } catch (error) {

@@ -54,6 +54,16 @@ const DailyQuiz = ({ userId }) => {
 
       setFinalScore(res.data.finalScore);
       setSubmitted(true);
+
+      // Show badge notifications
+      if (res.data.newlyAwarded && res.data.newlyAwarded.length > 0) {
+        res.data.newlyAwarded.forEach(badge => {
+          toast.success(`New Badge Earned: ${badge.name}! 🏆`, {
+            duration: 5000,
+            icon: '🎉',
+          });
+        });
+      }
     } catch (error) {
       console.error("Error submitting quiz:", error);
     }

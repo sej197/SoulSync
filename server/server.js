@@ -1,5 +1,5 @@
+import "dotenv/config";
 import express from "express";
-import dotenv from "dotenv";
 console.log(">>> SERVER CODE LOADING... VERSION 2.0 <<<");
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -11,7 +11,6 @@ import dailyQuizRoutes from "./routes/dailyQuizRoutes.js";
 import chatRoutes from "./routes/chatbotRoutes.js";
 import quizReminderRoutes from "./routes/QuizReminderRoutes.js";
 import communityRoutes from "./routes/CommunityRoutes.js";
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;

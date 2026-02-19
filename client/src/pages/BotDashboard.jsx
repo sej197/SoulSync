@@ -46,7 +46,6 @@ export default function BotDashboard() {
         e.preventDefault();
         const text = ques || e.target.text.value;
         console.log("[BotDashboard] handleSubmit triggered. Text:", text);
-        alert("[BotDashboard] Submitting: " + text);
         if (!text) return;
 
         createChatMutation.mutate(text);

@@ -7,12 +7,10 @@ import axios from "axios";
 import { setCache, getCache, deleteCachePattern, invalidateChatCache, cacheKeys } from "../utils/cacheUtils.js";
 import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 import mongoose from "mongoose";
-import fs from "fs";
-import path from "path";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY, { apiVersion: "v1" });
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
 if (!process.env.GEMINI_API_KEY) {
     console.error("CRITICAL: GEMINI_API_KEY is NOT set in environment!");
@@ -20,13 +18,7 @@ if (!process.env.GEMINI_API_KEY) {
     console.log("GEMINI_API_KEY is loaded (length: " + process.env.GEMINI_API_KEY.length + ")");
 }
 
-const logFile = "c:\\Users\\NOOPUR\\OneDrive\\Desktop\\soulsync\\server\\chatbot_debug.log";
 function log(msg) {
-    const timestamp = new Date().toISOString();
-    const formattedMsg = `[${timestamp}] ${msg}\n`;
-    try {
-        fs.appendFileSync(logFile, formattedMsg);
-    } catch (e) { }
     console.log(msg);
 }
 

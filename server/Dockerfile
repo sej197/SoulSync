@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # start server
-CMD ["npm", "start"]
+CMD ["npm", "run", "dev"]

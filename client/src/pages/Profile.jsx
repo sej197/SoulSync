@@ -5,6 +5,7 @@ import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import Badge from '../components/profile/Badge';
 import { BADGE_DEFINITIONS } from '../utils/badgeDefinitions';
+import StreakStats from '../components/StreakStats';
 
 const Profile = () => {
     const { user } = useContext(AuthContext);
@@ -78,25 +79,18 @@ const Profile = () => {
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
 
                             <div className="md:col-span-2 space-y-10">
+                                <StreakStats />
+
                                 <section>
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <h2 className="text-2xl font-serif font-bold text-[#3E2723]">Overview</h2>
-                                        <div className="flex-1 h-[2px] bg-[#FFCC80] opacity-30 rounded-full"></div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-6">
-                                        <div className="p-6 bg-[#FAFAFA] rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                                            <p className="text-sm text-[#8D6E63] font-bold uppercase tracking-wider mb-2">Current Streak</p>
-                                            <p className="text-3xl font-bold text-[#EF6C00]">{user.streak || 0} Days 🔥</p>
-                                        </div>
-                                        <div className="p-6 bg-[#FAFAFA] rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
-                                            <p className="text-sm text-[#8D6E63] font-bold uppercase tracking-wider mb-2">Risk Level</p>
-                                            <p className={`text-3xl font-bold ${user.current_risk?.level === 'LOW' ? 'text-success' :
+                                    <h2 className="text-lg font-bold mb-3 font-serif border-b border-base-300 pb-2">Risk Assessment</h2>
+                                    <div className="p-4 bg-base-200 rounded-xl">
+                                        <p className="text-sm opacity-70 mb-2">Current Risk Level</p>
+                                        <p className={`text-2xl font-bold ${user.current_risk?.level === 'LOW' ? 'text-success' :
                                                 user.current_risk?.level === 'MODERATE' ? 'text-warning' :
-                                                    user.current_risk?.level === 'HIGH' ? 'text-error' : 'text-[#3E2723]'
-                                                }`}>
-                                                {user.current_risk?.level || 'N/A'}
-                                            </p>
-                                        </div>
+                                                    user.current_risk?.level === 'HIGH' ? 'text-error' : 'text-base-content'
+                                            }`}>
+                                            {user.current_risk?.level || 'N/A'}
+                                        </p>
                                     </div>
                                 </section>
 

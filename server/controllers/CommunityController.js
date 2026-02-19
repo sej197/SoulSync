@@ -59,6 +59,9 @@ const joinCommunity = async (req, res) => {
             }
             community.pending_requests.push(userId);
             await community.save();
+            return res.status(200).json({
+                message:"join request sent. wait for approval"
+            })
         }else{
             community.members.push(userId);
             community.member_count = community.members.length;
@@ -78,4 +81,97 @@ const joinCommunity = async (req, res) => {
         res.status(500).json({ message: "Server error" });   
     }
 }
-export  {createCommunity, joinCommunity}
+
+const leaveCommunity = async (req, res) => {
+    try{
+        const userId = req.userId;
+        const {communityId} = req.params;
+        const community = await Community.findById(communityId);
+        if(!community){
+            return res.status(400).json({
+                message:"community not found"
+            })
+        }
+        if(!community.members.includes(userId)){
+            return res.status(400).json({
+                message:"you are not a member of this community"
+            })
+        }
+        community.members = community.members.filter(id => id.toString() != userId);
+        community.member_count = community.members.length;
+        community.save();
+
+        await User.findByIdAndUpdate(userId, {
+            $pull:{communities :community._id}
+        })
+        return res.status(200).json({message:"left community successfully"})
+    }catch(error){
+        console.error("Leave community error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+const apporveRequest = async(req, res) =>{
+    try {
+        const {communityId, userId} = req.params;
+        const adminId = req.userId;
+        const community = await Community.findById(communityId);
+        if(!community){
+            return res.status(404).json({
+                message:"community not found"
+            })
+        }
+        if (community.creator.toString() !== adminId) {
+            return res.status(403).json({ message: "not authorized" });
+        }
+        if(!community.pending_requests.includes(userId)){
+            return res.status(400).json({message:"user has not requested to join"})
+        }
+        community.pending_requests = community.pending_requests.filter(id=>id.toString() == userId);
+        community.members.push(userId);
+        community.member_count = community.members.length;
+        await community.save();
+        await User.findByIdAndUpdate(userId, {
+            $addToSet: { communities: community._id }
+        });
+        return res.status(200).json({
+            message:"user approved successfully"
+        })
+    } catch (error) {
+        console.error("approve requst error", error);
+        res.status(500).json({
+            message:"server error"
+        })
+    }
+}
+const rejectRequest = async(req, res) =>{
+    try {
+        const {communityId, userId} = req.params;
+        const adminId = req.userId;
+        const community = await Community.findById(communityId);
+        if(!community){
+            return res.status(404).json({
+                message:"community not found"
+            })
+
+        }
+        if(community.creator.toString() !== adminId){
+            return res.status(403).json({
+                message:"not authorized"
+            })
+        }
+        if(!community.pending_requests.includes(userId)){
+            return res.status(400).json({
+                message:"user has not requested to join"
+            })
+        }
+        community.pending_requests = community.pending_requests.filter(id => id.toString() !== userId);
+        await community.save();
+        return res.status(200).json({
+            message:"user rejected successfully"
+        })
+    } catch (error) {
+        console.error("Reject request error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+export  {createCommunity, joinCommunity, leaveCommunity, apporveRequest, rejectRequest}

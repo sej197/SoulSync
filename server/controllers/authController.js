@@ -85,8 +85,8 @@ const register = async(req, res) => {
             message: "User registered successfully!"
         })
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error during registration process", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -145,8 +145,8 @@ const login = async(req, res) => {
             message: "Login successful"
         });
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error during login process", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -166,8 +166,8 @@ const logout = async(req, res) => {
             message: "Logout successful"
         });
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error during logout", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -218,8 +218,8 @@ const isAuthenticated = async(req, res) => {
         });
         
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error checking authentication status", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -269,8 +269,8 @@ const updateProfile = async(req, res) => {
         });
 
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error updating profile", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 

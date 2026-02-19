@@ -50,8 +50,10 @@ const getJournalEntries = async(req, res) =>{
 
         res.json(response);
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error fetching journal entries", error);
+        res.status(500).json({
+            message: "Server error"
+        });
     }
 }
 
@@ -102,8 +104,8 @@ const getJournalEntryByDate = async(req, res) => {
         
         res.json(response); 
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error fetching journal entry by date", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -160,8 +162,8 @@ const createJournalEntry = async(req, res) =>{
         });
 
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error creating journal entry", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -188,8 +190,8 @@ const deleteJournalEntry = async(req, res) =>{
             message: "Journal entry deleted successfully"
         });
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error deleting journal entry", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -244,8 +246,8 @@ const updateJournalEntry = async(req, res) =>{
             entry: decryptEntry(entry)
         });
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error updating journal entry", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -289,8 +291,8 @@ const getCalendarDates = async(req, res) => {
 
         res.json(response);
     }catch(error){
-        res.status(500).json({message: "Server error"});
         console.error("Error fetching calendar dates", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 

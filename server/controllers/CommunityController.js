@@ -174,4 +174,39 @@ const rejectRequest = async(req, res) =>{
         res.status(500).json({ message: "Server error" });
     }
 }
-export  {createCommunity, joinCommunity, leaveCommunity, apporveRequest, rejectRequest}
+const getCommunities = async(req, res) => {
+    try{
+        const {search} = req.query;
+        let filter = {}
+        if(search){
+            filter.name = { $regex: search, $options: "i" };
+        }
+        const communities = await Community.find(filter)
+               .select("name description member_count is_private")
+               .sort({createdAt: -1});
+               res.status(200).json({
+                communities
+               })
+        
+    }catch(error){
+        console.error("Get communities error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+const getMyCreatedCommunities = async(req, res) =>{
+    try {
+        const userId = req.userId;
+        const communities = await Community.find({
+            creator: userId
+        })
+        .select("name description member_count is_private createdAt")
+        .sort({createdAt: -1});
+        res.status(200).json({
+            communities
+        })
+    } catch (error) {
+        console.error("Get my created communities error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+}
+export  {createCommunity, joinCommunity, leaveCommunity, apporveRequest, rejectRequest, getCommunities, getMyCreatedCommunities}

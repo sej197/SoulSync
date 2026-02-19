@@ -1,4 +1,3 @@
-// j:\sayalee\innovateyou\SoulSync\server\utils\cacheUtils.js
 import redisClient from "../config/redis.js";
 
 const DEFAULT_CACHE_TTL = 3600; // 1 hour in seconds

@@ -9,6 +9,8 @@ import journalRoutes from "./routes/journalRoutes.js";
 import dailyQuizRoutes from "./routes/dailyQuizRoutes.js";
 import chatRoutes from "./routes/chatbotRoutes.js";
 import quizReminderRoutes from "./routes/QuizReminderRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
+
 dotenv.config();
 
 const app = express();
@@ -30,6 +32,7 @@ app.use("/api/quiz", dailyQuizRoutes);
 app.use("/api/journal", journalRoutes);
 app.use("/api/chatbot", chatRoutes);
 app.use("/api/reminders",quizReminderRoutes);
+app.use("/api/posts", postRoutes);
 
 // Connect DB & start server
 connectDB().then(() => {

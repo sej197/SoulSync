@@ -1,4 +1,3 @@
-// j:\sayalee\innovateyou\SoulSync\server\config\redis.js
 import { createClient } from "redis";
 
 const redisClient = createClient({

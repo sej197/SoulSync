@@ -1,20 +1,7 @@
 import mongoose from "mongoose";
+import commentSchema from "../models/Comment.js";
 
-const commentSchema = new mongoose.Schema(
-  {
-    user: { 
-      type: mongoose.Schema.Types.ObjectId, 
-      ref: "User", 
-      required: true 
-    },
-    text: { type: String, required: true },
-    created_at: { type: Date, default: Date.now }
-  },
-  { _id: true } // Each comment has its own ID
-);
-
-const postSchema = new mongoose.Schema(
-  {
+const postSchema = new mongoose.Schema({
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -25,12 +12,20 @@ const postSchema = new mongoose.Schema(
       ref: "Community",
       required: true
     },
+    title: {
+      type: String,
+      trim:true
+    },
     text: {
       type: String,
       required: true,
       trim: true
     },
     comments: [commentSchema],
+    commentCount: {
+      type: Number,
+      default: 0
+    },
     upvotes: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "User"
@@ -47,14 +42,6 @@ const postSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
-    created_at: {
-      type: Date,
-      default: Date.now
-    },
-    updated_at: {
-      type: Date,
-      default: Date.now
-    }
   },
   {
     timestamps: true

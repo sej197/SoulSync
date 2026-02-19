@@ -134,7 +134,7 @@ const Navbar = () => {
                     </div>
 
                     <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                        <li><Link to="/community-chat">Community Chat</Link></li>
+                        <li><Link to="/communities">Community Chat</Link></li>
                         <li>
                             <details>
                                 <summary className="list-none before:hidden after:hidden marker:hidden">Quiz</summary>
@@ -194,7 +194,7 @@ const Navbar = () => {
 
                 >
                     <li>
-                        <Link to="/community-chat">Community Chat</Link>
+                        <Link to="/communities">Community Chat</Link>
                     </li>
                     <li>
                         <details>

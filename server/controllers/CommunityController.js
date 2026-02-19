@@ -1,6 +1,14 @@
 import Community from "../models/Community.js";
 import User from "../models/User.js";
 
+const checkIsCreator = (creator, userId) => {
+    if (!creator) return false;
+    if (Array.isArray(creator)) {
+        return creator.some(id => id.toString() === userId);
+    }
+    return creator.toString() === userId;
+};
+
 const createCommunity = async (req, res) => {
     try {
         const {name, description, is_private} = req.body;
@@ -17,7 +25,7 @@ const createCommunity = async (req, res) => {
         const community = await Community.create({
             name, 
             description,
-            creator:[userId],
+            creator: userId,
             members:[userId],
             member_count : 1,
             is_private: is_private || false
@@ -32,7 +40,6 @@ const createCommunity = async (req, res) => {
     } catch (error) {
         console.error("Create community error:", error);
         res.status(500).json({ message: "Server error" });
-  
     }
 }
 
@@ -75,7 +82,6 @@ const joinCommunity = async (req, res) => {
         return res.status(200).json({
             message:"joined community successfully"
         })
-
     } catch (error) {
         console.error("Join community error:", error);
         res.status(500).json({ message: "Server error" });   
@@ -97,9 +103,9 @@ const leaveCommunity = async (req, res) => {
                 message:"you are not a member of this community"
             })
         }
-        community.members = community.members.filter(id => id.toString() != userId);
+        community.members = community.members.filter(id => id.toString() !== userId);
         community.member_count = community.members.length;
-        community.save();
+        await community.save();
 
         await User.findByIdAndUpdate(userId, {
             $pull:{communities :community._id}
@@ -110,6 +116,7 @@ const leaveCommunity = async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 }
+
 const apporveRequest = async(req, res) =>{
     try {
         const {communityId, userId} = req.params;
@@ -120,13 +127,15 @@ const apporveRequest = async(req, res) =>{
                 message:"community not found"
             })
         }
-        if (community.creator.toString() !== adminId) {
+        if (!checkIsCreator(community.creator, adminId)) {
             return res.status(403).json({ message: "not authorized" });
         }
         if(!community.pending_requests.includes(userId)){
             return res.status(400).json({message:"user has not requested to join"})
         }
-        community.pending_requests = community.pending_requests.filter(id=>id.toString() == userId);
+        community.pending_requests = community.pending_requests.filter(
+            id => id.toString() !== userId
+        );
         community.members.push(userId);
         community.member_count = community.members.length;
         await community.save();
@@ -137,12 +146,13 @@ const apporveRequest = async(req, res) =>{
             message:"user approved successfully"
         })
     } catch (error) {
-        console.error("approve requst error", error);
+        console.error("approve request error", error);
         res.status(500).json({
             message:"server error"
         })
     }
 }
+
 const rejectRequest = async(req, res) =>{
     try {
         const {communityId, userId} = req.params;
@@ -152,9 +162,8 @@ const rejectRequest = async(req, res) =>{
             return res.status(404).json({
                 message:"community not found"
             })
-
         }
-        if(community.creator.toString() !== adminId){
+        if(!checkIsCreator(community.creator, adminId)){
             return res.status(403).json({
                 message:"not authorized"
             })
@@ -164,7 +173,9 @@ const rejectRequest = async(req, res) =>{
                 message:"user has not requested to join"
             })
         }
-        community.pending_requests = community.pending_requests.filter(id => id.toString() !== userId);
+        community.pending_requests = community.pending_requests.filter(
+            id => id.toString() !== userId
+        );
         await community.save();
         return res.status(200).json({
             message:"user rejected successfully"
@@ -174,32 +185,51 @@ const rejectRequest = async(req, res) =>{
         res.status(500).json({ message: "Server error" });
     }
 }
+
 const getCommunities = async(req, res) => {
     try{
         const {search} = req.query;
+        const userId = req.userId;
         let filter = {}
         if(search){
             filter.name = { $regex: search, $options: "i" };
         }
         const communities = await Community.find(filter)
-               .select("name description member_count is_private")
+               .select("name description member_count is_private members pending_requests creator")
                .sort({createdAt: -1});
-               res.status(200).json({
-                communities
-               })
-        
+
+        const communitiesWithStatus = communities.map(comm => {
+            const commObj = comm.toObject();
+            commObj.isMember = comm.members.some(
+                id => id.toString() === userId
+            );
+            commObj.pendingRequest = comm.pending_requests
+                ? comm.pending_requests.some(id => id.toString() === userId)
+                : false;
+            commObj.isCreator = checkIsCreator(comm.creator, userId);
+            delete commObj.members;
+            delete commObj.pending_requests;
+            delete commObj.creator;
+            return commObj;
+        });
+
+        res.status(200).json({
+            communities: communitiesWithStatus
+        })
     }catch(error){
         console.error("Get communities error:", error);
         res.status(500).json({ message: "Server error" });
     }
 }
+
 const getMyCreatedCommunities = async(req, res) =>{
     try {
         const userId = req.userId;
         const communities = await Community.find({
             creator: userId
         })
-        .select("name description member_count is_private createdAt")
+        .select("name description member_count is_private createdAt pending_requests")
+        .populate("pending_requests", "username name email")
         .sort({createdAt: -1});
         res.status(200).json({
             communities
@@ -209,4 +239,5 @@ const getMyCreatedCommunities = async(req, res) =>{
         res.status(500).json({ message: "Server error" });
     }
 }
-export  {createCommunity, joinCommunity, leaveCommunity, apporveRequest, rejectRequest, getCommunities, getMyCreatedCommunities}
+
+export {createCommunity, joinCommunity, leaveCommunity, apporveRequest, rejectRequest, getCommunities, getMyCreatedCommunities}

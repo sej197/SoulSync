@@ -2,3 +2,6 @@ fastapi
 uvicorn
 textblob
 pydantic
+google-genai
+python-dotenv
+groq

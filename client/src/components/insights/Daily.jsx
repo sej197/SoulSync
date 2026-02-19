@@ -37,7 +37,7 @@ export default function Daily({ dailyData, onRefresh }) {
     },
     {
       title: "Read & Relax",
-      description: "Read a chapter of a book or interesting article",
+      description: "Rthe ead a chapter of a book or interesting article",
       icon: "📖",
     },
     {

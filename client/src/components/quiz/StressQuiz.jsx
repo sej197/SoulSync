@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import stressQuizData from "./stressQuiz.json";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const StressQuiz = ({ userId }) => {
   const [quizData] = useState(stressQuizData);
@@ -35,6 +36,16 @@ const StressQuiz = ({ userId }) => {
 
       setFinalScore(res.data.stressScore);
       setSubmitted(true);
+
+      // Show badge notifications
+      if (res.data.newlyAwarded && res.data.newlyAwarded.length > 0) {
+        res.data.newlyAwarded.forEach(badge => {
+          toast.success(`New Badge Earned: ${badge.name}! 🏆`, {
+            duration: 5000,
+            icon: '🎉',
+          });
+        });
+      }
     } catch (error) {
       console.error("Error submitting stress quiz:", error);
     }
@@ -185,18 +196,16 @@ const StressQuiz = ({ userId }) => {
                         className="sr-only"
                       />
                       <div
-                        className={`relative flex items-center p-3.5 rounded-xl border-2 transition-all duration-300 ${
-                          isSelected
-                            ? "bg-[#F3E5F5] border-[#6A1B9A] shadow-md scale-[1.01]"
-                            : "bg-white/50 border-gray-100 hover:border-purple-200 hover:bg-purple-50/30 hover:shadow-sm"
-                        }`}
+                        className={`relative flex items-center p-3.5 rounded-xl border-2 transition-all duration-300 ${isSelected
+                          ? "bg-[#F3E5F5] border-[#6A1B9A] shadow-md scale-[1.01]"
+                          : "bg-white/50 border-gray-100 hover:border-purple-200 hover:bg-purple-50/30 hover:shadow-sm"
+                          }`}
                       >
                         <div
-                          className={`flex-shrink-0 w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center transition-all ${
-                            isSelected
-                              ? "border-[#6A1B9A] bg-[#6A1B9A]"
-                              : "border-gray-300 bg-white"
-                          }`}
+                          className={`flex-shrink-0 w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center transition-all ${isSelected
+                            ? "border-[#6A1B9A] bg-[#6A1B9A]"
+                            : "border-gray-300 bg-white"
+                            }`}
                         >
                           {isSelected && (
                             <div
@@ -206,11 +215,10 @@ const StressQuiz = ({ userId }) => {
                           )}
                         </div>
                         <span
-                          className={`text-sm md:text-base transition-colors ${
-                            isSelected
-                              ? "text-[#3E2723] font-bold"
-                              : "text-[#5D4037] font-medium opacity-80 group-hover:opacity-100"
-                          }`}
+                          className={`text-sm md:text-base transition-colors ${isSelected
+                            ? "text-[#3E2723] font-bold"
+                            : "text-[#5D4037] font-medium opacity-80 group-hover:opacity-100"
+                            }`}
                         >
                           {opt}
                         </span>
@@ -225,11 +233,10 @@ const StressQuiz = ({ userId }) => {
               <button
                 onClick={() => goToQuestion(Math.max(0, currentQuestion - 1))}
                 disabled={currentQuestion === 0}
-                className={`group flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all text-sm ${
-                  currentQuestion === 0
-                    ? "opacity-40 cursor-not-allowed bg-gray-100 text-gray-400"
-                    : "bg-white text-[#3E2723] hover:bg-purple-50 shadow-md hover:shadow-lg border border-purple-100"
-                }`}
+                className={`group flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold transition-all text-sm ${currentQuestion === 0
+                  ? "opacity-40 cursor-not-allowed bg-gray-100 text-gray-400"
+                  : "bg-white text-[#3E2723] hover:bg-purple-50 shadow-md hover:shadow-lg border border-purple-100"
+                  }`}
               >
                 <svg
                   className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform"
@@ -301,13 +308,12 @@ const StressQuiz = ({ userId }) => {
               <button
                 key={idx}
                 onClick={() => goToQuestion(idx)}
-                className={`h-2.5 rounded-full transition-all duration-300 ${
-                  idx === currentQuestion
-                    ? "bg-[#6A1B9A] w-7 shadow-md"
-                    : answers[quizData.questions[idx].id]
+                className={`h-2.5 rounded-full transition-all duration-300 ${idx === currentQuestion
+                  ? "bg-[#6A1B9A] w-7 shadow-md"
+                  : answers[quizData.questions[idx].id]
                     ? "bg-[#3E2723]/50 w-2.5"
                     : "bg-[#E1BEE7] w-2.5"
-                }`}
+                  }`}
               ></button>
             ))}
           </div>

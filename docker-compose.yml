@@ -15,12 +15,16 @@ services:
     volumes:
       - ./server:/app
       - /app/node_modules
+    stdin_open: true
+    tty: true
 
   python:
     build: ./python-server
     container_name: soulsync-python
     ports:
       - "8000:8000"
+    env_file:
+      - ./python-server/.env
 
   client:
     build: ./client

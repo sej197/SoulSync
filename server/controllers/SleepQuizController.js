@@ -1,20 +1,21 @@
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 
 const submitSleepQuiz = async (req, res) => {
     try {
         const userId = req.userId;
         const { answers } = req.body;
-        
-        if(!answers || answers.length === 0){
+
+        if (!answers || answers.length === 0) {
             return res.status(400).json({
-                message:"atleast one answer is required"
+                message: "atleast one answer is required"
             })
         }
-        
+
         const today = new Date().toISOString().split("T")[0]
-        
+
         const optionScores = {
             "Very well": 0,
             "Well": 0.25,
@@ -64,38 +65,38 @@ const submitSleepQuiz = async (req, res) => {
             "Poor": 0.75,
             "Very poor": 1
         };
-        
+
         let totalScore = 0;
         let questionCount = 0;
-        
-        for(let i = 0; i < answers.length; i++){
+
+        for (let i = 0; i < answers.length; i++) {
             const userAnswer = answers[i].answer;
             totalScore += optionScores[userAnswer] || 0;
             questionCount++;
         }
-        
+
         const sleepScore = Number((totalScore / questionCount).toFixed(2));
-        
+
         const transformedAnswers = answers.map(a => ({
             questionId: a.questionId,
-            selectedOptions: [a.answer] 
+            selectedOptions: [a.answer]
         }));
-        
+
         await DailyQuiz.create({
-            userId, 
+            userId,
             quizType: "sleep",
             date: new Date(),
-            answers:transformedAnswers,
-            score:{
+            answers: transformedAnswers,
+            score: {
                 sleepScore
             },
         });
-        
+
         await RiskScore.findOneAndUpdate(
             { user: userId, date: today },
             {
                 $set: {
-                    sleep_quiz_score: sleepScore,   
+                    sleep_quiz_score: sleepScore,
                     sleep_quiz_date: today
                 }
             },
@@ -104,16 +105,20 @@ const submitSleepQuiz = async (req, res) => {
 
         // Cache the result
         await setCache(cacheKeys.quizScore(userId, 'sleep', today), {
-            message:"Sleep quiz submitted successfully",
+            message: "Sleep quiz submitted successfully",
             sleepScore
         }, 86400);
 
         // Invalidate quiz cache
         await invalidateQuizCache(userId);
 
+        // Check for badges
+        const newlyAwarded = await checkAndAwardBadges(userId, 'quiz');
+
         res.status(200).json({
-            message:"Sleep quiz submitted successfully",
-            sleepScore
+            message: "Sleep quiz submitted successfully",
+            sleepScore,
+            newlyAwarded
         })
     } catch (error) {
         console.error("Error submitting sleep quiz:", error);

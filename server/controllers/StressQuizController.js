@@ -1,17 +1,18 @@
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 
 const submitStressQuiz = async (req, res) => {
   try {
     const userId = req.userId;
     const { answers } = req.body;
     const today = new Date().toISOString().split("T")[0]
-    
+
     if (!answers || answers.length === 0)
       return res.status(400).json({ message: "At least one answer is required" });
 
-    const questionScores = { 
+    const questionScores = {
       1: { "Very low": 0, "Low": 0.25, "Moderate": 0.5, "High": 0.75, "Extreme": 1 },
       2: { "Work or studies": 0.5, "Family": 0.5, "Money": 0.75, "Health": 0.75, "Time pressure": 0.5 },
       3: { "Never": 0, "Rarely": 0.25, "Sometimes": 0.5, "Often": 0.75, "Always": 1 },
@@ -33,21 +34,21 @@ const submitStressQuiz = async (req, res) => {
     });
 
     const stressScore = +(totalScore / answers.length).toFixed(2);
-    
+
     const transformedAnswers = answers.map(a => ({
-        questionId: a.questionId,
-        selectedOptions: [a.answer] 
+      questionId: a.questionId,
+      selectedOptions: [a.answer]
     }));
 
     await DailyQuiz.create({
       userId,
       quizType: "stress",
       date: new Date(),
-      answers:transformedAnswers,
+      answers: transformedAnswers,
       score: { stressScore },
       finalScore: stressScore
     });
-    
+
     await RiskScore.findOneAndUpdate(
       { user: userId, date: today },
       {
@@ -68,9 +69,13 @@ const submitStressQuiz = async (req, res) => {
     // Invalidate quiz cache
     await invalidateQuizCache(userId);
 
+    // Check for badges
+    const newlyAwarded = await checkAndAwardBadges(userId, 'quiz');
+
     res.status(201).json({
       message: "Stress quiz submitted successfully",
-      stressScore
+      stressScore,
+      newlyAwarded
     });
 
   } catch (error) {

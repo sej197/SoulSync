@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+console.log(">>> SERVER CODE LOADING... VERSION 2.0 <<<");
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
@@ -10,17 +11,23 @@ import dailyQuizRoutes from "./routes/dailyQuizRoutes.js";
 import chatRoutes from "./routes/chatbotRoutes.js";
 import quizReminderRoutes from "./routes/QuizReminderRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
+import communityRoutes from "./routes/CommunityRoutes.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// Request Logging
+app.use((req, res, next) => {
+  console.log(`[REQUEST] ${req.method} ${req.url}`);
+  next();
+});
 
 // Middlewares
 app.use(cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true
+  origin: process.env.CLIENT_URL,
+  credentials: true
 }));
 app.use(express.json());
 app.use(cookieParser());
@@ -33,10 +40,18 @@ app.use("/api/journal", journalRoutes);
 app.use("/api/chatbot", chatRoutes);
 app.use("/api/reminders",quizReminderRoutes);
 app.use("/api/posts", postRoutes);
+app.use("/api/reminders", quizReminderRoutes);
+app.use("/api/community", communityRoutes);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("GLOBAL ERROR CAPTURED:", err);
+  res.status(500).json({ message: "Internal server error", error: err.message });
+});
 
 // Connect DB & start server
 connectDB().then(() => {
-    app.listen(PORT, () => {
-        console.log(`Server started at port ${PORT}`);
-    });
+  app.listen(PORT, () => {
+    console.log(`Server started at port ${PORT}`);
+  });
 });

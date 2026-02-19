@@ -4,6 +4,7 @@ import RiskScore from "../models/RiskScore.js";
 import axios from "axios";
 import { encrypt, decrypt } from "../utils/encryption.js";
 import { setCache, getCache, deleteCache, deleteCachePattern, invalidateJournalCache, cacheKeys } from "../utils/cacheUtils.js";
+import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 
 function decryptEntry(entry) {
     const obj = entry.toObject ? entry.toObject() : { ...entry };
@@ -12,8 +13,8 @@ function decryptEntry(entry) {
     return obj;
 }
 
-const getJournalEntries = async(req, res) =>{
-    try{
+const getJournalEntries = async (req, res) => {
+    try {
         const userId = req.userId;
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
@@ -22,7 +23,7 @@ const getJournalEntries = async(req, res) =>{
         // Check cache first
         const cacheKey = cacheKeys.journalEntries(userId, page);
         const cachedEntries = await getCache(cacheKey);
-        if(cachedEntries) {
+        if (cachedEntries) {
             return res.json(cachedEntries);
         }
 
@@ -30,11 +31,11 @@ const getJournalEntries = async(req, res) =>{
         const entries = await Journal.find({
             user: userId
         })
-        .sort({
-            entryTime: -1
-        })
-        .skip(skip)
-        .limit(limit);
+            .sort({
+                entryTime: -1
+            })
+            .skip(skip)
+            .limit(limit);
 
         const decryptedEntries = entries.map(decryptEntry);
 
@@ -57,20 +58,20 @@ const getJournalEntries = async(req, res) =>{
     }
 }
 
-const getJournalEntryByDate = async(req, res) => {
-    try{
+const getJournalEntryByDate = async (req, res) => {
+    try {
         const userId = req.userId;
-        const {entryTime} = req.query;
-        if(!entryTime){
+        const { entryTime } = req.query;
+        if (!entryTime) {
             return res.status(400).json({
                 message: "entryTime query parameter is required"
             });
         }
-        
+
         // Check cache first
         const cacheKey = cacheKeys.journalDate(userId, entryTime);
         const cachedEntry = await getCache(cacheKey);
-        if(cachedEntry) {
+        if (cachedEntry) {
             return res.json(cachedEntry);
         }
 
@@ -90,15 +91,15 @@ const getJournalEntryByDate = async(req, res) => {
             entryTime: -1
         })
 
-        if(entries.length === 0){
-            return res.status(404).json({   
+        if (entries.length === 0) {
+            return res.status(404).json({
                 message: "Journal entry not found for the specified date"
             });
         }
         const decryptedEntries = entries.map(decryptEntry);
-        
+
         const response = { entries: decryptedEntries };
-        
+
         // Cache for 24 hours (daily data)
         await setCache(cacheKey, response, 86400);
         
@@ -109,11 +110,11 @@ const getJournalEntryByDate = async(req, res) => {
     }
 }
 
-const createJournalEntry = async(req, res) =>{
-    try{
+const createJournalEntry = async (req, res) => {
+    try {
         const userId = req.userId;
-        const {text, subject, entryTime} = req.body;
-        if(!text){
+        const { text, subject, entryTime } = req.body;
+        if (!text) {
             return res.status(400).json({
                 message: "Text is required"
             });
@@ -133,7 +134,7 @@ const createJournalEntry = async(req, res) =>{
                 { text }
             );
             sentimentScore = response.data.paragraphScore ?? 0;
-        }catch(error){
+        } catch (error) {
             console.error("Sentiment API error:", error.message);
         }
 
@@ -156,9 +157,13 @@ const createJournalEntry = async(req, res) =>{
         // Invalidate related caches
         await invalidateJournalCache(userId);
 
+        // Check for badges
+        const newlyAwarded = await checkAndAwardBadges(userId, 'journal');
+
         res.status(201).json({
-            message: "Journal entry created successfully", 
-            entry: decryptEntry(entry)
+            message: "Journal entry created successfully",
+            entry: decryptEntry(entry),
+            newlyAwarded
         });
 
     }catch(error){
@@ -167,17 +172,17 @@ const createJournalEntry = async(req, res) =>{
     }
 }
 
-const deleteJournalEntry = async(req, res) =>{
-    try{
-        const userId = req.userId;  
-        const {entryId} = req.params;
-        
+const deleteJournalEntry = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { entryId } = req.params;
+
         const deleted = await Journal.findOneAndDelete({
             _id: entryId,
             user: userId
         });
 
-        if(!deleted) {
+        if (!deleted) {
             return res.status(404).json({
                 message: "Journal entry not found"
             });
@@ -195,13 +200,13 @@ const deleteJournalEntry = async(req, res) =>{
     }
 }
 
-const updateJournalEntry = async(req, res) =>{
-    try{
+const updateJournalEntry = async (req, res) => {
+    try {
         const userId = req.userId;
-        const {entryId} = req.params;
-        const {text, subject} = req.body;
-        
-        if(!text){
+        const { entryId } = req.params;
+        const { text, subject } = req.body;
+
+        if (!text) {
             return res.status(400).json({
                 message: "Text is required"
             });
@@ -212,37 +217,37 @@ const updateJournalEntry = async(req, res) =>{
             user: userId
         });
 
-        if(!entry) {
+        if (!entry) {
             return res.status(404).json({
                 message: "Journal entry not found"
             });
         }
 
         entry.text = encrypt(text);
-        if(subject) entry.subject = encrypt(subject);
-        
+        if (subject) entry.subject = encrypt(subject);
+
         await entry.save();
 
         const journalDate = entry.entryTime.toISOString().split("T")[0];
-        
-        await RiskScore.findOneAndUpdate({ 
-            user: userId, 
-            date: journalDate 
+
+        await RiskScore.findOneAndUpdate({
+            user: userId,
+            date: journalDate
         },
-        {
-            $set: {
-                journal_score: entry.sentimentScore,
-                journal_date: journalDate,
+            {
+                $set: {
+                    journal_score: entry.sentimentScore,
+                    journal_date: journalDate,
+                },
             },
-        },
-        { upsert: true, new: true }
+            { upsert: true, new: true }
         );
 
         // Invalidate related caches
         await invalidateJournalCache(userId);
 
         res.json({
-            message: "Journal entry updated successfully", 
+            message: "Journal entry updated successfully",
             entry: decryptEntry(entry)
         });
     }catch(error){
@@ -251,21 +256,21 @@ const updateJournalEntry = async(req, res) =>{
     }
 }
 
-const getCalendarDates = async(req, res) => {
-    try{
+const getCalendarDates = async (req, res) => {
+    try {
         const userId = req.userId;
         const { month, year } = req.query;
 
         // Check cache first
         const cacheKey = cacheKeys.calendarDates(userId, month, year);
         const cachedDates = await getCache(cacheKey);
-        if(cachedDates) {
+        if (cachedDates) {
             return res.json(cachedDates);
         }
 
         let matchQuery = { user: new mongoose.Types.ObjectId(userId) };
 
-        if(month && year){
+        if (month && year) {
             const startDate = new Date(year, month - 1, 1);
             const endDate = new Date(year, month, 0, 23, 59, 59, 999);
             matchQuery.entryTime = { $gte: startDate, $lte: endDate };
@@ -280,7 +285,7 @@ const getCalendarDates = async(req, res) => {
             dateMap[localDate] = (dateMap[localDate] || 0) + 1;
         });
 
-        const calendarDates = Object.entries(dateMap) 
+        const calendarDates = Object.entries(dateMap)
             .sort((a, b) => a[0].localeCompare(b[0]))
             .map(([date, count]) => ({ date, entryCount: count }));
 
@@ -296,4 +301,4 @@ const getCalendarDates = async(req, res) => {
     }
 }
 
-export {getJournalEntries, createJournalEntry, deleteJournalEntry, updateJournalEntry, getJournalEntryByDate, getCalendarDates};
+export { getJournalEntries, createJournalEntry, deleteJournalEntry, updateJournalEntry, getJournalEntryByDate, getCalendarDates };

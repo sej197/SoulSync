@@ -5,25 +5,32 @@ const redisClient = createClient({
     host: process.env.REDIS_HOST || "localhost",
     port: process.env.REDIS_PORT || 6379,
   },
-  password: process.env.REDIS_PASSWORD || undefined,
 });
 
+let redisConnected = false;
+
+// Suppress connection errors to avoid spam - they're handled gracefully in cache utils
 redisClient.on("error", (err) => {
-  console.log("Redis Client Error:", err);
+  redisConnected = false;
+  // Only log if it's not the expected ECONNREFUSED error
+  if (!err.message.includes("ECONNREFUSED")) {
+    console.error("Redis Error:", err.message);
+  }
 });
 
 redisClient.on("connect", () => {
-  console.log("Redis connected successfully");
+  console.log("✓ Redis connected successfully");
+  redisConnected = true;
 });
 
 (async () => {
   try {
     await redisClient.connect();
-    console.log("Redis connection established");
+    redisConnected = true;
   } catch (error) {
-    console.error("Failed to connect to Redis:", error);
-    process.exit(1);
+    // Redis not available - caching will be disabled silently
+    redisConnected = false;
   }
 })();
 
-export default redisClient;
+export { redisClient, redisConnected };

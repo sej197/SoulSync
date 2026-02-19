@@ -9,6 +9,7 @@ const DEFAULT_CACHE_TTL = 3600; // 1 hour in seconds
  * @param {number} ttl - Time to live in seconds (default: 1 hour)
  */
 export const setCache = async (key, value, ttl = DEFAULT_CACHE_TTL) => {
+  if (!redisConnected) return; // Skip caching if Redis not available
   try {
     await redisClient.setEx(key, ttl, JSON.stringify(value));
   } catch (error) {
@@ -22,6 +23,7 @@ export const setCache = async (key, value, ttl = DEFAULT_CACHE_TTL) => {
  * @returns {any} Parsed cached value or null
  */
 export const getCache = async (key) => {
+  if (!redisConnected) return null; // Return null if Redis not available
   try {
     const data = await redisClient.get(key);
     return data ? JSON.parse(data) : null;
@@ -36,6 +38,7 @@ export const getCache = async (key) => {
  * @param {string} key - Cache key
  */
 export const deleteCache = async (key) => {
+  if (!redisConnected) return; // Skip if Redis not available
   try {
     await redisClient.del(key);
   } catch (error) {
@@ -48,6 +51,7 @@ export const deleteCache = async (key) => {
  * @param {string} pattern - Redis pattern (e.g., "user:123:*")
  */
 export const deleteCachePattern = async (pattern) => {
+  if (!redisConnected) return; // Skip if Redis not available
   try {
     const keys = await redisClient.keys(pattern);
     if (keys.length > 0) {
@@ -66,23 +70,23 @@ export const cacheKeys = {
   user: (userId) => `user:${userId}`,
   userProfile: (userId) => `user:${userId}:profile`,
   userAuth: (userId) => `user:${userId}:auth`,
-  
+
   // Quiz cache
   quizScore: (userId, quizType, date) => `quiz:${userId}:${quizType}:${date}`,
   dailyQuiz: (userId, date) => `quiz:${userId}:daily:${date}`,
   quizHistory: (userId) => `quiz:${userId}:history`,
-  
+
   // Journal cache
   journalEntries: (userId, page) => `journal:${userId}:entries:${page}`,
   journalEntry: (userId, entryId) => `journal:${userId}:${entryId}`,
   journalDate: (userId, date) => `journal:${userId}:date:${date}`,
   calendarDates: (userId, month, year) => `journal:${userId}:calendar:${month}:${year}`,
-  
+
   // Risk cache
   riskDaily: (userId, date) => `risk:${userId}:daily:${date}`,
   riskWeekly: (userId) => `risk:${userId}:weekly`,
   riskMonthly: (userId) => `risk:${userId}:monthly`,
-  
+
   // Chat cache
   chatList: (userId) => `chat:${userId}:list`,
   chat: (chatId) => `chat:${chatId}`,
@@ -94,7 +98,7 @@ export const cacheKeys = {
  */
 export const invalidateUserCache = async (userId) => {
   try {
-    await deleteCachePattern(`user:${userId}:*`);
+    await deleteCachePattern(`user:${userId}*`);
   } catch (error) {
     console.error(`Error invalidating user cache for ${userId}:`, error);
   }

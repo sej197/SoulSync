@@ -15,7 +15,8 @@ import {
     Users,
     MoreVertical,
     AlertTriangle,
-    ShieldAlert
+    ShieldAlert,
+    MessagesSquare
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -31,6 +32,7 @@ import {
     updateCommentApi,
     deleteCommentApi
 } from '../lib/postApi';
+import GroupChat from '../components/community/GroupChat';
 
 export default function CommunityPage() {
     const { communityId } = useParams();
@@ -69,6 +71,9 @@ export default function CommunityPage() {
 
     // Filter state
     const [filterFlagged, setFilterFlagged] = useState(false);
+
+    // Tab state: 'posts' or 'chat'
+    const [activeTab, setActiveTab] = useState('posts');
 
     // Hate speech / warning state
     const [userWarnings, setUserWarnings] = useState(0);
@@ -388,6 +393,40 @@ export default function CommunityPage() {
                     </div>
                 )}
 
+                {/* Tab Toggle: Posts vs Chat */}
+                <div className="flex items-center gap-3 mb-6">
+                    <button
+                        onClick={() => setActiveTab('posts')}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                            activeTab === 'posts'
+                                ? 'bg-[#7B1FA2] text-white shadow-md'
+                                : 'bg-white/70 text-[#5D4037] border border-white/60 hover:bg-white'
+                        }`}
+                    >
+                        <MessageCircle size={16} />
+                        Posts
+                    </button>
+                    <button
+                        onClick={() => setActiveTab('chat')}
+                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
+                            activeTab === 'chat'
+                                ? 'bg-[#7B1FA2] text-white shadow-md'
+                                : 'bg-white/70 text-[#5D4037] border border-white/60 hover:bg-white'
+                        }`}
+                    >
+                        <MessagesSquare size={16} />
+                        Group Chat
+                    </button>
+                </div>
+
+                {activeTab === 'chat' ? (
+                    <GroupChat
+                        communityId={communityId}
+                        communityName={communityName}
+                        userBanned={userBanned}
+                    />
+                ) : (
+                <>
                 {/* New Post Toggle */}
                 <div className="mb-6">
                     {userBanned ? (
@@ -785,6 +824,8 @@ export default function CommunityPage() {
                             </div>
                         )}
                     </div>
+                )}
+                </>
                 )}
             </div>
 

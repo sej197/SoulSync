@@ -25,53 +25,65 @@ def build_prompt(data: dict) -> str:
     days_since_checkin         = data.get("days_since_checkin", 0)
     consecutive_high_risk_days = data.get("consecutive_high_risk_days", 0)
 
-    factors_text = ", ".join(top_factors) if top_factors else "no specific factors flagged"
+    context_parts = []
 
-    streak_context = ""
-    if consecutive_high_risk_days >= 3:
-        streak_context = f"They have been in a high-risk zone for {consecutive_high_risk_days} consecutive days — this is a persistent pattern, not a one-off."
-    elif consecutive_high_risk_days >= 2:
-        streak_context = "This is their second consecutive high-risk day."
+    if risk_level in ("CRITICAL", "HIGH"):
+        if consecutive_high_risk_days >= 3:
+            context_parts.append(f"This person has been in a high-risk state for {consecutive_high_risk_days} consecutive days.")
+        elif consecutive_high_risk_days == 2:
+            context_parts.append("This is their second high-risk day in a row.")
+        else:
+            context_parts.append("They are having a very difficult day.")
+    elif risk_level == "MODERATE":
+        context_parts.append("They're having a moderately hard day.")
+    else:
+        context_parts.append("They're doing relatively okay today.")
 
-    checkin_context = ""
+    trend_map = {
+        "improving": "Things have been gradually improving.",
+        "worsening": "Their overall state has been declining recently.",
+        "stable": "Their state has been consistent lately.",
+    }
+    if trend in trend_map:
+        context_parts.append(trend_map[trend])
+
     if days_since_checkin >= 3:
-        checkin_context = f"They haven't checked in for {days_since_checkin} days and just returned."
+        context_parts.append(f"They were gone for {days_since_checkin} days and just came back.")
     elif days_since_checkin > 0:
-        checkin_context = f"They missed {days_since_checkin} day(s) before this check-in."
+        context_parts.append(f"They missed {days_since_checkin} day(s) but showed up today.")
 
-    return f"""You are a warm, compassionate mental wellness companion inside a mental health app called SoulSync.
+    factors_text = ", ".join(top_factors) if top_factors else "general low mood"
+    context = " ".join(context_parts)
 
-A user has just completed their mental health check-in. Here is their current state:
-- Risk Level: {risk_level}
-- Trend: {trend}
-- Key Factors: {factors_text}
-{f"- {streak_context}" if streak_context else ""}
-{f"- {checkin_context}" if checkin_context else ""}
+    return f"""You are a compassionate mental wellness companion in an app called SoulSync.
 
-Your job is to respond with exactly two things:
+A user just completed their daily check-in. Here is their situation:
+{context}
+Their main struggles today: {factors_text}
 
-1. A MOTIVATIONAL MESSAGE (2–3 sentences, warm and personal):
-   - CRITICAL/HIGH risk: Be deeply compassionate. Acknowledge their struggle directly and genuinely.
-     Do NOT be dismissive or falsely cheerful. Remind them their feelings are valid and they are not alone.
-     If it's a streak of high-risk days, acknowledge that it's been a hard stretch.
-   - MODERATE risk: Be encouraging. Acknowledge the effort it takes to keep checking in.
-   - LOW risk: Be warm and affirming. Celebrate their consistency and wellbeing.
-   - If they returned after missing days: acknowledge the courage it took to come back.
+Write a response with two parts:
 
-2. TWO COPING STEPS (specific and achievable today, not generic advice):
-   - Tailor each step directly to their flagged factors.
-   - Depression factor → behavioural activation (one small meaningful action, not just "go for a walk")
-   - Anxiety factor → a specific grounding or breathing technique with brief instructions
-   - Stress factor → a specific regulation technique (name it, e.g. "box breathing", "5-4-3-2-1")
-   - Sleep factor → one concrete sleep hygiene action for tonight specifically
-   - If multiple factors, pick the two most actionable combinations.
-   - Steps must be doable in under 30 minutes.
+1. MOTIVATIONAL MESSAGE (2-3 sentences)
+- Speak to them directly and warmly
+- Emotionally match their situation — don't be cheerful if they're suffering
+- If HIGH/CRITICAL risk, acknowledge the pain honestly before any hope
+- If they returned after missing days, recognise that coming back took courage
+- Every response must feel fresh — vary your tone, opening, and phrasing
 
-Respond ONLY with valid JSON in this exact format (no markdown, no extra text, no code fences):
+2. TWO COPING STEPS grounded in CBT (Cognitive Behavioural Therapy)
+- Use CBT techniques appropriate to their struggles: cognitive restructuring for negative thoughts, behavioural activation for depression, grounding techniques for anxiety, sleep hygiene for sleep issues, etc.
+- Directly address their specific struggles: {factors_text}
+- Each step must be concrete and doable within 30 minutes
+- Name the technique (e.g. box breathing, thought record, behavioural activation) and give just enough instruction to actually do it
+- Do NOT give generic advice like "talk to someone" or "take a walk"
+- Every response must suggest different techniques — never repeat the same ones
+
+Reply ONLY in this JSON format, no markdown, no extra text:
 {{
   "motivational_message": "...",
-  "coping_steps": ["step 1 with specific detail", "step 2 with specific detail"]
+  "coping_steps": ["step 1", "step 2"]
 }}"""
+
 
 def get_recommendations(data: dict) -> dict:
     client = get_client()

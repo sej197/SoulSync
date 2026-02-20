@@ -1,6 +1,6 @@
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
-import { setCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+import { setCache, invalidateQuizCache, invalidateRiskCache, cacheKeys } from "../utils/cacheUtils.js";
 import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 
 const submitSleepQuiz = async (req, res) => {
@@ -109,8 +109,9 @@ const submitSleepQuiz = async (req, res) => {
             sleepScore
         }, 86400);
 
-        // Invalidate quiz cache
+        // Invalidate quiz and risk caches
         await invalidateQuizCache(userId);
+        await invalidateRiskCache(userId);
 
         // Check for badges
         const newlyAwarded = await checkAndAwardBadges(userId, 'quiz');

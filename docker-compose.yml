@@ -12,6 +12,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
+      - CLIENT_URL=http://client:5173
     volumes:
       - ./server:/app
       - /app/node_modules

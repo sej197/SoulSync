@@ -120,7 +120,7 @@ const Profile = () => {
                                             <div className="flex flex-wrap gap-3">
                                                 {user.communities && user.communities.length > 0 ? (
                                                     user.communities.map((c, i) => (
-                                                        <span key={i} className="px-5 py-2 rounded-full bg-[#E0F2F1] text-[#00695C] font-bold text-sm border border-[#B2DFDB]">{c}</span>
+                                                        <span key={c._id || i} className="px-5 py-2 rounded-full bg-[#E0F2F1] text-[#00695C] font-bold text-sm border border-[#B2DFDB]">{c.name || c}</span>
                                                     ))
                                                 ) : (
                                                     <span className="text-sm text-[#8D6E63] italic font-medium">Join a community to share your journey</span>

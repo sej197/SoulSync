@@ -85,9 +85,9 @@ const register = async (req, res) => {
         return res.json({
             message: "User registered successfully!"
         })
-    } catch (error) {
-        res.status(500).json({ message: "Server error" });
+    }catch(error){
         console.error("Error during registration process", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -148,9 +148,9 @@ const login = async (req, res) => {
         return res.json({
             message: "Login successful"
         });
-    } catch (error) {
-        res.status(500).json({ message: "Server error" });
+    }catch(error){
         console.error("Error during login process", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -169,9 +169,9 @@ const logout = async (req, res) => {
         return res.json({
             message: "Logout successful"
         });
-    } catch (error) {
-        res.status(500).json({ message: "Server error" });
+    }catch(error){
         console.error("Error during logout", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -186,13 +186,22 @@ const isAuthenticated = async (req, res) => {
         // Check cache first
         const cachedUser = await getCache(cacheKeys.user(req.userId));
         if (cachedUser) {
-            return res.json({
-                isAuthenticated: true,
-                user: cachedUser
-            });
+            // Validate cached communities have names (not raw IDs)
+            const communitiesValid = !cachedUser.communities?.length || 
+                (typeof cachedUser.communities[0] === 'object' && cachedUser.communities[0]?.name);
+            if (communitiesValid) {
+                return res.json({
+                    isAuthenticated: true,
+                    user: cachedUser
+                });
+            }
+            // Stale cache — clear it and re-fetch
+            await deleteCache(cacheKeys.user(req.userId));
         }
 
-        const user = await User.findById(req.userId).select('-password');
+        const user = await User.findById(req.userId)
+            .select('-password')
+            .populate('communities', 'name');
 
         if (!user) {
             return res.json({
@@ -212,7 +221,7 @@ const isAuthenticated = async (req, res) => {
             gender: user.gender,
             contact: user.contact,
             emergency_contacts: user.emergency_contacts,
-            communities: user.communities,
+            communities: user.communities.map(c => ({ _id: c._id, name: c.name })),
             streak: user.streak,
         };
 
@@ -223,10 +232,10 @@ const isAuthenticated = async (req, res) => {
             isAuthenticated: true,
             user: userData
         });
-
-    } catch (error) {
-        res.status(500).json({ message: "Server error" });
+        
+    }catch(error){
         console.error("Error checking authentication status", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 
@@ -275,9 +284,9 @@ const updateProfile = async (req, res) => {
             user: userData
         });
 
-    } catch (error) {
-        res.status(500).json({ message: "Server error" });
+    }catch(error){
         console.error("Error updating profile", error);
+        res.status(500).json({message: "Server error"});
     }
 }
 

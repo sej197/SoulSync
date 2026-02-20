@@ -1,6 +1,5 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import express from "express";
-console.log(">>> SERVER CODE LOADING... VERSION 2.0 <<<");
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
@@ -10,7 +9,10 @@ import journalRoutes from "./routes/journalRoutes.js";
 import dailyQuizRoutes from "./routes/dailyQuizRoutes.js";
 import chatRoutes from "./routes/chatbotRoutes.js";
 import quizReminderRoutes from "./routes/QuizReminderRoutes.js";
+import postRoutes from "./routes/postRoutes.js";
 import communityRoutes from "./routes/CommunityRoutes.js";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,6 +37,8 @@ app.use("/api/risk", riskRoutes);
 app.use("/api/quiz", dailyQuizRoutes);
 app.use("/api/journal", journalRoutes);
 app.use("/api/chatbot", chatRoutes);
+app.use("/api/reminders",quizReminderRoutes);
+app.use("/api/posts", postRoutes);
 app.use("/api/reminders", quizReminderRoutes);
 app.use("/api/community", communityRoutes);
 

@@ -2,10 +2,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 
-# Load environment variables from .env file FIRST before importing routes
+
 load_dotenv()
 
 from routes.sentiment_routes import router as sentiment_router
+from routes.hatespeech_routes import router as hatespeech_router
 import routes.recommendations as recommendation
 
 app = FastAPI()
@@ -20,6 +21,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(sentiment_router, prefix="/sentiment")
+app.include_router(hatespeech_router)
 app.include_router(recommendation.router, prefix="/api")
 
 @app.get("/")

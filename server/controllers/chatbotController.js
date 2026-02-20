@@ -1,4 +1,3 @@
-// j:\sayalee\innovateyou\SoulSync\server\controllers\chatbotController.js
 import { encrypt, decrypt } from "../utils/encryption.js";
 import UserChat from "../models/Botuserchat.js";
 import Chat from "../models/Botchat.js";

@@ -1,5 +1,6 @@
 import Community from "../models/Community.js";
 import User from "../models/User.js";
+import { invalidateUserCache } from "../utils/cacheUtils.js";
 
 const checkIsCreator = (creator, userId) => {
     if (!creator) return false;
@@ -33,6 +34,7 @@ const createCommunity = async (req, res) => {
         await User.findByIdAndUpdate(userId, {
           $addToSet : {communities: community._id}
         })
+        await invalidateUserCache(userId);
         res.status(201).json({
             message :"community created successfully",
             community
@@ -79,6 +81,7 @@ const joinCommunity = async (req, res) => {
                 communities:community._id
             }
         })
+        await invalidateUserCache(userId);
         return res.status(200).json({
             message:"joined community successfully"
         })
@@ -110,6 +113,7 @@ const leaveCommunity = async (req, res) => {
         await User.findByIdAndUpdate(userId, {
             $pull:{communities :community._id}
         })
+        await invalidateUserCache(userId);
         return res.status(200).json({message:"left community successfully"})
     }catch(error){
         console.error("Leave community error:", error);
@@ -142,6 +146,7 @@ const apporveRequest = async(req, res) =>{
         await User.findByIdAndUpdate(userId, {
             $addToSet: { communities: community._id }
         });
+        await invalidateUserCache(userId);
         return res.status(200).json({
             message:"user approved successfully"
         })

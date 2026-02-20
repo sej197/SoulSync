@@ -12,7 +12,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - CLIENT_URL=http://client:5173
+      - CLIENT_URL=http://localhost:5173
     volumes:
       - ./server:/app
       - /app/node_modules
@@ -34,6 +34,8 @@ services:
       - "5173:5173"
     depends_on:
       - server
+    environment:
+      - VITE_API_URL=http://server:5000
     stdin_open: true
     tty: true
     volumes:

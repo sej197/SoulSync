@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const journalapi = axios.create({
-    baseURL: `${import.meta.env.VITE_BASE_URL}/api/journal`,
+    baseURL: `/api/journal`,
     withCredentials: true
 });
 

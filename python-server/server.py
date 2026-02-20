@@ -15,13 +15,13 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000"],  
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 app.include_router(sentiment_router, prefix="/sentiment")
-app.include_router(hatespeech_router)
+app.include_router(hatespeech_router, prefix="/hatespeech")
 app.include_router(recommendation.router, prefix="/api")
 
 @app.get("/")

@@ -1,8 +1,10 @@
 import dotenv from "dotenv";
 import express from "express";
+import http from "http";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
+import { setupSocket } from "./config/socket.js";
 import riskRoutes from "./routes/riskRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import journalRoutes from "./routes/journalRoutes.js";
@@ -11,11 +13,16 @@ import chatRoutes from "./routes/chatbotRoutes.js";
 import quizReminderRoutes from "./routes/QuizReminderRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import communityRoutes from "./routes/CommunityRoutes.js";
+import chatRoomRoutes from "./routes/chatRoomRoutes.js";
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
+
+// Setup Socket.IO
+setupSocket(server);
 
 // Request Logging
 app.use((req, res, next) => {
@@ -41,6 +48,7 @@ app.use("/api/reminders",quizReminderRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/reminders", quizReminderRoutes);
 app.use("/api/community", communityRoutes);
+app.use("/api/chat", chatRoomRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -50,7 +58,7 @@ app.use((err, req, res, next) => {
 
 // Connect DB & start server
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Server started at port ${PORT}`);
   });
 });

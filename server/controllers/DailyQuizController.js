@@ -1,7 +1,7 @@
 import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import Streak from "../models/Streak.js";
-import { setCache, getCache, invalidateQuizCache, cacheKeys } from "../utils/cacheUtils.js";
+import { setCache, getCache, invalidateQuizCache, invalidateRiskCache, cacheKeys } from "../utils/cacheUtils.js";
 import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 
 // Helper function to calculate streak
@@ -9,96 +9,66 @@ const calculateStreak = async (userId) => {
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
 
-    // Get all quizzes for this user sorted by date descending
-    const userQuizzes = await DailyQuiz.find({
-      userId,
-      quizType: "daily",
-      date: { $lt: tomorrow }
-    })
+    const userQuizzes = await DailyQuiz.find({ userId, quizType: "daily" })
       .sort({ date: -1 })
       .lean();
 
     if (userQuizzes.length === 0) {
-      return {
-        currentStreak: 0,
-        longestStreak: 0,
-        lastQuizDate: null,
-        totalQuizzesCompleted: 0
-      };
+      return { currentStreak: 0, longestStreak: 0, lastQuizDate: null, totalQuizzesCompleted: 0 };
     }
+
+    const lastQuizDate = new Date(userQuizzes[0].date);
+    lastQuizDate.setHours(0, 0, 0, 0);
+
+    // If last quiz wasn't today or yesterday, streak is broken
+    const isStreakActive =
+      lastQuizDate.getTime() === today.getTime() ||
+      lastQuizDate.getTime() === yesterday.getTime();
 
     let currentStreak = 0;
     let longestStreak = 0;
-    let tempStreak = 0;
-    let lastQuizDate = userQuizzes[0].date;
+    let tempStreak = 1; // start at 1 for the first quiz
 
-    // Check if last quiz was today or yesterday
-    const lastQuizDateOnly = new Date(lastQuizDate);
-    lastQuizDateOnly.setHours(0, 0, 0, 0);
-    
-    const yesterday = new Date(today);
-    yesterday.setDate(yesterday.getDate() - 1);
+    for (let i = 0; i < userQuizzes.length - 1; i++) {
+      const curr = new Date(userQuizzes[i].date);
+      curr.setHours(0, 0, 0, 0);
+      const next = new Date(userQuizzes[i + 1].date);
+      next.setHours(0, 0, 0, 0);
 
-    const isStreakActive = 
-      (lastQuizDateOnly.getTime() === today.getTime()) || 
-      (lastQuizDateOnly.getTime() === yesterday.getTime());
+      const diff = (curr.getTime() - next.getTime()) / (1000 * 60 * 60 * 24);
 
-    if (!isStreakActive) {
-      // Streak is broken
-      tempStreak = 0;
-    }
-
-    // Calculate streaks
-    for (let i = 0; i < userQuizzes.length; i++) {
-      tempStreak++;
-      longestStreak = Math.max(longestStreak, tempStreak);
-
-      // Check if next quiz is consecutive day
-      if (i + 1 < userQuizzes.length) {
-        const currentDate = new Date(userQuizzes[i].date);
-        currentDate.setHours(0, 0, 0, 0);
-        
-        const nextDate = new Date(userQuizzes[i + 1].date);
-        nextDate.setHours(0, 0, 0, 0);
-
-        const dayDifference = (currentDate.getTime() - nextDate.getTime()) / (1000 * 60 * 60 * 24);
-
-        if (dayDifference !== 1) {
-          // Break in sequence
-          if (isStreakActive && i === 0) {
-            currentStreak = tempStreak;
-          }
-          tempStreak = 0;
-        }
+      if (diff === 1) {
+        tempStreak++;
       } else {
-        // Last element
-        if (isStreakActive) {
+        // streak broken — capture currentStreak from the first run if still not set
+        if (isStreakActive && currentStreak === 0) {
           currentStreak = tempStreak;
         }
+        longestStreak = Math.max(longestStreak, tempStreak);
+        tempStreak = 1;
       }
+    }
+
+    // After loop, finalize
+    longestStreak = Math.max(longestStreak, tempStreak);
+    if (isStreakActive && currentStreak === 0) {
+      currentStreak = tempStreak;
     }
 
     return {
       currentStreak,
       longestStreak,
-      lastQuizDate,
-      totalQuizzesCompleted: userQuizzes.length
+      lastQuizDate: userQuizzes[0].date,
+      totalQuizzesCompleted: userQuizzes.length,
     };
   } catch (error) {
     console.error("Error calculating streak:", error);
-    return {
-      currentStreak: 0,
-      longestStreak: 0,
-      lastQuizDate: null,
-      totalQuizzesCompleted: 0
-    };
+    return { currentStreak: 0, longestStreak: 0, lastQuizDate: null, totalQuizzesCompleted: 0 };
   }
 };
-
 // Helper function to update streak in database
 const updateStreakData = async (userId) => {
   try {
@@ -369,8 +339,9 @@ export const submitDailyQuiz = async (req, res) => {
       }
     }, 86400); // Cache for 24 hours
 
-    // Invalidate quiz history cache
+    // Invalidate quiz and risk caches
     await invalidateQuizCache(userId);
+    await invalidateRiskCache(userId);
 
     // Check for badges asynchronously but await for response data
     const newlyAwarded = await checkAndAwardBadges(userId, 'quiz');

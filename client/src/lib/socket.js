@@ -60,3 +60,17 @@ export const emitStopTyping = (communityId) => {
         s.emit("stop-typing", communityId);
     }
 };
+
+export const joinCommunityPosts = (communityId) => {
+    const s = getSocket();
+    if (s.connected) {
+        s.emit("join-community", communityId);
+    }
+};
+
+export const leaveCommunityPosts = (communityId) => {
+    const s = getSocket();
+    if (s.connected) {
+        s.emit("leave-community", communityId);
+    }
+};

@@ -32,6 +32,7 @@ import {
     updateCommentApi,
     deleteCommentApi
 } from '../lib/postApi';
+import { connectSocket, getSocket, joinCommunityPosts, leaveCommunityPosts } from '../lib/socket';
 import GroupChat from '../components/community/GroupChat';
 
 export default function CommunityPage() {
@@ -114,6 +115,119 @@ export default function CommunityPage() {
         loadPosts(1);
         setPage(1);
     }, [communityId, loadPosts]);
+
+    // Socket.IO: real-time post & comment updates
+    useEffect(() => {
+        const socket = connectSocket();
+
+        const onConnect = () => joinCommunityPosts(communityId);
+
+        if (socket.connected) {
+            joinCommunityPosts(communityId);
+        }
+        socket.on('connect', onConnect);
+
+        // New post from another user
+        socket.on('new-post', (post) => {
+            setPosts(prev => {
+                if (prev.some(p => p._id === post._id)) return prev;
+                return [post, ...prev];
+            });
+        });
+
+        // Post updated
+        socket.on('update-post', (updated) => {
+            setPosts(prev => prev.map(p =>
+                p._id === updated._id ? { ...p, ...updated } : p
+            ));
+        });
+
+        // Post deleted
+        socket.on('delete-post', ({ postId }) => {
+            setPosts(prev => prev.filter(p => p._id !== postId));
+        });
+
+        // Reaction updated
+        socket.on('update-reactions', ({ postId, upvotesCount, downvotesCount, upvotes, downvotes }) => {
+            setPosts(prev => prev.map(p =>
+                p._id === postId
+                    ? {
+                        ...p,
+                        upvotesCount,
+                        downvotesCount,
+                        isUpvoted: upvotes.includes(user?.id),
+                        isDownvoted: downvotes.includes(user?.id)
+                    }
+                    : p
+            ));
+        });
+
+        // New comment
+        socket.on('new-comment', ({ postId, comment, commentsCount }) => {
+            setPosts(prev => prev.map(p =>
+                p._id === postId ? { ...p, commentsCount } : p
+            ));
+            setCommentsData(prev => {
+                if (!prev[postId]) return prev;
+                const existing = prev[postId];
+                if (existing.comments.some(c => c._id === comment._id)) return prev;
+                return {
+                    ...prev,
+                    [postId]: {
+                        ...existing,
+                        comments: [...existing.comments, comment],
+                        totalComments: commentsCount
+                    }
+                };
+            });
+        });
+
+        // Comment updated
+        socket.on('update-comment', ({ postId, comment }) => {
+            setCommentsData(prev => {
+                if (!prev[postId]) return prev;
+                return {
+                    ...prev,
+                    [postId]: {
+                        ...prev[postId],
+                        comments: prev[postId].comments.map(c =>
+                            c._id === comment._id ? comment : c
+                        )
+                    }
+                };
+            });
+        });
+
+        // Comment deleted
+        socket.on('delete-comment', ({ postId, commentId, commentsCount }) => {
+            setPosts(prev => prev.map(p =>
+                p._id === postId ? { ...p, commentsCount } : p
+            ));
+            setCommentsData(prev => {
+                if (!prev[postId]) return prev;
+                return {
+                    ...prev,
+                    [postId]: {
+                        ...prev[postId],
+                        comments: prev[postId].comments.filter(c => c._id !== commentId),
+                        totalComments: commentsCount
+                    }
+                };
+            });
+        });
+
+        return () => {
+            leaveCommunityPosts(communityId);
+            socket.off('connect', onConnect);
+            socket.off('new-post');
+            socket.off('update-post');
+            socket.off('delete-post');
+            socket.off('update-reactions');
+            socket.off('new-comment');
+            socket.off('update-comment');
+            socket.off('delete-comment');
+        };
+    }, [communityId, user?.id]);
 
     const handleLoadMore = () => {
         const next = page + 1;

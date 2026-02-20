@@ -5,6 +5,13 @@ import Community from "../models/Community.js";
 import User from "../models/User.js";
 import axios from "axios";
 
+let ioInstance = null;
+
+export function getIO() {
+    if (!ioInstance) throw new Error("Socket.IO not initialized");
+    return ioInstance;
+}
+
 const HATE_SPEECH_THRESHOLD = 0.6;
 
 const checkHateSpeech = async (text) => {
@@ -28,6 +35,8 @@ export function setupSocket(server) {
         }
     });
 
+    ioInstance = io;
+
     // Authenticate socket connections via JWT cookie
     io.use((socket, next) => {
         try {
@@ -50,6 +59,17 @@ export function setupSocket(server) {
 
     io.on("connection", (socket) => {
         console.log(`[SOCKET] User ${socket.userId} connected`);
+
+        // Join community posts room (for live post/comment updates)
+        socket.on("join-community", (communityId) => {
+            socket.join(`posts:${communityId}`);
+            console.log(`[SOCKET] User ${socket.userId} joined posts room for ${communityId}`);
+        });
+
+        socket.on("leave-community", (communityId) => {
+            socket.leave(`posts:${communityId}`);
+            console.log(`[SOCKET] User ${socket.userId} left posts room for ${communityId}`);
+        });
 
         // Join a community chat room
         socket.on("join-room", async (communityId) => {

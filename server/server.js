@@ -1,6 +1,5 @@
-import express from "express";
 import dotenv from "dotenv";
-console.log(">>> SERVER CODE LOADING... VERSION 2.0 <<<");
+import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";

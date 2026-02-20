@@ -11,6 +11,10 @@ const commentSchema = new mongoose.Schema(
       type: String, 
       required: true,
       trim: true
+    },
+    hate_speech_flag: {
+      type: Boolean,
+      default: false
     }
   },
   {

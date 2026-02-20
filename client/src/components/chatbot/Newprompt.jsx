@@ -125,8 +125,6 @@ export default function Newprompt({ chatId }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const text = ques || e.target.text.value;
-        console.log("[Newprompt] handleSubmit triggered. Text:", text, "ChatId:", activeChatId);
-        alert("[Newprompt] Submitting: " + text);
         if (!text) return;
         add(text);
     };

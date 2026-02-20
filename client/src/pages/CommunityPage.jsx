@@ -13,7 +13,9 @@ import {
     ChevronDown,
     ChevronUp,
     Users,
-    MoreVertical
+    MoreVertical,
+    AlertTriangle,
+    ShieldAlert
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -62,6 +64,16 @@ export default function CommunityPage() {
     const [editCommentText, setEditCommentText] = useState('');
     const [openMenu, setOpenMenu] = useState(null); // postId of open menu
 
+    // Delete confirmation modal
+    const [deleteConfirm, setDeleteConfirm] = useState(null); // { type: 'post'|'comment', postId, commentId? }
+
+    // Filter state
+    const [filterFlagged, setFilterFlagged] = useState(false);
+
+    // Hate speech / warning state
+    const [userWarnings, setUserWarnings] = useState(0);
+    const [userBanned, setUserBanned] = useState(false);
+
     const [scrollY, setScrollY] = useState(0);
 
     useEffect(() => {
@@ -75,9 +87,11 @@ export default function CommunityPage() {
         try {
             setLoading(true);
             const res = await fetchPosts(communityId, pageNum);
-            const { formattedPosts, name, description } = res.data;
+            const { formattedPosts, name, description, userWarnings: uw, userBanned: ub } = res.data;
             setCommunityName(name);
             setCommunityDesc(description);
+            if (uw !== undefined) setUserWarnings(uw);
+            if (ub !== undefined) setUserBanned(ub);
             if (append) {
                 setPosts(prev => [...prev, ...formattedPosts]);
             } else {
@@ -108,8 +122,13 @@ export default function CommunityPage() {
         if (!newText.trim()) return toast.error('Post text is required');
         try {
             setCreating(true);
-            await createPostApi(communityId, { title: newTitle.trim(), text: newText.trim() });
-            toast.success('Post created!');
+            const res = await createPostApi(communityId, { title: newTitle.trim(), text: newText.trim() });
+            if (res.data.hate_speech_warning) {
+                toast.error(res.data.message, { duration: 6000, icon: '⚠️' });
+                setUserWarnings(prev => prev + 1);
+            } else {
+                toast.success('Post created!');
+            }
             setNewTitle('');
             setNewText('');
             setShowNewPost(false);
@@ -133,8 +152,13 @@ export default function CommunityPage() {
     const handleUpdate = async (postId) => {
         if (!editText.trim()) return toast.error('Post text is required');
         try {
-            await updatePostApi(communityId, postId, { title: editTitle.trim(), text: editText.trim() });
-            toast.success('Post updated!');
+            const res = await updatePostApi(communityId, postId, { title: editTitle.trim(), text: editText.trim() });
+            if (res.data.hate_speech_warning) {
+                toast.error(res.data.message, { duration: 6000, icon: '⚠️' });
+                setUserWarnings(prev => prev + 1);
+            } else {
+                toast.success('Post updated!');
+            }
             setEditingPostId(null);
             loadPosts(1);
             setPage(1);
@@ -145,13 +169,16 @@ export default function CommunityPage() {
 
     // Delete post
     const handleDelete = async (postId) => {
-        if (!window.confirm('Delete this post?')) return;
         try {
-            await deletePostApi(communityId, postId);
+            const res = await deletePostApi(communityId, postId);
             toast.success('Post deleted');
             setPosts(prev => prev.filter(p => p._id !== postId));
+            if (res.data.userWarnings !== undefined) setUserWarnings(res.data.userWarnings);
+            if (res.data.userBanned !== undefined) setUserBanned(res.data.userBanned);
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to delete');
+        } finally {
+            setDeleteConfirm(null);
         }
     };
 
@@ -202,7 +229,11 @@ export default function CommunityPage() {
         if (!text) return;
         try {
             setCommentLoading(prev => ({ ...prev, [postId]: true }));
-            await addCommentApi(postId, text);
+            const res = await addCommentApi(postId, text);
+            if (res.data.hate_speech_warning) {
+                toast.error(res.data.message, { duration: 6000, icon: '⚠️' });
+                setUserWarnings(prev => prev + 1);
+            }
             setCommentText(prev => ({ ...prev, [postId]: '' }));
             await loadComments(postId);
             // Update comment count in posts list
@@ -225,11 +256,21 @@ export default function CommunityPage() {
     const handleUpdateComment = async () => {
         if (!editCommentText.trim() || !editingComment) return;
         try {
-            await updateCommentApi(editingComment.postId, editingComment.commentId, editCommentText.trim());
-            toast.success('Comment updated');
+            const res = await updateCommentApi(editingComment.postId, editingComment.commentId, editCommentText.trim());
+            if (res.data.flag_removed) {
+                toast.success('Comment updated — flag removed!', { duration: 4000, icon: '✅' });
+                if (res.data.userWarnings !== undefined) setUserWarnings(res.data.userWarnings);
+                if (res.data.userBanned !== undefined) setUserBanned(res.data.userBanned);
+            } else if (res.data.hate_speech_warning) {
+                toast.error(res.data.message, { duration: 6000, icon: '⚠️' });
+                setUserWarnings(prev => prev + 1);
+            } else {
+                toast.success('Comment updated');
+            }
+            const postId = editingComment.postId;
             setEditingComment(null);
             setEditCommentText('');
-            await loadComments(editingComment.postId);
+            await loadComments(postId);
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to update comment');
         }
@@ -237,7 +278,6 @@ export default function CommunityPage() {
 
     // Delete comment
     const handleDeleteComment = async (postId, commentId) => {
-        if (!window.confirm('Delete this comment?')) return;
         try {
             await deleteCommentApi(postId, commentId);
             toast.success('Comment deleted');
@@ -247,6 +287,8 @@ export default function CommunityPage() {
             ));
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to delete comment');
+        } finally {
+            setDeleteConfirm(null);
         }
     };
 
@@ -308,9 +350,52 @@ export default function CommunityPage() {
                     </div>
                 </div>
 
+                {/* Banned User Banner */}
+                {userBanned && (
+                    <div className="mb-6 bg-red-50 border-2 border-red-300 rounded-2xl p-5 flex items-start gap-4">
+                        <ShieldAlert size={28} className="text-red-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 className="font-bold text-red-800 text-lg">Account Suspended</h3>
+                            <p className="text-red-700 text-sm mt-1">
+                                Your account has been suspended due to repeated community guideline violations. 
+                                You can still browse posts but cannot create new posts or comments. 
+                                Please check your email for details.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Warning Banner */}
+                {!userBanned && userWarnings > 0 && (
+                    <div className="mb-6 bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 flex items-start gap-4">
+                        <AlertTriangle size={24} className="text-amber-600 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <h3 className="font-bold text-amber-800">
+                                Community Guidelines Warning ({userWarnings}/3)
+                            </h3>
+                            <p className="text-amber-700 text-sm mt-1">
+                                {userWarnings >= 2 
+                                    ? "This is your final warning. One more violation will result in account suspension."
+                                    : "Some of your content has been flagged for violating community guidelines. Please be respectful and supportive."
+                                }
+                            </p>
+                            <div className="flex gap-1 mt-2">
+                                {[1, 2, 3].map(i => (
+                                    <div key={i} className={`w-16 h-2 rounded-full ${i <= userWarnings ? 'bg-amber-500' : 'bg-amber-200'}`} />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
                 {/* New Post Toggle */}
                 <div className="mb-6">
-                    {!showNewPost ? (
+                    {userBanned ? (
+                        <div className="w-full flex items-center gap-3 px-6 py-4 bg-gray-100 rounded-2xl border border-gray-200 text-gray-400 font-medium text-lg cursor-not-allowed">
+                            <ShieldAlert size={22} />
+                            Posting is disabled for suspended accounts
+                        </div>
+                    ) : !showNewPost ? (
                         <button
                             onClick={() => setShowNewPost(true)}
                             className="w-full flex items-center gap-3 px-6 py-4 bg-white/70 backdrop-blur-md rounded-2xl border border-white/60 shadow-md text-[#8D6E63] font-medium text-lg hover:shadow-lg transition-all"
@@ -359,6 +444,38 @@ export default function CommunityPage() {
                     )}
                 </div>
 
+                {/* Filter Bar */}
+                <div className="flex items-center gap-3 mb-5">
+                    <button
+                        onClick={() => setFilterFlagged(false)}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                            !filterFlagged
+                                ? 'bg-[#7B1FA2] text-white shadow-md'
+                                : 'bg-white/70 text-[#5D4037] border border-white/60 hover:bg-white'
+                        }`}
+                    >
+                        All Posts
+                    </button>
+                    <button
+                        onClick={() => setFilterFlagged(true)}
+                        className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+                            filterFlagged
+                                ? 'bg-red-600 text-white shadow-md'
+                                : 'bg-white/70 text-red-600 border border-red-200 hover:bg-red-50'
+                        }`}
+                    >
+                        <AlertTriangle size={14} />
+                        Flagged
+                        {posts.filter(p => p.hateSpeechFlag).length > 0 && (
+                            <span className={`ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold ${
+                                filterFlagged ? 'bg-white/20 text-white' : 'bg-red-100 text-red-700'
+                            }`}>
+                                {posts.filter(p => p.hateSpeechFlag).length}
+                            </span>
+                        )}
+                    </button>
+                </div>
+
                 {/* Posts List */}
                 {loading && posts.length === 0 ? (
                     <div className="flex justify-center py-16">
@@ -372,7 +489,14 @@ export default function CommunityPage() {
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        {posts.map((post) => {
+                        {(filterFlagged ? posts.filter(p => p.hateSpeechFlag) : posts).length === 0 && filterFlagged ? (
+                            <div className="text-center py-16 bg-white/40 backdrop-blur-md rounded-[2.5rem] border border-white/60">
+                                <AlertTriangle className="mx-auto text-[#CE93D8] mb-4" size={40} />
+                                <h3 className="text-xl font-serif font-bold text-[#3E2723] mb-2">No Flagged Posts</h3>
+                                <p className="text-[#5D4037] text-sm">No posts have been flagged for community guideline violations.</p>
+                            </div>
+                        ) : null}
+                        {(filterFlagged ? posts.filter(p => p.hateSpeechFlag) : posts).map((post) => {
                             const isAuthor = post.author?._id === user?.id || post.author === user?.id;
                             const isEditing = editingPostId === post._id;
                             const commentsOpen = openComments[post._id];
@@ -382,8 +506,21 @@ export default function CommunityPage() {
                             return (
                                 <div
                                     key={post._id}
-                                    className="bg-white rounded-[2rem] shadow-lg border border-white/60 overflow-hidden transition-all hover:shadow-xl"
+                                    className={`bg-white rounded-[2rem] shadow-lg overflow-hidden transition-all hover:shadow-xl ${
+                                        post.hateSpeechFlag 
+                                            ? 'border-2 border-red-300' 
+                                            : 'border border-white/60'
+                                    }`}
                                 >
+                                    {/* Hate speech flag banner on post */}
+                                    {post.hateSpeechFlag && (
+                                        <div className="bg-red-50 px-6 py-2.5 flex items-center gap-2 border-b border-red-200">
+                                            <AlertTriangle size={16} className="text-red-500" />
+                                            <span className="text-xs font-bold text-red-600 uppercase tracking-wide">
+                                                Flagged for Community Guidelines Violation
+                                            </span>
+                                        </div>
+                                    )}
                                     {/* Post header */}
                                     <div className="p-6 pb-0">
                                         <div className="flex items-center justify-between mb-3">
@@ -415,7 +552,7 @@ export default function CommunityPage() {
                                                                 <Pencil size={14} /> Edit
                                                             </button>
                                                             <button
-                                                                onClick={() => { setOpenMenu(null); handleDelete(post._id); }}
+                                                                onClick={() => { setOpenMenu(null); setDeleteConfirm({ type: 'post', postId: post._id }); }}
                                                                 className="w-full flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 transition-all"
                                                             >
                                                                 <Trash2 size={14} /> Delete
@@ -505,6 +642,12 @@ export default function CommunityPage() {
                                     {commentsOpen && (
                                         <div className="px-6 py-4 border-t border-gray-100 bg-[#FAFAFA]">
                                             {/* Add comment */}
+                                            {userBanned ? (
+                                                <div className="flex items-center gap-2 px-4 py-3 mb-4 bg-gray-100 rounded-xl text-gray-400 text-sm font-medium">
+                                                    <ShieldAlert size={16} />
+                                                    Commenting is disabled for suspended accounts
+                                                </div>
+                                            ) : (
                                             <div className="flex gap-3 mb-4">
                                                 <input
                                                     type="text"
@@ -527,6 +670,7 @@ export default function CommunityPage() {
                                                     {cLoading ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                                                 </button>
                                             </div>
+                                            )}
 
                                             {/* Comments list */}
                                             {cLoading && !cData ? (
@@ -545,7 +689,15 @@ export default function CommunityPage() {
                                                                     {(comment.author?.username || 'U').charAt(0)}
                                                                 </div>
                                                                 <div className="flex-1 min-w-0">
-                                                                    <div className="bg-white rounded-xl px-4 py-2.5 border border-gray-100">
+                                                                    <div className={`bg-white rounded-xl px-4 py-2.5 ${comment.hate_speech_flag ? 'border-2 border-red-300' : 'border border-gray-100'}`}>
+                                                                        {comment.hate_speech_flag && (
+                                                                            <div className="flex items-center gap-1.5 mb-1.5 -mt-0.5">
+                                                                                <AlertTriangle size={12} className="text-red-500" />
+                                                                                <span className="text-[10px] font-bold text-red-600 uppercase tracking-wide">
+                                                                                    Flagged — edit to remove
+                                                                                </span>
+                                                                            </div>
+                                                                        )}
                                                                         <div className="flex items-center gap-2 mb-1">
                                                                             <span className="font-bold text-xs text-[#3E2723]">
                                                                                 {comment.author?.username || 'User'}
@@ -590,7 +742,7 @@ export default function CommunityPage() {
                                                                                 Edit
                                                                             </button>
                                                                             <button
-                                                                                onClick={() => handleDeleteComment(post._id, comment._id)}
+                                                                                onClick={() => setDeleteConfirm({ type: 'comment', postId: post._id, commentId: comment._id })}
                                                                                 className="text-xs text-[#8D6E63] hover:text-red-600 font-medium"
                                                                             >
                                                                                 Delete
@@ -635,6 +787,50 @@ export default function CommunityPage() {
                     </div>
                 )}
             </div>
+
+            {/* Delete Confirmation Modal */}
+            {deleteConfirm && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setDeleteConfirm(null)}>
+                    <div
+                        className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4 animate-in fade-in zoom-in"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="flex items-center gap-3 mb-4">
+                            <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                                <Trash2 size={20} className="text-red-600" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-[#3E2723]">
+                                    Delete {deleteConfirm.type === 'post' ? 'Post' : 'Comment'}?
+                                </h3>
+                                <p className="text-sm text-[#8D6E63]">
+                                    This action cannot be undone.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex gap-3 justify-end">
+                            <button
+                                onClick={() => setDeleteConfirm(null)}
+                                className="px-5 py-2.5 rounded-xl bg-gray-100 text-[#5D4037] font-bold text-sm hover:bg-gray-200 transition-all"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (deleteConfirm.type === 'post') {
+                                        handleDelete(deleteConfirm.postId);
+                                    } else {
+                                        handleDeleteComment(deleteConfirm.postId, deleteConfirm.commentId);
+                                    }
+                                }}
+                                className="px-5 py-2.5 rounded-xl bg-red-600 text-white font-bold text-sm hover:bg-red-700 transition-all"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

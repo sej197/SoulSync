@@ -94,8 +94,22 @@ const userSchema = new mongoose.Schema(
     communities: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: "Community"
-  }]
-  }
-);
+    }],
+    // Hate speech warnings
+    hate_speech_warnings: {
+      type: Number,
+      default: 0
+    },
+    hate_speech_logs: [{
+      postId: { type: mongoose.Schema.Types.ObjectId, ref: "Post" },
+      score: Number,
+      text_snippet: String,
+      date: { type: Date, default: Date.now }
+    }],
+    is_banned: {
+      type: Boolean,
+      default: false
+    }
+  });
 
 export default mongoose.model("User", userSchema);

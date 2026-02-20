@@ -4,7 +4,6 @@ from services.hatespeech_service import get_hate_speech_score
 from typing import Dict
 
 router = APIRouter(
-    prefix="/hatespeech",
     tags=["HateSpeech"]
 )
 

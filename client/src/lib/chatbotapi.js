@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const chatbotapi = axios.create({
-    baseURL: `${import.meta.env.VITE_BASE_URL}/api/chatbot`,
+    baseURL: `/api/chatbot`,
     withCredentials: true
 });
 

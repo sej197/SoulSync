@@ -33,6 +33,7 @@
     "redis-server": "^1.2.2",
     "socket.io": "^4.8.3",
     "socket.io-client": "^4.8.3",
+    "twilio": "^4.23.0",
     "web-push": "^3.6.7"
   }
 }

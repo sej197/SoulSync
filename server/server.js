@@ -15,6 +15,7 @@ import postRoutes from "./routes/postRoutes.js";
 import communityRoutes from "./routes/CommunityRoutes.js";
 import chatRoomRoutes from "./routes/chatRoomRoutes.js";
 import surveyRoutes from "./routes/surveyRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import rateLimiter from "./middleware/ratelimiter.js";
 
 dotenv.config();

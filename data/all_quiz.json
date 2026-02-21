@@ -1,0 +1,1456 @@
+{
+  "quizType": "daily_checkin",
+  "questions": [
+    {
+      "id": 1,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "How calm did your thoughts feel for most of today?",
+      "options": [
+        "Very calm",
+        "Mostly calm",
+        "Occasionally restless",
+        "Often restless",
+        "Constantly tense"
+      ]
+    },
+    {
+      "id": 2,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "How often did you feel anxious without a clear reason today?",
+      "options": [
+        "No anxious moments",
+        "Rare anxious moments",
+        "Sometimes anxious",
+        "Frequently anxious",
+        "Anxious all day"
+      ]
+    },
+    {
+      "id": 3,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "How easy was it for you to relax during your free time?",
+      "options": [
+        "Very easy",
+        "Mostly easy",
+        "Somewhat difficult",
+        "Very difficult",
+        "Could not relax at all"
+      ]
+    },
+    {
+      "id": 4,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How rested did you feel when you woke up today?",
+      "options": [
+        "Fully rested",
+        "Mostly rested",
+        "Slightly tired",
+        "Very tired",
+        "Completely exhausted"
+      ]
+    },
+    {
+      "id": 5,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How easily did you fall asleep last night?",
+      "options": [
+        "Very easily",
+        "Fairly easily",
+        "Took some time",
+        "Very difficult",
+        "Barely slept"
+      ]
+    },
+    {
+      "id": 6,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How supportive was your sleep for your energy today?",
+      "options": [
+        "Very supportive",
+        "Mostly supportive",
+        "Somewhat lacking",
+        "Not supportive",
+        "Very poor sleep"
+      ]
+    },
+    {
+      "id": 7,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "How manageable did your tasks and responsibilities feel today?",
+      "options": [
+        "Very manageable",
+        "Mostly manageable",
+        "Somewhat stressful",
+        "Hard to manage",
+        "Completely overwhelming"
+      ]
+    },
+    {
+      "id": 8,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "How much stress did you feel throughout the day?",
+      "options": [
+        "No stress",
+        "Low stress",
+        "Moderate stress",
+        "High stress",
+        "Extreme stress"
+      ]
+    },
+    {
+      "id": 9,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "How often did you feel mentally drained today?",
+      "options": [
+        "Not at all",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Almost constantly"
+      ]
+    },
+    {
+      "id": 10,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How heavy or low did your mood feel today?",
+      "options": [
+        "Very light",
+        "Mostly light",
+        "Neutral",
+        "Heavy",
+        "Very heavy"
+      ]
+    },
+    {
+      "id": 11,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How interested did you feel in doing your usual activities?",
+      "options": [
+        "Very interested",
+        "Mostly interested",
+        "Slightly interested",
+        "Hardly interested",
+        "No interest at all"
+      ]
+    },
+    {
+      "id": 12,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How hopeful did you feel about the days ahead?",
+      "options": [
+        "Very hopeful",
+        "Somewhat hopeful",
+        "Neutral",
+        "Not very hopeful",
+        "Not hopeful at all"
+      ]
+    },
+    {
+      "id": 13,
+      "category": "reflection",
+      "type": "paragraph",
+      "question": "In a few lines, how would you describe your day overall?"
+    },
+    {
+      "id": 14,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Little interest or pleasure in doing things",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 15,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Feeling down, depressed, or hopeless",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 16,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Trouble falling or staying asleep, or sleeping too much",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 17,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Feeling tired or having little energy",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 18,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Poor appetite or overeating",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 19,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Feeling bad about yourself - or that you are a failure or have let yourself or your family down",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 20,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Trouble concentrating on things, such as reading the newspaper or watching television",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 21,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Moving or speaking so slowly that other people could have noticed, or being so fidgety or restless that you have been moving around a lot more than usual",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 22,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Thoughts that you would be better off dead, or of hurting yourself",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 23,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "If you checked off any problems, how difficult have these problems made it for you at work, home, or with other people?",
+      "options": [
+        "Not difficult at all",
+        "Somewhat difficult",
+        "Very difficult",
+        "Extremely difficult"
+      ]
+    },
+    {
+      "id": 24,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Feeling nervous, anxious, or on edge",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 25,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Not being able to stop or control worrying",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 26,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Worrying too much about different things",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 27,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Trouble relaxing",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 28,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Being so restless that it is hard to sit still",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 29,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Becoming easily annoyed or irritable",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 30,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Feeling afraid, as if something awful might happen",
+      "options": [
+        "Not at all",
+        "Several days",
+        "More than half the days",
+        "Nearly every day"
+      ]
+    },
+    {
+      "id": 31,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How often do you typically get a good night's sleep on a regular weeknight?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 32,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Do you experience difficulty falling asleep or staying asleep?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 33,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How often do you wake up feeling refreshed and well-rested?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 34,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Do you find yourself experiencing restless legs, twitching, or other involuntary movements during sleep?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 35,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How frequently do you snore loudly or have been told that you stop breathing during sleep?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 36,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Do you consume caffeine or stimulants close to bedtime?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 37,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How often do you experience vivid or disturbing dreams that disrupt your sleep?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 38,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How often do you experience daytime sleepiness or fatigue?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 39,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Have you ever been diagnosed or treated for a sleep disorder by a healthcare professional?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 40,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "How often do you rate the impact of sleep disturbances on your daily functioning and overall well-being?",
+      "options": [
+        "Never",
+        "Sometimes",
+        "Often",
+        "Almost always"
+      ]
+    },
+    {
+      "id": 41,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I have poor dietary choices when stressed",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 42,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I get 7-9 hours of sleep at least 4 nights a week",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 43,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I exercise to the point of having the need to catch my breath",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 44,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I have a network of friends, family and acquaintances on whom I can rely on",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 45,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I am able to speak openly about my feelings when angry, stressed or worried",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 46,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I do something for fun at least once a week",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 47,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I take quiet time for myself during the day",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 48,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I worry about my income covering my daily living costs",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 49,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I am calm when I am kept waiting/stuck in traffic/late for an appointment",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 50,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I feel organised and in control",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 51,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "I recognise when I am not coping well under pressure and I know how to deal with it",
+      "options": [
+        "Never",
+        "Seldom",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 52,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "On average how many cigarettes do you smoke per day?",
+      "options": [
+        "I do not smoke",
+        "1-6 cigarettes",
+        "7-12 cigarettes",
+        "13-16 cigarettes",
+        "17+ cigarettes"
+      ]
+    },
+    {
+      "id": 53,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "On average how often do you drink alcohol per week?",
+      "options": [
+        "I do not drink alcohol",
+        "1-6 Units per week",
+        "7-12 Units per week",
+        "13-16 Units per week",
+        "17+ Units per week"
+      ]
+    },
+    {
+      "id": 54,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "On average I drink fewer than two cups of coffee (or tea or cola) a day",
+      "options": [
+        "I do not drink coffee (or tea or cola)",
+        "I drink 1 cup of coffee (or tea or cola)",
+        "I drink 2 cups of coffee (or tea or cola)",
+        "I drink 3 cups of coffee (or tea or cola)",
+        "I drink 4+ cups of coffee (or tea or cola)"
+      ]
+    },
+    {
+      "id": 55,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I try to keep my bedroom cool at night.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 56,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I often need a caffeinated drink in the late afternoon.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 57,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I rarely feel the need to nap during the day.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 58,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I typically eat my last meal several hours before bedtime.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 59,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I try to make sure that I go to bed around the same time each night.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 60,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I get out of bed shortly after waking up.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 61,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "There is often distracting noise in my room at night.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 62,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I exercise at least several times per week.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 63,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "My bedroom is very dark at night.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 64,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "In general, my diet has a lot of whole grains, vegetables, and lean proteins.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 65,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I do not look at my phone or electronic device in bed.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 66,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "If I can't fall asleep, I get out of bed instead of just lying there.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 67,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I have a set nighttime routine that I use to unwind.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 68,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I try to go outside each morning shortly after I wake up.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 69,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I often do things like answer emails in bed.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 70,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I steer clear of alcoholic drinks at night.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 71,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I almost never fall asleep with the TV on.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 72,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I start winding down at about the same time every evening.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 73,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "My bed is comfortable for me.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 74,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "I tend to worry about the next day's to-do list while trying to fall asleep.",
+      "options": [
+        "Disagree",
+        "Slightly Disagree",
+        "Neutral",
+        "Slightly Agree",
+        "Agree"
+      ]
+    },
+    {
+      "id": 75,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Worry control: I find it hard to stop or control worrying once it starts.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 76,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Overthinking: I replay conversations, decisions, or 'what if' scenarios in my mind.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 77,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Future dread: I often expect something bad will happen, even when there's no clear reason.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 78,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Physical tension: I feel physically tense (tight chest, clenched jaw, tight shoulders, muscle aches).",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 79,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Restlessness: I feel keyed up, on edge, or unable to relax.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 80,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Heart/rush symptoms: I get sudden surges of anxiety with symptoms like racing heart, shaking, shortness of breath, or sweating.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 81,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Fear of symptoms: When I notice anxiety symptoms, I worry they mean something dangerous (e.g., I might faint, lose control, or something is seriously wrong).",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 82,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Avoidance: I avoid certain places, activities, or tasks because they might trigger anxiety.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 83,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Social fear: I feel anxious about being judged, embarrassed, or seen as 'wrong' by others.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 84,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Reassurance seeking: I repeatedly seek reassurance (from people, doctors, checking online, or checking my body) to feel safe.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 85,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Health worry: I worry a lot about my health or misinterpret normal sensations as signs of illness.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 86,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Sleep impact: Anxiety interferes with my sleep (falling asleep, staying asleep, or waking too early).",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 87,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Focus impact: Anxiety makes it difficult to concentrate, remember things, or think clearly.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 88,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Irritability: I feel more irritable, easily startled, or emotionally reactive than usual.",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 89,
+      "category": "anxiety",
+      "type": "single_choice",
+      "question": "Life impact: Anxiety interferes with my daily functioning (work, relationships, school, parenting, or enjoyment of life).",
+      "options": [
+        "Not At All",
+        "Occasionally",
+        "Sometimes",
+        "Often",
+        "Almost Always"
+      ]
+    },
+    {
+      "id": 90,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel hopeless?",
+      "options": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 91,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel you've lost interest in most (or all) of the things and activities that you used to find enjoyable or interesting?",
+      "options": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 92,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel helpless?",
+      "options": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 93,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel down, blue, and/or dejected?",
+      "options": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 94,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel you have a lot to look forward to?",
+      "options": [
+        "Never",
+        "Not often",
+        "Sometimes",
+        "Most of the time",
+        "Always"
+      ]
+    },
+    {
+      "id": 95,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel trapped with no options?",
+      "options": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 96,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel you've lost control of your life and future?",
+      "options": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 97,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel overwhelmed?",
+      "options": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 98,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "How often do you feel optimistic?",
+      "options": [
+        "Never",
+        "Rarely",
+        "Sometimes",
+        "Often",
+        "Always"
+      ]
+    },
+    {
+      "id": 99,
+      "category": "depression",
+      "type": "single_choice",
+      "question": "Are you generally a pessimist?",
+      "options": [
+        "No, not at all",
+        "Yes, but not often",
+        "Yes, somewhat",
+        "Yes, for the most part",
+        "Yes, always"
+      ]
+    },
+    {
+      "id": 100,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "How stressed do you feel today?",
+      "options": [
+        "I don't feel stressed at all",
+        "My stress is low",
+        "My stress is about the same",
+        "My stress is higher than normal",
+        "My stress is really high right now"
+      ]
+    },
+    {
+      "id": 101,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "Lately, how stressful has your job/work been?",
+      "options": [
+        "Not stressful at all",
+        "Hasn't been too stressful",
+        "About the same",
+        "Higher than normal",
+        "Really stressful"
+      ]
+    },
+    {
+      "id": 102,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "How stressful have things been at home lately?",
+      "options": [
+        "Really stressful",
+        "More stressful than normal",
+        "About the same",
+        "A little stressful",
+        "Not stressful at all"
+      ]
+    },
+    {
+      "id": 103,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "Are you presently worried about your financial situation?",
+      "options": [
+        "Yes, really worried",
+        "Yes, worried",
+        "Yes, somewhat worried",
+        "Yes, a little",
+        "No, not at all"
+      ]
+    },
+    {
+      "id": 104,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "Are you worried about losing your job?",
+      "options": [
+        "No, not at all",
+        "Yes, a little concerned",
+        "Yes, somewhat",
+        "Yes, a lot",
+        "Yes, greatly worried"
+      ]
+    },
+    {
+      "id": 105,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "Are you presently having any relationship problems?",
+      "options": [
+        "Yes, major problems",
+        "Yes, many problems",
+        "Yes, about normal",
+        "Yes, but not many",
+        "No, not at all"
+      ]
+    },
+    {
+      "id": 106,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "Have you been worrying about your health lately?",
+      "options": [
+        "No, not at all",
+        "Yes, a little",
+        "Yes, somewhat",
+        "Yes, a lot",
+        "Yes, all the time"
+      ]
+    },
+    {
+      "id": 107,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "Have you been feeling overwhelmed lately?",
+      "options": [
+        "Yes, absolutely",
+        "Yes, a lot",
+        "Yes, somewhat",
+        "Yes, but not much",
+        "No, not at all"
+      ]
+    },
+    {
+      "id": 108,
+      "category": "stress",
+      "type": "single_choice",
+      "question": "Are you happy with how things are going in your life right now?",
+      "options": [
+        "Yes, absolutely",
+        "Yes, for the most part",
+        "Things are okay",
+        "No, things aren't going well",
+        "No, things are awful"
+      ]
+    },
+    {
+      "id": 109,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Lack of sleep is linked to which of the following?",
+      "options": [
+        "A. Car accidents",
+        "B. Industrial disasters",
+        "C. Medical errors",
+        "D. Errors at work",
+        "E. All of the above"
+      ]
+    },
+    {
+      "id": 110,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Getting too little sleep puts you at risk for:",
+      "options": [
+        "A. High blood pressure",
+        "B. Diabetes",
+        "C. Depression",
+        "D. Weight gain",
+        "E. Cancer",
+        "F. Early death",
+        "G. All of the above"
+      ]
+    },
+    {
+      "id": 111,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Which of the following is NOT a good sleep habit?",
+      "options": [
+        "A. Getting up at the same time every day",
+        "B. Avoiding big meals before bedtime",
+        "C. Sleeping in on the weekends",
+        "D. Avoiding caffeine after 2 p.m.",
+        "E. Avoiding alcohol before bed"
+      ]
+    },
+    {
+      "id": 112,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Which of the following can make it hard to get to sleep and stay asleep?",
+      "options": [
+        "A. Going to bed at different times each night",
+        "B. Napping during the day",
+        "C. Sleeping with a bright night light",
+        "D. Not getting enough exercise",
+        "E. Watching TV before bed",
+        "F. Using a computer in bed",
+        "G. All of the above"
+      ]
+    },
+    {
+      "id": 113,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Which of the following is a symptom of sleep apnea?",
+      "options": [
+        "A. Loud snoring",
+        "B. Daytime sleepiness",
+        "C. Morning headaches",
+        "D. Sore throat, dry mouth, cough",
+        "E. All of the above"
+      ]
+    },
+    {
+      "id": 114,
+      "category": "sleep",
+      "type": "single_choice",
+      "question": "Which group of people is at risk for sleep apnea?",
+      "options": [
+        "A. People who are overweight or obese",
+        "B. Men",
+        "C. Children with enlarged tonsils",
+        "D. All of the above"
+      ]
+    }
+  ]
+}

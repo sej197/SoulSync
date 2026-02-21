@@ -1,15 +1,40 @@
 // src/components/quiz/DailyQuiz.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dailyQuizData from "./dailyCheckinQuiz.json";
 import axios from "axios";
 
 const DailyQuiz = ({ userId }) => {
-  const [quizData] = useState(dailyQuizData);
+  const [quizData, setQuizData] = useState(dailyQuizData);
   const [answers, setAnswers] = useState({});
   const [finalScore, setFinalScore] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [visitedQuestions, setVisitedQuestions] = useState([0]);
+  const [adaptations, setAdaptations] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch adaptive quiz on mount
+  useEffect(() => {
+    const fetchAdaptiveQuiz = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/quiz/adaptive-quiz`,
+          { withCredentials: true }
+        );
+        if (res.data && res.data.questions && res.data.questions.length > 0) {
+          setQuizData({ quizType: res.data.quizType, questions: res.data.questions });
+          setAdaptations(res.data.adaptations || null);
+        }
+      } catch (error) {
+        console.error("Error fetching adaptive quiz, using default:", error);
+        // Keep the default static quiz loaded from JSON
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAdaptiveQuiz();
+  }, []);
 
   const handleChange = (questionId, value, type) => {
     setAnswers((prev) => {
@@ -33,6 +58,8 @@ const DailyQuiz = ({ userId }) => {
         questionId: q.id,
         category: q.category,
         type: q.type,
+        is_adaptive: q.is_adaptive || false,
+        options: q.options || [],
         selectedOption:
           q.type === "single_choice"
             ? answers[q.id]?.[0] ?? null
@@ -77,6 +104,17 @@ const DailyQuiz = ({ userId }) => {
       setVisitedQuestions([...visitedQuestions, index]);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F3E5F5]">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-4 border-[#6A1B9A] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-[#3E2723] font-serif text-lg">Preparing your personalised check-in...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -178,6 +216,29 @@ const DailyQuiz = ({ userId }) => {
             <p className="text-[#5D4037] text-sm md:text-base font-medium opacity-70">
               Your personal wellness reflection
             </p>
+            {adaptations && (() => {
+              const categoryMeta = {
+                anxiety: { emoji: "😰", label: "anxiety" },
+                sleep: { emoji: "🌙", label: "sleep" },
+                stress: { emoji: "🔥", label: "stress" },
+                depression: { emoji: "🌧️", label: "depression" },
+              };
+              const adaptedCategories = Object.entries(categoryMeta)
+                .filter(([key]) => adaptations[key]?.adapted)
+                .map(([, meta]) => meta);
+              if (adaptedCategories.length === 0) return null;
+              const emojis = adaptedCategories.map(c => c.emoji).join(" ");
+              const labels = adaptedCategories.map(c => c.label);
+              const labelText = labels.length === 1
+                ? labels[0]
+                : labels.slice(0, -1).join(", ") + " & " + labels[labels.length - 1];
+              return (
+                <div className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 rounded-full text-sm text-indigo-700 font-medium">
+                  <span>{emojis}</span>
+                  <span>Personalised {labelText} questions based on your recent scores</span>
+                </div>
+              );
+            })()}
           </div>
 
 
@@ -203,11 +264,16 @@ const DailyQuiz = ({ userId }) => {
           <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border border-white/50 transform transition-all duration-500" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
 
             {q.category && (
-              <div className="mb-4">
+              <div className="mb-4 flex items-center gap-2">
                 <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-[#F3E5F5] text-[#6A1B9A] text-xs font-bold rounded-full border border-purple-100 shadow-sm">
                   <span className="w-1.5 h-1.5 bg-[#6A1B9A] rounded-full animate-pulse"></span>
                   {q.category}
                 </span>
+                {q.is_adaptive && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-full border border-indigo-100">
+                    {q.category === "anxiety" ? "😰" : q.category === "stress" ? "🔥" : q.category === "depression" ? "🌧️" : "🌙"} Adaptive
+                  </span>
+                )}
               </div>
             )}
 

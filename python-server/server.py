@@ -8,6 +8,7 @@ load_dotenv()
 from routes.sentiment_routes import router as sentiment_router
 from routes.hatespeech_routes import router as hatespeech_router
 import routes.recommendations as recommendation
+from routes.adaptive_quiz import router as adaptive_quiz_router
 
 app = FastAPI()
 
@@ -23,6 +24,7 @@ app.add_middleware(
 app.include_router(sentiment_router, prefix="/sentiment")
 app.include_router(hatespeech_router, prefix="/hatespeech")
 app.include_router(recommendation.router, prefix="/api")
+app.include_router(adaptive_quiz_router, prefix="/api")
 
 @app.get("/")
 def root():

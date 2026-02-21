@@ -3,6 +3,24 @@ import RiskScore from "../models/RiskScore.js";
 import Streak from "../models/Streak.js";
 import { setCache, getCache, invalidateQuizCache, invalidateRiskCache, cacheKeys } from "../utils/cacheUtils.js";
 import { checkAndAwardBadges } from "../utils/badgeUtils.js";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load the default daily quiz questions from the data folder
+const defaultDailyQuiz = JSON.parse(
+  readFileSync(join(__dirname, "../../data/dailyCheckinQuiz.json"), "utf-8")
+);
+
+// Load the full question pool for adaptive quiz
+const allQuizRaw = readFileSync(join(__dirname, "../../data/all_quiz.json"), "utf-8");
+// Strip JS-style line comments before parsing
+const allQuizPool = JSON.parse(
+  allQuizRaw.split("\n").filter(l => !l.trim().startsWith("//")).join("\n")
+);
 
 // Helper function to calculate streak
 const calculateStreak = async (userId) => {
@@ -195,7 +213,26 @@ export const submitDailyQuiz = async (req, res) => {
       "Not hopeful at all": 1
     };
 
-    const getScore = (answer) => {
+    const getScore = (answer, answerMeta) => {
+      // For adaptive (LLM-generated) questions, use position-based scoring
+      // since their option text won't be in the hardcoded optionScores map
+      if (answerMeta?.is_adaptive && answerMeta?.options) {
+        if (Array.isArray(answer)) {
+          let total = 0;
+          answer.forEach((option) => {
+            const idx = answerMeta.options.indexOf(option);
+            total += idx >= 0 ? idx / Math.max(answerMeta.options.length - 1, 1) : 0.5;
+          });
+          return total / answer.length;
+        }
+        if (typeof answer === "string") {
+          const idx = answerMeta.options.indexOf(answer);
+          return idx >= 0 ? idx / Math.max(answerMeta.options.length - 1, 1) : 0.5;
+        }
+        return 0;
+      }
+
+      // Standard scoring from hardcoded map
       if (Array.isArray(answer)) {
         let total = 0;
         answer.forEach((option) => {
@@ -254,7 +291,10 @@ export const submitDailyQuiz = async (req, res) => {
         continue;
       }
 
-      const score = getScore(userAnswer);
+      const score = getScore(userAnswer, {
+        is_adaptive: ans.is_adaptive || false,
+        options: ans.options || [],
+      });
 
       switch (ans.category) {
         case "anxiety":
@@ -302,6 +342,7 @@ export const submitDailyQuiz = async (req, res) => {
         stressScore: stress,
         sleepScore: sleep,
         depressionScore: depression,
+        paragraphScore,
         mentalHealthScore,
         socialScore,
         reflectionScore,
@@ -324,10 +365,8 @@ export const submitDailyQuiz = async (req, res) => {
       { upsert: true, new: true }
     );
 
-    // Update streak information
     const streakInfo = await updateStreakData(userId);
 
-    // Cache the quiz result
     await setCache(cacheKeys.dailyQuiz(userId, today), {
       message: "Daily quiz submitted successfully",
       score: quizScore,
@@ -549,6 +588,111 @@ export const getStreakStats = async (req, res) => {
     res.status(500).json({
       message: "Error fetching streak statistics",
       error: error.message
+    });
+  }
+};
+
+// Get adaptive daily quiz — replaces questions for ANY elevated category with detailed LLM ones
+export const getAdaptiveQuiz = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const ADAPTATION_THRESHOLD = 0.5;
+
+    // Get the user's most recent daily quiz to check category scores
+    const lastQuiz = await DailyQuiz.findOne({
+      userId,
+      quizType: "daily",
+    })
+      .sort({ date: -1 })
+      .lean();
+
+    // Default category scores if no previous quiz
+    const categoryScores = {
+      sleepScore: lastQuiz?.scores?.sleepScore ?? 0,
+      anxietyScore: lastQuiz?.scores?.anxietyScore ?? 0,
+      stressScore: lastQuiz?.scores?.stressScore ?? 0,
+      depressionScore: lastQuiz?.scores?.depressionScore ?? 0,
+    };
+
+    console.log(`[AdaptiveQuiz] User ${userId} category scores:`, categoryScores);
+
+    // Check if ANY category is above the threshold
+    const anyElevated =
+      categoryScores.sleepScore >= ADAPTATION_THRESHOLD ||
+      categoryScores.anxietyScore >= ADAPTATION_THRESHOLD ||
+      categoryScores.stressScore >= ADAPTATION_THRESHOLD ||
+      categoryScores.depressionScore >= ADAPTATION_THRESHOLD;
+
+    if (!anyElevated) {
+      console.log(`[AdaptiveQuiz] All scores below ${ADAPTATION_THRESHOLD}, returning default quiz`);
+      return res.status(200).json({
+        quizType: "daily_checkin",
+        questions: defaultDailyQuiz.questions,
+        adaptations: {
+          anxiety: { adapted: false, reason: "Anxiety score within normal range.", score: categoryScores.anxietyScore },
+          sleep: { adapted: false, reason: "Sleep score within normal range.", score: categoryScores.sleepScore },
+          stress: { adapted: false, reason: "Stress score within normal range.", score: categoryScores.stressScore },
+          depression: { adapted: false, reason: "Depression score within normal range.", score: categoryScores.depressionScore },
+        },
+      });
+    }
+
+    // At least one category is elevated — call Python server for adaptive quiz
+    const elevated = Object.entries(categoryScores)
+      .filter(([, v]) => v >= ADAPTATION_THRESHOLD)
+      .map(([k, v]) => `${k}=${v.toFixed(2)}`);
+    console.log(`[AdaptiveQuiz] Elevated categories: ${elevated.join(", ")}. Picking follow-up questions from pool.`);
+
+    const today = new Date().toISOString().split("T")[0];
+
+    try {
+      const response = await fetch(
+        `${process.env.PYTHON_SERVER}/api/adaptive-quiz`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            category_scores: categoryScores,
+            base_questions: defaultDailyQuiz.questions,
+            user_id: userId,
+            today: today,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Python server responded with ${response.status}`);
+      }
+
+      const adaptiveResult = await response.json();
+
+      console.log(`[AdaptiveQuiz] Adaptive quiz generated. Adaptations:`, adaptiveResult.adaptations);
+
+      return res.status(200).json({
+        quizType: "daily_checkin",
+        questions: adaptiveResult.questions,
+        adaptations: adaptiveResult.adaptations,
+      });
+    } catch (pythonError) {
+      console.error("[AdaptiveQuiz] Python server error, falling back to default quiz:", pythonError.message);
+
+      // Fallback: return the default quiz if Python server is down
+      return res.status(200).json({
+        quizType: "daily_checkin",
+        questions: defaultDailyQuiz.questions,
+        adaptations: {
+          anxiety: { adapted: false, reason: `LLM service unavailable: ${pythonError.message}`, score: categoryScores.anxietyScore },
+          sleep: { adapted: false, reason: `LLM service unavailable: ${pythonError.message}`, score: categoryScores.sleepScore },
+          stress: { adapted: false, reason: `LLM service unavailable: ${pythonError.message}`, score: categoryScores.stressScore },
+          depression: { adapted: false, reason: `LLM service unavailable: ${pythonError.message}`, score: categoryScores.depressionScore },
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error generating adaptive quiz:", error);
+    res.status(500).json({
+      message: "Error generating adaptive quiz",
+      error: error.message,
     });
   }
 };

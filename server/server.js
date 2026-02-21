@@ -15,6 +15,7 @@ import postRoutes from "./routes/postRoutes.js";
 import communityRoutes from "./routes/CommunityRoutes.js";
 import chatRoomRoutes from "./routes/chatRoomRoutes.js";
 import surveyRoutes from "./routes/surveyRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 import rateLimiter from "./middleware/ratelimiter.js";
 
 dotenv.config();
@@ -50,6 +51,7 @@ app.use("/api/chatbot", chatRoutes);
 app.use("/api/reminders",quizReminderRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/reminders", quizReminderRoutes);
+app.use("/api/notify", notificationRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/chat", chatRoomRoutes);
 app.use("/api/survey", surveyRoutes);

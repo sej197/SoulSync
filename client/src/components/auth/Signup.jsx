@@ -63,7 +63,7 @@ const Signup = () => {
 
       toast.success("Signup successful!");
       await getAuthStatus();
-      navigate('/');
+      navigate('/survey');
     }catch(error){
       const errorMessage = error.response?.data?.message || 'An error occurred';
       toast.error(errorMessage);

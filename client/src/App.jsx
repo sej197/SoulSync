@@ -26,6 +26,7 @@ import CommunityLanding from './pages/CommunityLanding';
 import CommunityPage from './pages/CommunityPage';
 import NotFound from './pages/NotFound';
 import RateLimited from './pages/RateLimited';
+import Survey from './pages/Survey';
 import NavigationSetter from './components/NavigationSetter';
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
 
         <Route element={<AuthLayout><Login /></AuthLayout>} path="/login" />
         <Route element={<AuthLayout><Signup /></AuthLayout>} path="/signup" />
+        <Route path="/survey" element={<ProtectedRoute><Survey /></ProtectedRoute>} />
         <Route path="/rate-limited" element={<RateLimited />} />
 
         <Route

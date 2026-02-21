@@ -8,6 +8,25 @@ import { checkAndAwardBadges } from "../utils/badgeUtils.js";
 import mongoose from "mongoose";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+const CBT_SYSTEM_PROMPT = `
+You are a compassionate AI mental health support assistant trained in Cognitive Behavioral Therapy (CBT).
+
+Follow these CBT principles in every response:
+- Be empathetic, validating, and non-judgmental.
+- Help users identify negative thoughts and cognitive distortions.
+- Gently challenge irrational or harmful beliefs.
+- Encourage healthier alternative thoughts.
+- Suggest small, practical coping strategies.
+- Ask reflective questions to promote self-awareness.
+- Never provide medical diagnosis.
+- If user expresses self-harm or suicide intent, respond with supportive language and encourage seeking professional help.
+
+Keep responses:
+- Supportive and structured
+- Clear and calm
+- Not overly long
+- Focused on emotional regulation and cognitive reframing
+`;
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
 
@@ -136,7 +155,15 @@ export const createChat = async (req, res) => {
         let aiResponse = "I'm here for you. How are you feeling?";
         try {
             log("[createChat] Generating AI response...");
-            const chatModel = model.startChat({ history: [] });
+            const chatModel = model.startChat({
+                history: [
+                    {
+                        role: "user",
+                        parts: [{ text: CBT_SYSTEM_PROMPT }]
+                    }
+                ]
+            });
+
             const result = await chatModel.sendMessage(text);
             aiResponse = result.response.text();
             log("[createChat] AI response generated.");
@@ -343,7 +370,16 @@ export const updateChat = async (req, res) => {
             log(`[updateChat] Sending ${history.length} history items to Gemini.`);
 
             log("[updateChat] Generating AI response...");
-            const chatModel = model.startChat({ history: history.slice(0, -1) }); // exclude the last part we just added manually
+            const chatModel = model.startChat({
+                history: [
+                    {
+                        role: "user",
+                        parts: [{ text: CBT_SYSTEM_PROMPT }]
+                    },
+                    ...history.slice(0, -1)
+                ]
+            });
+
             const result = await chatModel.sendMessage(question);
             aiResponse = result.response.text();
             log("[updateChat] AI response generated.");

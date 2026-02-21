@@ -212,7 +212,26 @@ const getClinicalAssistance = (riskLevel, consecutiveHighRiskDays, alerts) => {
   return { show: false };
 };
 
-// ─── LLM via FastAPI ─────────────────────────────────────────────────────────
+// ── DYNAMIC WEIGHTS via XGBoost ─────────────────────────────────────────────
+const getDynamicWeights = async () => {
+  const cacheKey = "config:risk_weights";
+  let weights = await getCache(cacheKey);
+  if (weights) return weights;
+
+  try {
+    const res = await fetch(`${process.env.PYTHON_SERVER}/api/risk-weights`);
+    if (!res.ok) throw new Error(`FastAPI ${res.status}`);
+    weights = await res.json();
+    console.log("📈 [XGBoost] Fetched dynamic weights:", weights);
+    await setCache(cacheKey, weights, 86400); // 24h cache
+    return weights;
+  } catch (err) {
+    console.warn("⚠️ [XGBoost] Weights unavailable, using hardcoded fallback:", err.message);
+    return RISK_WEIGHTS;
+  }
+};
+
+// ── LLM via FastAPI ─────────────────────────────────────────────────────────
 const getLLMResult = async (payload) => {
   try {
     const res = await fetch(`${process.env.PYTHON_SERVER}/api/recommendations`, {
@@ -372,8 +391,9 @@ export const calculateOverallRisk = async (req, res) => {
     };
 
     // ── Normalised weighted average (null excluded, 0 included) ──
+    const weights = await getDynamicWeights();
     let totalWeight = 0, weightedSum = 0;
-    for (const [key, weight] of Object.entries(RISK_WEIGHTS)) {
+    for (const [key, weight] of Object.entries(weights)) {
       if (scores[key] !== null && scores[key] !== undefined) {
         weightedSum += scores[key] * weight;
         totalWeight += weight;
@@ -708,6 +728,8 @@ export const updateSilentUsers = async () => {
     );
     const silentIds = usersWithHistory.filter((id) => !usersWithToday.has(String(id)));
     console.log(`[Nightly] ${silentIds.length} silent users`);
+
+    const weights = await getDynamicWeights(); // Fetch once for all users
 
     const bulkOps = [];
     for (const userId of silentIds) {

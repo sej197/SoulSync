@@ -91,24 +91,13 @@ def generate_risk_timeseries(num_users=30, days=90):
                 daily_noise = np.random.normal(0, volatility * 0.3)
                 current_risk += daily_noise
                 
-                # Weekly pattern (higher on weekends for some, weekdays for others)
-                day_of_week = (day + 3) % 7  # 0=Mon, 6=Sun
-                if variation % 2 == 0:  # Every other user has different pattern
-                    if day_of_week >= 5:  # Weekend
-                        current_risk += 0.3
+                # Weekly pattern
+                day_of_week = (day + 3) % 7
+                if variation % 2 == 0:
+                    if day_of_week >= 5: current_risk += 0.3
                 else:
-                    if day_of_week < 2:  # Monday, Tuesday
-                        current_risk += 0.2
+                    if day_of_week < 2: current_risk += 0.2
                 
-                # Occasional spikes (realistic mental health patterns)
-                if np.random.random() < 0.05:  # 5% chance
-                    current_risk += np.random.uniform(0.5, 1.5)
-                
-                # Occasional dips (good days)
-                if np.random.random() < 0.05:  # 5% chance
-                    current_risk -= np.random.uniform(0.3, 1.0)
-                
-                # Clamp to valid range
                 current_risk = np.clip(current_risk, 0, 10)
                 risk_scores.append(current_risk)
             
@@ -117,33 +106,56 @@ def generate_risk_timeseries(num_users=30, days=90):
                 date = start_date + timedelta(days=day)
                 
                 # Determine risk level
-                if risk_score >= 7:
-                    risk_level = 'CRITICAL'
-                elif risk_score >= 5.5:
-                    risk_level = 'HIGH'
-                elif risk_score >= 3:
-                    risk_level = 'MODERATE'
-                else:
-                    risk_level = 'LOW'
+                if risk_score >= 7.5: risk_level = 'CRITICAL'
+                elif risk_score >= 6.0: risk_level = 'HIGH'
+                elif risk_score >= 4.0: risk_level = 'MODERATE'
+                else: risk_level = 'LOW'
                 
                 # Determine trend
                 if day > 0:
                     prev_risk = risk_scores[day - 1]
-                    if risk_score > prev_risk + 0.2:
-                        trend = 'declining'
-                    elif risk_score < prev_risk - 0.2:
-                        trend = 'improving'
-                    else:
-                        trend = 'stable'
+                    trend = 'declining' if risk_score > prev_risk + 0.2 else 'improving' if risk_score < prev_risk - 0.2 else 'stable'
                 else:
                     trend = 'stable'
+
+                # Generate individual components based on risk_score and archetype
+                # These will be used to "learn" the weights
+                noise_level = 0.1
+                
+                # Component generation with some archetype-specific bias
+                if archetype_name == 'anxious':
+                    anxiety = min(1.0, (risk_score / 10) + np.random.normal(0.1, noise_level))
+                    depression = min(1.0, (risk_score / 10) + np.random.normal(-0.1, noise_level))
+                elif archetype_name == 'depressive':
+                    anxiety = min(1.0, (risk_score / 10) + np.random.normal(-0.1, noise_level))
+                    depression = min(1.0, (risk_score / 10) + np.random.normal(0.1, noise_level))
+                else:
+                    anxiety = min(1.0, (risk_score / 10) + np.random.normal(0, noise_level))
+                    depression = min(1.0, (risk_score / 10) + np.random.normal(0, noise_level))
+                    
+                stress = min(1.0, (risk_score / 10) + np.random.normal(0, noise_level))
+                sleep = min(1.0, (1 - (risk_score / 10)) + np.random.normal(0, noise_level)) # inverse
+                journal = min(1.0, (risk_score / 10) + np.random.normal(0.05, noise_level))
+                chatbot = min(1.0, (risk_score / 10) + np.random.normal(-0.05, noise_level))
+                quiz = min(1.0, (risk_score / 10) + np.random.normal(0, noise_level))
+                community = min(1.0, (1 - (risk_score / 10)) + np.random.normal(0, noise_level))
+                disengagement = min(1.0, (risk_score / 20) + (day % 5 == 0) * 0.2) # occasional spikes
                 
                 data.append({
                     'user_id': user_id,
                     'date': date.strftime('%Y-%m-%d'),
                     'risk_score': round(risk_score, 2),
                     'risk_level': risk_level,
-                    'trend': trend
+                    'trend': trend,
+                    'depression_quiz_score': round(max(0, depression), 2),
+                    'anxiety_quiz_score': round(max(0, anxiety), 2),
+                    'stress_quiz_score': round(max(0, stress), 2),
+                    'sleep_quiz_score': round(max(0, sleep), 2),
+                    'journal_score': round(max(0, journal), 2),
+                    'chatbot_score': round(max(0, chatbot), 2),
+                    'quiz_score': round(max(0, quiz), 2),
+                    'community_score': round(max(0, community), 2),
+                    'disengagement_score': round(max(0, disengagement), 2)
                 })
             
             user_id += 1

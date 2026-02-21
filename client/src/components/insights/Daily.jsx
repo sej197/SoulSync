@@ -645,72 +645,84 @@ export default function Daily({ dailyData, onRefresh, userId }) {
               })}
             </div>
 
-            {/* ── XGBoost Week Ahead Forecast ── */}
+            {/* ── Enhanced AI Forecast Visibility ── */}
             {xgboostPrediction && xgboostPrediction.length > 0 && (
-              <div className="bg-white/70 rounded-2xl p-5 border border-amber-100">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-base">🔮</span>
-                  <h4 className="text-[#4A148C] font-bold text-sm">
-                    Your Week Ahead
-                  </h4>
-                  <span className="ml-auto text-[10px] text-slate-400 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
-                    AI Forecast
-                  </span>
-                </div>
+              <div className="bg-gradient-to-br from-white via-purple-50/20 to-white rounded-[2.5rem] p-8 md:p-10 border-2 border-purple-100/40 shadow-xl relative overflow-hidden group">
+                {/* Decorative Background Blob */}
+                <div className="absolute top-0 right-0 w-48 h-48 bg-purple-200/20 rounded-full blur-3xl -mr-24 -mt-24 group-hover:bg-purple-300/30 transition-all duration-700" />
 
-                <div className="grid grid-cols-7 gap-1.5">
-                  {xgboostPrediction.slice(0, 7).map((p, i) => {
-                    const { label, emoji, bar, pill } = getWellnessLabel(
-                      p.predicted_risk,
-                    );
-                    const dayName = new Date(p.date).toLocaleDateString(
-                      "en-US",
-                      { weekday: "short" },
-                    );
-                    const isToday = i === 0;
-
-                    return (
-                      <div
-                        key={i}
-                        className={`flex flex-col items-center gap-1.5 p-2 rounded-xl transition-all duration-200 hover:scale-105 cursor-default
-                    ${isToday ? "bg-gradient-to-b from-purple-50 to-white border border-purple-200 shadow-sm" : "bg-white/60 border border-amber-50"}`}
-                      >
-                        {/* Day */}
-                        <span
-                          className={`text-[9px] font-bold uppercase tracking-wide ${isToday ? "text-purple-500" : "text-slate-400"}`}
-                        >
-                          {isToday ? "TMR" : dayName}
-                        </span>
-
-                        {/* Emoji mood */}
-                        <span className="text-lg leading-none">{emoji}</span>
-
-                        {/* Bar indicator */}
-                        <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                          <div
-                            className={`h-full rounded-full ${bar} transition-all duration-500`}
-                            style={{
-                              width: `${(p.predicted_risk / 10) * 100}%`,
-                            }}
-                          />
-                        </div>
-
-                        {/* Label pill */}
-                        <span
-                          className={`text-[8px] font-semibold px-1.5 py-0.5 rounded-full ${pill} text-center leading-tight`}
-                        >
-                          {label}
-                        </span>
+                <div className="relative z-10 flex flex-col gap-10">
+                  {/* Header */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-center gap-4">
+                      <div className="w-14 h-14 rounded-2xl bg-[#EDE7F6] flex items-center justify-center text-3xl shadow-md border border-[#D1C4E9] group-hover:rotate-12 transition-transform duration-500">
+                        🔮
                       </div>
-                    );
-                  })}
-                </div>
+                      <div>
+                        <h3 className="text-[#4A148C] font-black text-2xl font-serif tracking-tight">
+                          Predictive Wellness
+                        </h3>
+                        <p className="text-sm text-[#7B1FA2] font-bold uppercase tracking-widest opacity-70">
+                          Your week ahead • AI Analysis
+                        </p>
+                      </div>
+                    </div>
 
-                <p className="text-[10px] text-slate-400 text-center mt-3">
-                  Forecasts update daily based on your recent patterns ✨
-                </p>
+                    <div className="flex items-center gap-2 bg-[#4A148C] px-5 py-2.5 rounded-2xl shadow-lg border border-[#311B92]/20 self-start md:self-center">
+                      <Sparkles size={16} className="text-purple-300 animate-pulse" />
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-white">
+                        AI Radar Active
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Prediction Grid */}
+                  <div className="grid grid-cols-4 md:grid-cols-7 gap-4">
+                    {xgboostPrediction.slice(0, 7).map((p, i) => {
+                      const { label, emoji, bar, pill } = getWellnessLabel(p.predicted_risk);
+                      const dayName = new Date(p.date).toLocaleDateString("en-US", { weekday: "short" });
+                      const isToday = i === 0;
+
+                      return (
+                        <div
+                          key={i}
+                          className={`flex flex-col items-center gap-3 p-4 rounded-[2rem] transition-all duration-300 hover:scale-[1.08] hover:shadow-2xl cursor-default
+                          ${isToday ? "bg-white border-2 border-[#6A1B9A] shadow-purple-200/50 shadow-2xl ring-4 ring-purple-100/50" : "bg-white/90 border border-slate-100 hover:border-purple-300/50"}`}
+                        >
+                          <span className={`text-xs font-black uppercase tracking-widest ${isToday ? "text-[#7B1FA2]" : "text-slate-400"}`}>
+                            {isToday ? "Tmr" : dayName}
+                          </span>
+
+                          <span className="text-4xl my-1 transition-transform group-hover:scale-110">{emoji}</span>
+
+                          <div className="w-full h-2.5 rounded-full bg-slate-100 overflow-hidden shadow-inner">
+                            <div
+                              className={`h-full rounded-full ${bar} transition-all duration-1000 ease-out`}
+                              style={{
+                                width: `${Math.min(100, (p.predicted_risk / 10) * 100)}%`,
+                              }}
+                            />
+                          </div>
+
+                          <span className={`text-[10px] font-black px-3 py-1.5 rounded-full ${pill} text-center leading-none whitespace-nowrap shadow-sm border border-black/5`}>
+                            {label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Footer Disclaimer/Info */}
+                  <div className="flex items-center justify-center gap-3 py-4 px-6 bg-purple-50/50 rounded-2xl border border-dashed border-purple-200">
+                    <Info size={16} className="text-[#7B1FA2]" />
+                    <p className="text-[11px] text-[#4A148C] font-bold uppercase tracking-wider text-center">
+                      Personalized forecasts help you prepare. Your daily actions can positively shift these trends. ✨
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
+
           </div>
         </div>
       )}

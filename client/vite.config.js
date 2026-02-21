@@ -7,13 +7,6 @@ export default defineConfig({
     host: true,
     proxy: {
       '/api': process.env.VITE_API_URL || 'http://localhost:5000', 
-      '/socket.io': {
-        target: process.env.VITE_API_URL || 'http://localhost:5000',
-        ws: true,
-      },
     },
-  },
-  optimizeDeps: {
-    include: ['socket.io-client'],
   },
 })

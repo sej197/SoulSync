@@ -16,7 +16,9 @@ import {
     MoreVertical,
     AlertTriangle,
     ShieldAlert,
-    MessagesSquare
+    MessagesSquare,
+    TriangleAlert,
+    CircleCheck
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
@@ -243,7 +245,7 @@ export default function CommunityPage() {
             setCreating(true);
             const res = await createPostApi(communityId, { title: newTitle.trim(), text: newText.trim() });
             if (res.data.hate_speech_warning) {
-                toast.error(res.data.message, { duration: 6000, icon: '⚠️' });
+                toast.error(res.data.message, { duration: 6000, icon: <TriangleAlert size={16} className="text-amber-500" /> });
                 setUserWarnings(prev => prev + 1);
             } else {
                 toast.success('Post created!');
@@ -273,7 +275,7 @@ export default function CommunityPage() {
         try {
             const res = await updatePostApi(communityId, postId, { title: editTitle.trim(), text: editText.trim() });
             if (res.data.hate_speech_warning) {
-                toast.error(res.data.message, { duration: 6000, icon: '⚠️' });
+                toast.error(res.data.message, { duration: 6000, icon: <TriangleAlert size={16} className="text-amber-500" /> });
                 setUserWarnings(prev => prev + 1);
             } else {
                 toast.success('Post updated!');
@@ -350,7 +352,7 @@ export default function CommunityPage() {
             setCommentLoading(prev => ({ ...prev, [postId]: true }));
             const res = await addCommentApi(postId, text);
             if (res.data.hate_speech_warning) {
-                toast.error(res.data.message, { duration: 6000, icon: '⚠️' });
+                toast.error(res.data.message, { duration: 6000, icon: <TriangleAlert size={16} className="text-amber-500" /> });
                 setUserWarnings(prev => prev + 1);
             }
             setCommentText(prev => ({ ...prev, [postId]: '' }));
@@ -377,11 +379,11 @@ export default function CommunityPage() {
         try {
             const res = await updateCommentApi(editingComment.postId, editingComment.commentId, editCommentText.trim());
             if (res.data.flag_removed) {
-                toast.success('Comment updated — flag removed!', { duration: 4000, icon: '✅' });
+                toast.success('Comment updated — flag removed!', { duration: 4000, icon: <CircleCheck size={16} className="text-emerald-500" /> });
                 if (res.data.userWarnings !== undefined) setUserWarnings(res.data.userWarnings);
                 if (res.data.userBanned !== undefined) setUserBanned(res.data.userBanned);
             } else if (res.data.hate_speech_warning) {
-                toast.error(res.data.message, { duration: 6000, icon: '⚠️' });
+                toast.error(res.data.message, { duration: 6000, icon: <TriangleAlert size={16} className="text-amber-500" /> });
                 setUserWarnings(prev => prev + 1);
             } else {
                 toast.success('Comment updated');

@@ -1,7 +1,8 @@
 import ChatMessage from "../models/ChatMessage.js";
 import Community from "../models/Community.js";
+import { getIO } from "../config/socket.js";
 
-// GET /api/chat/:communityId/messages?page=1&limit=50
+
 export const getMessages = async (req, res) => {
     try {
         const { communityId } = req.params;
@@ -11,25 +12,33 @@ export const getMessages = async (req, res) => {
 
         const community = await Community.findById(communityId);
         if (!community) {
-            return res.status(404).json({ message: "Community not found" });
+            return res.status(404).json({
+                message: "Community not found" 
+            });
         }
 
-        // Verify membership
+       
         const isMember = community.members.some(
             (m) => m.toString() === req.userId
         );
         if (!isMember) {
-            return res.status(403).json({ message: "Not a member of this community" });
+            return res.status(403).json({
+                message: "Not a member of this community" 
+            });
         }
 
-        const totalMessages = await ChatMessage.countDocuments({ community: communityId });
+        const totalMessages = await ChatMessage.countDocuments({
+            community: communityId 
+        });
 
-        // Get messages in reverse-chronological order, then reverse for display
-        const messages = await ChatMessage.find({ community: communityId })
-            .populate("sender", "username")
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
+       
+        const messages = await ChatMessage.find({
+                            community: communityId 
+                        })
+                        .populate("sender", "username")
+                        .sort({ createdAt: -1 })
+                        .skip(skip)
+                        .limit(limit);
 
         res.json({
             messages: messages.reverse(),
@@ -44,25 +53,39 @@ export const getMessages = async (req, res) => {
     }
 };
 
-// DELETE /api/chat/:communityId/messages/:messageId
+
 export const deleteMessage = async (req, res) => {
     try {
         const { messageId } = req.params;
 
         const message = await ChatMessage.findById(messageId);
         if (!message) {
-            return res.status(404).json({ message: "Message not found" });
+            return res.status(404).json({
+                message: "Message not found" 
+            });
         }
 
         if (message.sender.toString() !== req.userId) {
-            return res.status(403).json({ message: "Not authorized to delete this message" });
+            return res.status(403).json({
+                message: "Not authorized to delete this message" 
+            });
         }
 
+        const communityId = message.community.toString();
         await message.deleteOne();
 
-        res.json({ message: "Message deleted successfully" });
+        // Broadcast deletion to the chat room in real-time
+        try {
+            getIO().to(communityId).emit("delete-message", { messageId });
+        } catch (e) { console.error("Socket emit error:", e.message); }
+
+        res.json({
+            message: "Message deleted successfully"
+         });
     } catch (err) {
         console.error("Error deleting chat message:", err.message);
-        res.status(500).json({ message: "Internal Server Error" });
+        res.status(500).json({
+            message: "Internal Server Error" 
+        });
     }
 };

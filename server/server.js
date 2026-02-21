@@ -14,6 +14,7 @@ import quizReminderRoutes from "./routes/QuizReminderRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import communityRoutes from "./routes/CommunityRoutes.js";
 import chatRoomRoutes from "./routes/chatRoomRoutes.js";
+import rateLimiter from "./middleware/ratelimiter.js";
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(rateLimiter); 
 
 // Routes
 app.use("/api/auth", authRoutes);

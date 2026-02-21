@@ -11,7 +11,11 @@ import {
   Smile,
   Sun,
   Cloud,
-  Wind
+  Wind,
+  CloudSun,
+  Frown,
+  Meh,
+  SmilePlus
 } from 'lucide-react';
 
 export default function Home() {
@@ -201,15 +205,15 @@ export default function Home() {
                 <div className="relative order-1">
                   <div className="absolute -inset-4 bg-[#FFE082] rounded-[2.5rem] transform -rotate-3 opacity-40"></div>
                   <div className="relative bg-white rounded-[2rem] p-10 shadow-2xl border border-[#FFF8E1] text-center">
-                    <div className="w-28 h-28 mx-auto bg-[#FFF3E0] rounded-full flex items-center justify-center text-5xl mb-8 shadow-inner">
-                      🌤️
+                    <div className="w-28 h-28 mx-auto bg-[#FFF3E0] rounded-full flex items-center justify-center mb-8 shadow-inner">
+                      <CloudSun size={48} className="text-[#EF6C00]" />
                     </div>
                     <h4 className="text-2xl font-bold text-[#3E2723] mb-2">Morning Check-in</h4>
                     <p className="text-[#8D6E63] mb-8">How are you feeling right now?</p>
 
                     <div className="flex justify-center gap-6 mb-10">
-                      {['😔', '😐', '🙂', '😄'].map((emoji, i) => (
-                        <button key={i} className="text-5xl hover:scale-125 transition-transform cursor-pointer p-2 bg-[#FAFAFA] rounded-2xl hover:bg-[#FFF3E0] shadow-sm">{emoji}</button>
+                      {[Frown, Meh, Smile, SmilePlus].map((Icon, i) => (
+                        <button key={i} className="hover:scale-125 transition-transform cursor-pointer p-3 bg-[#FAFAFA] rounded-2xl hover:bg-[#FFF3E0] shadow-sm"><Icon size={36} className="text-[#8D6E63]" /></button>
                       ))}
                     </div>
 

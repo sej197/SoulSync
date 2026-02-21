@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
     Phone,
     Clock,
@@ -7,17 +7,42 @@ import {
     Heart,
     ExternalLink,
     MessageCircle,
-    AlertCircle
+    AlertCircle,
+    Bell,
+    Users
 } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 export default function Helplines() {
+    const { user } = useContext(AuthContext);
     const [scrollY, setScrollY] = useState(0);
+    const [loadingNotify, setLoadingNotify] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => setScrollY(window.scrollY);
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const handleNotifyContacts = async () => {
+        if (!user?.emergency_contacts || user.emergency_contacts.length === 0) {
+            toast.error('No emergency contacts set. Please add them in Edit Profile.');
+            return;
+        }
+
+        setLoadingNotify(true);
+        try {
+            const response = await axios.post('/api/notify/notify-contacts', {}, { withCredentials: true });
+            toast.success(`Notifications sent to ${response.data.results?.length || 'emergency contacts'}!`);
+        } catch (error) {
+            const errorMsg = error.response?.data?.message || 'Failed to send notifications';
+            toast.error(errorMsg);
+        } finally {
+            setLoadingNotify(false);
+        }
+    };
 
     const helplines = [
         {
@@ -156,6 +181,51 @@ export default function Helplines() {
                         </div>
                     ))}
                 </div>
+
+                {/* Emergency Contacts Section */}
+                {user && user.emergency_contacts && user.emergency_contacts.length > 0 && (
+                    <div className="mt-20 max-w-3xl mx-auto">
+                        <div className="bg-white/80 backdrop-blur-md rounded-[2.5rem] p-10 border border-white/60 shadow-lg">
+                            <div className="flex items-center gap-3 mb-6">
+                                <div className="w-12 h-12 rounded-2xl bg-[#FCE4EC] text-[#C2185B] flex items-center justify-center">
+                                    <Users size={28} />
+                                </div>
+                                <h2 className="text-3xl font-serif font-bold text-[#3E2723]">Your Support Circle</h2>
+                            </div>
+
+                            <p className="text-[#5D4037] mb-8 text-lg">
+                                Your emergency contacts have been saved. When you need support, reach out to them anytime.
+                            </p>
+
+                            <div className="grid md:grid-cols-2 gap-4 mb-8">
+                                {user.emergency_contacts.map((contact, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="p-5 bg-[#FFF8E1] rounded-2xl border border-[#FFE0B2] flex items-center gap-4"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-[#FFCC80] flex items-center justify-center flex-shrink-0">
+                                            <Phone className="text-[#EF6C00]" size={20} />
+                                        </div>
+                                        <span className="text-[#5D4037] font-semibold">{contact}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button
+                                onClick={handleNotifyContacts}
+                                disabled={loadingNotify}
+                                className="w-full py-4 px-6 rounded-2xl bg-[#D32F2F] hover:bg-[#B71C1C] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-red-300 transition-all transform hover:-translate-y-1"
+                            >
+                                <Bell size={24} />
+                                {loadingNotify ? 'Notifying...' : 'Notify Emergency Contacts'}
+                            </button>
+
+                            <p className="text-xs text-[#8D6E63] text-center mt-4 italic">
+                                💡 Use this to let your support circle know you need them
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 {/* Footer Note */}
                 <div className="mt-24 text-center bg-white/40 backdrop-blur-md rounded-[3rem] p-10 border border-white/60 max-w-4xl mx-auto">

@@ -1,14 +1,35 @@
-import React from 'react';
-import { User, Mail, MapPin, Calendar, Edit2, Camera } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Mail, MapPin, Calendar, Edit2, Camera, Bell, Phone } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import Badge from '../components/profile/Badge';
 import { BADGE_DEFINITIONS } from '../utils/badgeDefinitions';
 import StreakStats from '../components/StreakStats';
+import toast from 'react-hot-toast';
+import axios from 'axios';
 
 const Profile = () => {
     const { user } = useContext(AuthContext);
+    const [loadingNotify, setLoadingNotify] = useState(false);
+
+    const handleNotifyContacts = async () => {
+        if (!user?.emergency_contacts || user.emergency_contacts.length === 0) {
+            toast.error('No emergency contacts set. Please add them in Edit Profile.');
+            return;
+        }
+
+        setLoadingNotify(true);
+        try {
+            const response = await axios.post('/api/notify/notify-contacts', {}, { withCredentials: true });
+            toast.success(`Notifications sent to ${response.data.results?.length || 'emergency contacts'}!`);
+        } catch (error) {
+            const errorMsg = error.response?.data?.message || 'Failed to send notifications';
+            toast.error(errorMsg);
+        } finally {
+            setLoadingNotify(false);
+        }
+    };
 
     // Fallback/Loading state if user is not yet loaded
     if (!user) {
@@ -165,6 +186,36 @@ const Profile = () => {
                                         </li>
                                     </ul>
                                 </div>
+
+                                {/* Emergency Contacts Section */}
+                                {user.emergency_contacts && user.emergency_contacts.length > 0 && (
+                                    <div className="p-8 bg-[#FCE4EC] rounded-[2rem] border border-[#F8BBD0] shadow-sm">
+                                        <h3 className="text-lg font-serif font-bold text-[#C2185B] mb-4 flex items-center gap-2">
+                                            <Phone className="w-5 h-5" /> Emergency Contacts
+                                        </h3>
+                                        <ul className="space-y-3">
+                                            {user.emergency_contacts.map((contact, idx) => (
+                                                <li key={idx} className="text-[#5D4037] font-medium">
+                                                    {contact}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                {/* Notify Button */}
+                                <button
+                                    onClick={handleNotifyContacts}
+                                    disabled={loadingNotify || !user.emergency_contacts?.length}
+                                    className={`w-full py-3 px-6 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+                                        user.emergency_contacts?.length
+                                            ? 'bg-[#D32F2F] hover:bg-[#B71C1C] text-white shadow-lg shadow-red-300'
+                                            : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                    }`}
+                                >
+                                    <Bell className="w-5 h-5" />
+                                    {loadingNotify ? 'Notifying...' : 'Notify Emergency Contacts'}
+                                </button>
                             </div>
                         </div>
                     </div>

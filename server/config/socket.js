@@ -1,4 +1,6 @@
 import { Server } from "socket.io";
+import { createAdapter } from "@socket.io/redis-adapter";
+import { createClient } from "redis";
 import jwt from "jsonwebtoken";
 import ChatMessage from "../models/ChatMessage.js";
 import Community from "../models/Community.js";
@@ -27,13 +29,42 @@ const checkHateSpeech = async (text) => {
     }
 };
 
-export function setupSocket(server) {
+export async function setupSocket(server) {
+    const allowedOrigins = process.env.CLIENT_URL
+        ? process.env.CLIENT_URL.split(',')
+        : ['http://localhost:5173'];
     const io = new Server(server, {
         cors: {
-            origin: process.env.CLIENT_URL,
+            origin: (origin, callback) => {
+                if (!origin || allowedOrigins.includes(origin)) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
             credentials: true
         }
     });
+
+    // Setup Redis adapter for cross-server real-time events
+    try {
+        const pubClient = createClient({
+            socket: {
+                host: process.env.REDIS_HOST || "localhost",
+                port: process.env.REDIS_PORT || 6379,
+            },
+        });
+        const subClient = pubClient.duplicate();
+
+        pubClient.on("error", (err) => console.error("Redis Adapter Pub Error:", err.message));
+        subClient.on("error", (err) => console.error("Redis Adapter Sub Error:", err.message));
+
+        await Promise.all([pubClient.connect(), subClient.connect()]);
+        io.adapter(createAdapter(pubClient, subClient));
+        console.log("✓ Socket.IO Redis adapter connected");
+    } catch (err) {
+        console.warn("⚠ Socket.IO Redis adapter failed, falling back to in-memory:", err.message);
+    }
 
     ioInstance = io;
 

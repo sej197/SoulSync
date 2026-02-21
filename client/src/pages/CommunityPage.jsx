@@ -16,7 +16,6 @@ import {
     MoreVertical,
     AlertTriangle,
     ShieldAlert,
-    MessagesSquare,
     TriangleAlert,
     CircleCheck
 } from 'lucide-react';
@@ -34,8 +33,6 @@ import {
     updateCommentApi,
     deleteCommentApi
 } from '../lib/postApi';
-import { connectSocket, getSocket, joinCommunityPosts, leaveCommunityPosts } from '../lib/socket';
-import GroupChat from '../components/community/GroupChat';
 
 export default function CommunityPage() {
     const { communityId } = useParams();
@@ -74,9 +71,6 @@ export default function CommunityPage() {
 
     // Filter state
     const [filterFlagged, setFilterFlagged] = useState(false);
-
-    // Tab state: 'posts' or 'chat'
-    const [activeTab, setActiveTab] = useState('posts');
 
     // Hate speech / warning state
     const [userWarnings, setUserWarnings] = useState(0);
@@ -117,119 +111,6 @@ export default function CommunityPage() {
         loadPosts(1);
         setPage(1);
     }, [communityId, loadPosts]);
-
-    // Socket.IO: real-time post & comment updates
-    useEffect(() => {
-        const socket = connectSocket();
-
-        const onConnect = () => joinCommunityPosts(communityId);
-
-        if (socket.connected) {
-            joinCommunityPosts(communityId);
-        }
-        socket.on('connect', onConnect);
-
-        // New post from another user
-        socket.on('new-post', (post) => {
-            setPosts(prev => {
-                if (prev.some(p => p._id === post._id)) return prev;
-                return [post, ...prev];
-            });
-        });
-
-        // Post updated
-        socket.on('update-post', (updated) => {
-            setPosts(prev => prev.map(p =>
-                p._id === updated._id ? { ...p, ...updated } : p
-            ));
-        });
-
-        // Post deleted
-        socket.on('delete-post', ({ postId }) => {
-            setPosts(prev => prev.filter(p => p._id !== postId));
-        });
-
-        // Reaction updated
-        socket.on('update-reactions', ({ postId, upvotesCount, downvotesCount, upvotes, downvotes }) => {
-            setPosts(prev => prev.map(p =>
-                p._id === postId
-                    ? {
-                        ...p,
-                        upvotesCount,
-                        downvotesCount,
-                        isUpvoted: upvotes.includes(user?.id),
-                        isDownvoted: downvotes.includes(user?.id)
-                    }
-                    : p
-            ));
-        });
-
-        // New comment
-        socket.on('new-comment', ({ postId, comment, commentsCount }) => {
-            setPosts(prev => prev.map(p =>
-                p._id === postId ? { ...p, commentsCount } : p
-            ));
-            setCommentsData(prev => {
-                if (!prev[postId]) return prev;
-                const existing = prev[postId];
-                if (existing.comments.some(c => c._id === comment._id)) return prev;
-                return {
-                    ...prev,
-                    [postId]: {
-                        ...existing,
-                        comments: [...existing.comments, comment],
-                        totalComments: commentsCount
-                    }
-                };
-            });
-        });
-
-        // Comment updated
-        socket.on('update-comment', ({ postId, comment }) => {
-            setCommentsData(prev => {
-                if (!prev[postId]) return prev;
-                return {
-                    ...prev,
-                    [postId]: {
-                        ...prev[postId],
-                        comments: prev[postId].comments.map(c =>
-                            c._id === comment._id ? comment : c
-                        )
-                    }
-                };
-            });
-        });
-
-        // Comment deleted
-        socket.on('delete-comment', ({ postId, commentId, commentsCount }) => {
-            setPosts(prev => prev.map(p =>
-                p._id === postId ? { ...p, commentsCount } : p
-            ));
-            setCommentsData(prev => {
-                if (!prev[postId]) return prev;
-                return {
-                    ...prev,
-                    [postId]: {
-                        ...prev[postId],
-                        comments: prev[postId].comments.filter(c => c._id !== commentId),
-                        totalComments: commentsCount
-                    }
-                };
-            });
-        });
-
-        return () => {
-            leaveCommunityPosts(communityId);
-            socket.off('connect', onConnect);
-            socket.off('new-post');
-            socket.off('update-post');
-            socket.off('delete-post');
-            socket.off('update-reactions');
-            socket.off('new-comment');
-            socket.off('update-comment');
-            socket.off('delete-comment');
-        };
-    }, [communityId, user?.id]);
 
     const handleLoadMore = () => {
         const next = page + 1;
@@ -400,8 +281,10 @@ export default function CommunityPage() {
     // Delete comment
     const handleDeleteComment = async (postId, commentId) => {
         try {
-            await deleteCommentApi(postId, commentId);
+            const res = await deleteCommentApi(postId, commentId);
             toast.success('Comment deleted');
+            if (res.data.userWarnings !== undefined) setUserWarnings(res.data.userWarnings);
+            if (res.data.userBanned !== undefined) setUserBanned(res.data.userBanned);
             await loadComments(postId);
             setPosts(prev => prev.map(p =>
                 p._id === postId ? { ...p, commentsCount: Math.max((p.commentsCount || 1) - 1, 0) } : p
@@ -509,40 +392,6 @@ export default function CommunityPage() {
                     </div>
                 )}
 
-                {/* Tab Toggle: Posts vs Chat */}
-                <div className="flex items-center gap-3 mb-6">
-                    <button
-                        onClick={() => setActiveTab('posts')}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                            activeTab === 'posts'
-                                ? 'bg-[#7B1FA2] text-white shadow-md'
-                                : 'bg-white/70 text-[#5D4037] border border-white/60 hover:bg-white'
-                        }`}
-                    >
-                        <MessageCircle size={16} />
-                        Posts
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('chat')}
-                        className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
-                            activeTab === 'chat'
-                                ? 'bg-[#7B1FA2] text-white shadow-md'
-                                : 'bg-white/70 text-[#5D4037] border border-white/60 hover:bg-white'
-                        }`}
-                    >
-                        <MessagesSquare size={16} />
-                        Group Chat
-                    </button>
-                </div>
-
-                {activeTab === 'chat' ? (
-                    <GroupChat
-                        communityId={communityId}
-                        communityName={communityName}
-                        userBanned={userBanned}
-                    />
-                ) : (
-                <>
                 {/* New Post Toggle */}
                 <div className="mb-6">
                     {userBanned ? (
@@ -940,8 +789,6 @@ export default function CommunityPage() {
                             </div>
                         )}
                     </div>
-                )}
-                </>
                 )}
             </div>
 

@@ -136,3 +136,29 @@ async def predict_user_risk(user_id: str, days: int = 7):
     except Exception as e:
         print(f"Prediction error for user {user_id}: {str(e)}", file=sys.stderr)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/risk-weights")
+async def get_risk_weights():
+    """
+    Returns dynamically learned weights for risk components using XGBoost
+    """
+    try:
+        weights = xgb_predictor.get_risk_weights()
+        if not weights:
+             # Fallback to current hardcoded defaults if model not found
+             return {
+                "depression_quiz_score": 0.20,
+                "anxiety_quiz_score":    0.15,
+                "stress_quiz_score":     0.15,
+                "sleep_quiz_score":      0.12,
+                "journal_score":         0.13,
+                "chatbot_score":         0.11,
+                "quiz_score":            0.07,
+                "community_score":       0.03,
+                "disengagement_score":   0.04
+            }
+        return weights
+    except Exception as e:
+        print(f"Error fetching risk weights: {str(e)}", file=sys.stderr)
+        raise HTTPException(status_code=500, detail=str(e))

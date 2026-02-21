@@ -4,7 +4,7 @@ import User from "../models/User.js";
 import axios from "axios";
 import transporter from "../config/nodemailer.js";
 import hateSpeechWarningEmail from "../emails/hateSpeechWarningEmail.js";
-import { getIO } from "../config/socket.js";
+
 
 const HATE_SPEECH_THRESHOLD = 0.6;
 const MAX_WARNINGS = 3;
@@ -121,11 +121,6 @@ const createPost = async(req, res) => {
             isDownvoted: false,
             hateSpeechFlag: isFlagged
         };
-
-        // Broadcast new post to all users in the community
-        try {
-            getIO().to(`posts:${communityId}`).emit("new-post", postData);
-        } catch (e) { console.error("Socket emit error:", e.message); }
 
         // If flagged, warn the user
         if(isFlagged){
@@ -253,18 +248,6 @@ const updatePost = async(req,res) => {
 
         const updatedPost = await post.save();
 
-        // Broadcast post update
-        try {
-            const populatedPost = await Post.findById(updatedPost._id).populate("author", "username");
-            getIO().to(`posts:${communityId}`).emit("update-post", {
-                ...populatedPost.toObject(),
-                upvotesCount: populatedPost.upvotes.length,
-                downvotesCount: populatedPost.downvotes.length,
-                commentsCount: populatedPost.comments.length,
-                hateSpeechFlag: populatedPost.hate_speech_flag
-            });
-        } catch (e) { console.error("Socket emit error:", e.message); }
-
         if(isFlagged){
             const updatedUser = await flagUser(req.userId, post._id, hateSpeechScore, fullText.trim());
             return res.status(200).json({
@@ -322,11 +305,6 @@ const deletePost = async(req,res) => {
         }
 
         await post.deleteOne();
-
-        // Broadcast post deletion
-        try {
-            getIO().to(`posts:${communityId}`).emit("delete-post", { postId: post._id.toString() });
-        } catch (e) { console.error("Socket emit error:", e.message); }
 
         // Return updated warning info
         const updatedUser = await User.findById(req.userId).select('hate_speech_warnings is_banned');
@@ -393,17 +371,6 @@ const reactToPost = async(req, res) => {
         }
         await post.save();
 
-        // Broadcast reaction update
-        try {
-            getIO().to(`posts:${post.community.toString()}`).emit("update-reactions", {
-                postId: post._id.toString(),
-                upvotesCount: post.upvotes.length,
-                downvotesCount: post.downvotes.length,
-                upvotes: post.upvotes,
-                downvotes: post.downvotes
-            });
-        } catch (e) { console.error("Socket emit error:", e.message); }
-
         return res.json({
             message: "Reaction updated",
             upvotesCount: post.upvotes.length,
@@ -463,17 +430,6 @@ const addComment = async(req, res) => {
         post.commentCount += 1;
 
         await post.save();
-
-        // Broadcast new comment to community
-        try {
-            const updatedPost = await Post.findById(postId).populate("comments.author", "username");
-            const addedComment = updatedPost.comments[updatedPost.comments.length - 1];
-            getIO().to(`posts:${post.community.toString()}`).emit("new-comment", {
-                postId: post._id.toString(),
-                comment: addedComment,
-                commentsCount: updatedPost.commentCount
-            });
-        } catch (e) { console.error("Socket emit error:", e.message); }
 
         if(isFlagged){
             await flagUser(userId, post._id, hateSpeechScore, text);
@@ -582,16 +538,6 @@ const updateComment = async(req, res) => {
 
         await post.save();
 
-        // Broadcast comment update
-        try {
-            const updatedPost = await Post.findById(postId).populate("comments.author", "username");
-            const updatedComment = updatedPost.comments.id(commentId);
-            getIO().to(`posts:${post.community.toString()}`).emit("update-comment", {
-                postId: post._id.toString(),
-                comment: updatedComment
-            });
-        } catch (e) { console.error("Socket emit error:", e.message); }
-
         // If previously flagged and now clean, decrement warnings
         if(wasFlagged && !isFlagged){
             await User.findByIdAndUpdate(userId, {
@@ -659,22 +605,25 @@ const deleteComment = async(req, res) => {
             });
         }
 
+        // If the comment was flagged, decrement warnings and remove the log entry
+        if(comment.hate_speech_flag){
+            await User.findByIdAndUpdate(userId, {
+                $inc: { hate_speech_warnings: -1 },
+                $pull: { hate_speech_logs: { postId: post._id } }
+            });
+        }
+
         comment.deleteOne();
         post.commentCount -= 1;
 
         await post.save();
 
-        // Broadcast comment deletion
-        try {
-            getIO().to(`posts:${post.community.toString()}`).emit("delete-comment", {
-                postId: post._id.toString(),
-                commentId,
-                commentsCount: post.commentCount
-            });
-        } catch (e) { console.error("Socket emit error:", e.message); }
-
+        // Return updated warning info
+        const updatedUser = await User.findById(userId).select('hate_speech_warnings is_banned');
         res.status(200).json({
-            message: "Comment deleted successfully"
+            message: "Comment deleted successfully",
+            userWarnings: updatedUser?.hate_speech_warnings || 0,
+            userBanned: updatedUser?.is_banned || false
         });
 
     }

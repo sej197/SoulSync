@@ -1,14 +1,16 @@
 import { ArrowUp } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
+import { useOutletContext, useNavigate } from "react-router-dom";
 import { fetchChatById, createChat, updateChat } from "../../lib/chatbotapi";
 import Markdown from "react-markdown";
 import toast from "react-hot-toast";
 import "./newprompt.css";
-import { useNavigate } from "react-router-dom";
+import { getMoodMismatchMessage } from "../../utils/emotionUtils";
+
 export default function Newprompt({ chatId }) {
     const navigate = useNavigate();
+    const { faceEmotionRef, setMismatchMessage } = useOutletContext() || {};
     const activeChatId = chatId;
-
     const [ques, setQues] = useState("");
     const [ans, setAns] = useState("");
     const [chat, setChat] = useState([]);
@@ -80,12 +82,20 @@ export default function Newprompt({ chatId }) {
                     });
                 }
 
+                // Mood mismatch check
+                if (data.sentimentScore != null) {
+                    const mismatchMsg = getMoodMismatchMessage(faceEmotionRef.current, data.sentimentScore);
+                    if (mismatchMsg) {
+                        setMismatchMessage(mismatchMsg);
+                    }
+                }
+
                 // Show badge notifications
                 if (data.newlyAwarded && data.newlyAwarded.length > 0) {
                     data.newlyAwarded.forEach(badge => {
-                        toast.success(`New Badge Earned: ${badge.name}! 🏆`, {
+                        toast.success(`New Badge Earned: ${badge.name}! \uD83C\uDFC6`, {
                             duration: 5000,
-                            icon: '🎉',
+                            icon: '\uD83C\uDF89',
                         });
                     });
                 }
@@ -106,12 +116,20 @@ export default function Newprompt({ chatId }) {
                 });
             }
 
+            // Mood mismatch check
+            if (data.sentimentScore != null) {
+                const mismatchMsg = getMoodMismatchMessage(faceEmotionRef.current, data.sentimentScore);
+                if (mismatchMsg) {
+                    setMismatchMessage(mismatchMsg);
+                }
+            }
+
             // Show badge notifications
             if (data.newlyAwarded && data.newlyAwarded.length > 0) {
                 data.newlyAwarded.forEach(badge => {
-                    toast.success(`New Badge Earned: ${badge.name}! 🏆`, {
+                    toast.success(`New Badge Earned: ${badge.name}! \uD83C\uDFC6`, {
                         duration: 5000,
-                        icon: '🎉',
+                        icon: '\uD83C\uDF89',
                     });
                 });
             }

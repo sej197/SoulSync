@@ -50,7 +50,7 @@ const getJournalEntries = async (req, res) => {
         await setCache(cacheKey, response, 1800);
 
         res.json(response);
-    }catch(error){
+    } catch (error) {
         console.error("Error fetching journal entries", error);
         res.status(500).json({
             message: "Server error"
@@ -102,11 +102,11 @@ const getJournalEntryByDate = async (req, res) => {
 
         // Cache for 24 hours (daily data)
         await setCache(cacheKey, response, 86400);
-        
-        res.json(response); 
-    }catch(error){
+
+        res.json(response);
+    } catch (error) {
         console.error("Error fetching journal entry by date", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -166,9 +166,9 @@ const createJournalEntry = async (req, res) => {
             newlyAwarded
         });
 
-    }catch(error){
+    } catch (error) {
         console.error("Error creating journal entry", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -194,9 +194,9 @@ const deleteJournalEntry = async (req, res) => {
         res.json({
             message: "Journal entry deleted successfully"
         });
-    }catch(error){
+    } catch (error) {
         console.error("Error deleting journal entry", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -226,6 +226,19 @@ const updateJournalEntry = async (req, res) => {
         entry.text = encrypt(text);
         if (subject) entry.subject = encrypt(subject);
 
+        // Re-analyze sentiment for updated text
+        let sentimentScore = entry.sentimentScore || 0;
+        try {
+            const response = await axios.post(
+                `${process.env.PYTHON_SERVER}/sentiment/analyze`,
+                { text }
+            );
+            sentimentScore = response.data.paragraphScore ?? 0;
+        } catch (error) {
+            console.error("Sentiment API error on update:", error.message);
+        }
+        entry.sentimentScore = sentimentScore;
+
         await entry.save();
 
         const journalDate = entry.entryTime.toISOString().split("T")[0];
@@ -250,9 +263,9 @@ const updateJournalEntry = async (req, res) => {
             message: "Journal entry updated successfully",
             entry: decryptEntry(entry)
         });
-    }catch(error){
+    } catch (error) {
         console.error("Error updating journal entry", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -295,9 +308,9 @@ const getCalendarDates = async (req, res) => {
         await setCache(cacheKey, response, 86400);
 
         res.json(response);
-    }catch(error){
+    } catch (error) {
         console.error("Error fetching calendar dates", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 

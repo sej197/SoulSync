@@ -58,9 +58,9 @@ function App() {
                     <Route path=":id" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                     <Route path="new" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                   </Route>
-                  <Route path="/communities" element={<ProtectedRoute><CommunityLanding/></ProtectedRoute>} />
-                  <Route path="/communities/explore" element={<ProtectedRoute><CommunityExplore/></ProtectedRoute>} />
-                  <Route path="/communities/:communityId" element={<ProtectedRoute><CommunityPage/></ProtectedRoute>} />
+                  <Route path="/communities" element={<ProtectedRoute><CommunityLanding /></ProtectedRoute>} />
+                  <Route path="/communities/explore" element={<ProtectedRoute><CommunityExplore /></ProtectedRoute>} />
+                  <Route path="/communities/:communityId" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
                   <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
                   <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />

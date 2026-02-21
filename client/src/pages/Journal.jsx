@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Calendar from 'react-calendar';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
@@ -10,6 +10,9 @@ import {
   Undo, Redo, Lock, Feather, Heart, Sparkles, Pencil, Moon, CalendarDays, Star, BookMarked
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import EmotionDetector from '../components/EmotionDetector';
+import MoodMismatchBanner from '../components/MoodMismatchBanner';
+import { getMoodMismatchMessage } from '../utils/emotionUtils';
 import {
   fetchJournalEntries,
   fetchJournalByDate,
@@ -114,6 +117,8 @@ const BindingDots = () => (
 export default function Journal() {
   const [mode, setMode] = useState('write');
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const faceEmotionRef = useRef('neutral');
+  const [mismatchMessage, setMismatchMessage] = useState(null);
   const [calendarDates, setCalendarDates] = useState([]);
   const [activeMonth, setActiveMonth] = useState(new Date());
 
@@ -263,12 +268,13 @@ export default function Journal() {
 
     setSaving(true);
     try {
+      let data;
       if (existingEntry) {
-        const data = await updateJournalEntry(existingEntry._id, text, subject);
+        data = await updateJournalEntry(existingEntry._id, text, subject);
         setExistingEntry(data.entry);
         toast.success('Updated!');
       } else {
-        const data = await createJournalEntry(text, subject);
+        data = await createJournalEntry(text, subject);
         setExistingEntry(data.entry);
         toast.success('Saved!');
 
@@ -283,6 +289,13 @@ export default function Journal() {
         }
       }
       loadCalendarDates(activeMonth);
+
+      // Mood mismatch check — compare face emotion with text sentiment
+      const score = data?.entry?.sentimentScore;
+      const mismatchMsg = getMoodMismatchMessage(faceEmotionRef.current, score);
+      if (mismatchMsg) {
+        setMismatchMessage(mismatchMsg);
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save');
     }
@@ -339,6 +352,8 @@ export default function Journal() {
 
   return (
     <div className="journal-page">
+      <MoodMismatchBanner message={mismatchMessage} onDismiss={() => setMismatchMessage(null)} />
+      <EmotionDetector onEmotionDetected={(e) => { faceEmotionRef.current = e; }} />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="journal-page-header flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">

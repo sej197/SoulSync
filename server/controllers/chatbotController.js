@@ -190,6 +190,7 @@ export const createChat = async (req, res) => {
         res.status(201).json({
             chatId: newChat._id,
             aiResponse,
+            sentimentScore,
             riskAlert: sentimentScore > 0.7,
             alertMessage: sentimentScore > 0.7 ? "We've noticed you might be going through a tough time. Remember, SoulSync is here for you, but please consider reaching out to a professional or a loved one if you feel overwhelmed." : null,
             newlyAwarded
@@ -404,6 +405,7 @@ export const updateChat = async (req, res) => {
         res.status(200).json({
             message: "Chat updated",
             aiResponse,
+            sentimentScore,
             riskAlert: sentimentScore > 0.7,
             alertMessage: sentimentScore > 0.7
                 ? "It's okay to feel this way. We've detected some high-stress signals in your messages. Please take a moment for yourself or talk to someone you trust."

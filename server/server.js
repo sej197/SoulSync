@@ -23,46 +23,57 @@ const app = express();
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 
-// Setup Socket.IO
-setupSocket(server);
+// Async initialization
+(async () => {
+  // Setup Socket.IO with Redis adapter
+  await setupSocket(server);
 
-// Request Logging
-app.use((req, res, next) => {
-  console.log(`[REQUEST] ${req.method} ${req.url}`);
-  next();
-});
+  // Request Logging
+  app.use((req, res, next) => {
+    console.log(`[REQUEST] ${req.method} ${req.url}`);
+    next();
+  });
 
-// Middlewares
-app.use(cors({
-  origin: process.env.CLIENT_URL,
-  credentials: true
-}));
-app.use(express.json());
-app.use(cookieParser());
-app.use(rateLimiter); 
+  // Middlewares
+  const allowedOrigins = process.env.CLIENT_URL
+    ? process.env.CLIENT_URL.split(',')
+    : ['http://localhost:5173'];
+  app.use(cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    credentials: true
+  }));
+  app.use(express.json());
+  app.use(cookieParser());
+  app.use(rateLimiter); 
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/risk", riskRoutes);
-app.use("/api/quiz", dailyQuizRoutes);
-app.use("/api/journal", journalRoutes);
-app.use("/api/chatbot", chatRoutes);
-app.use("/api/reminders",quizReminderRoutes);
-app.use("/api/posts", postRoutes);
-app.use("/api/reminders", quizReminderRoutes);
-app.use("/api/community", communityRoutes);
-app.use("/api/chat", chatRoomRoutes);
-app.use("/api/survey", surveyRoutes);
+  // Routes
+  app.use("/api/auth", authRoutes);
+  app.use("/api/risk", riskRoutes);
+  app.use("/api/quiz", dailyQuizRoutes);
+  app.use("/api/journal", journalRoutes);
+  app.use("/api/chatbot", chatRoutes);
+  app.use("/api/reminders",quizReminderRoutes);
+  app.use("/api/posts", postRoutes);
+  app.use("/api/reminders", quizReminderRoutes);
+  app.use("/api/community", communityRoutes);
+  app.use("/api/chat", chatRoomRoutes);
+  app.use("/api/survey", surveyRoutes);
 
-// Global Error Handler
-app.use((err, req, res, next) => {
-  console.error("GLOBAL ERROR CAPTURED:", err);
-  res.status(500).json({ message: "Internal server error", error: err.message });
-});
+  // Global Error Handler
+  app.use((err, req, res, next) => {
+    console.error("GLOBAL ERROR CAPTURED:", err);
+    res.status(500).json({ message: "Internal server error", error: err.message });
+  });
 
-// Connect DB & start server
-connectDB().then(() => {
+  // Connect DB & start server
+  await connectDB();
   server.listen(PORT, () => {
     console.log(`Server started at port ${PORT}`);
   });
-});
+})();

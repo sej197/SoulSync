@@ -13,7 +13,7 @@ import postRoutes from "./routes/postRoutes.js";
 import communityRoutes from "./routes/CommunityRoutes.js";
 import surveyRoutes from "./routes/surveyRoutes.js";
 import rateLimiter from "./middleware/ratelimiter.js";
-
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 dotenv.config();
 
@@ -46,6 +46,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/reminders", quizReminderRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/survey", surveyRoutes);
+app.use("/api/notify", notificationRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

@@ -3,25 +3,23 @@ import User from '../models/User.js';
 
 // Helper function to format phone numbers to E.164 format
 const formatPhoneNumber = (phone) => {
-  // Remove any non-digit characters
+
   const cleaned = phone.replace(/\D/g, '');
-  
-  // If it's 10 digits, assume India (+91)
+
   if (cleaned.length === 10) {
     return `+91${cleaned}`;
   }
   
-  // If it already starts with country code (11-15 digits), assume it's correct
+
   if (cleaned.length >= 11 && cleaned.length <= 15) {
     return `+${cleaned}`;
   }
   
-  // If it's exactly 12 digits and doesn't start with +, add +
   if (cleaned.length === 12) {
     return `+${cleaned}`;
   }
   
-  return null; // Invalid format
+  return null; 
 };
 
 export const notifyContacts = async (req, res) => {
@@ -43,24 +41,29 @@ export const notifyContacts = async (req, res) => {
 
     if (!accountSid || !authToken || !fromNumber) {
       console.error('Missing Twilio credentials:', { accountSid: !!accountSid, authToken: !!authToken, fromNumber: !!fromNumber });
-      return res.status(500).json({ message: 'Twilio configuration missing on server' });
+      return res.status(500).json({
+        message: 'Twilio configuration missing on server'
+      });
     }
 
     const client = twilio(accountSid, authToken);
 
-    const name = user.name || 'Someone';
+    const name = user.username || 'Someone';
     const messageBody = `${name} needs your support — please check in with them and let them know you care. If it's an emergency, contact local emergency services.`;
 
     const results = [];
     
     for (const contact of contacts) {
       try {
-        // Format phone number to E.164 format
         const formattedPhone = formatPhoneNumber(contact);
         
         if (!formattedPhone) {
           console.error(`Invalid phone number format: ${contact}`);
-          results.push({ to: contact, status: 'error', error: 'Invalid phone number format. Use 10 or 12 digit format.' });
+          results.push({ 
+            to: contact, 
+            status: 'error', 
+            error: 'Invalid phone number format. Use 10 or 12 digit format.' 
+      });
           continue;
         }
 
@@ -76,14 +79,23 @@ export const notifyContacts = async (req, res) => {
         results.push({ to: contact, formattedPhone, status: 'sent', sid: msg.sid });
       } catch (err) {
         console.error(`Failed to send SMS to ${contact}:`, err.message);
-        results.push({ to: contact, status: 'error', error: err.message });
+        results.push({
+          to: contact, 
+          status: 'error', 
+          error: err.message 
+        });
       }
     }
 
-    return res.json({ message: 'Notifications processed', results });
+    return res.json({
+      message: 'Notifications processed', results 
+    });
   } catch (error) {
     console.error('NotifyContacts error:', error);
-    return res.status(500).json({ message: 'Failed to send notifications', error: error.message });
+    return res.status(500).json({
+      message: 'Failed to send notifications', 
+      error: error.message 
+    });
   }
 };
 

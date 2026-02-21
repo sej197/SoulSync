@@ -30,6 +30,7 @@ import NotFound from './pages/NotFound';
 import RateLimited from './pages/RateLimited';
 import Survey from './pages/Survey';
 import NavigationSetter from './components/NavigationSetter';
+import EmotionDetector from './components/EmotionDetector';
 
 function App() {
   console.log("[App] Rendering. Time:", new Date().toLocaleTimeString());
@@ -49,6 +50,7 @@ function App() {
           element={
             <div className="min-h-screen flex flex-col font-sans bg-base-100">
               <Navbar />
+              <EmotionDetector/>
               <SurveyBanner />
               <main className="flex-grow">
                 <Routes>

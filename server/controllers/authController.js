@@ -80,6 +80,7 @@ const register = async (req, res) => {
             emergency_contacts: user.emergency_contacts,
             communities: user.communities,
             streak: user.streak,
+            surveyCompleted: user.surveyCompleted,
         }, 7200); // 2 hours
 
         return res.json({
@@ -143,6 +144,7 @@ const login = async (req, res) => {
             emergency_contacts: user.emergency_contacts,
             communities: user.communities,
             streak: user.streak,
+            surveyCompleted: user.surveyCompleted,
         }, 7200);
 
         return res.json({
@@ -223,6 +225,7 @@ const isAuthenticated = async (req, res) => {
             emergency_contacts: user.emergency_contacts,
             communities: user.communities.map(c => ({ _id: c._id, name: c.name })),
             streak: user.streak,
+            surveyCompleted: user.surveyCompleted,
         };
 
         // Cache the user
@@ -273,6 +276,7 @@ const updateProfile = async (req, res) => {
             emergency_contacts: updatedUser.emergency_contacts,
             communities: updatedUser.communities,
             streak: updatedUser.streak,
+            surveyCompleted: updatedUser.surveyCompleted,
         };
 
         // Invalidate and update cache

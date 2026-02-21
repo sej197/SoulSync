@@ -14,6 +14,8 @@ import quizReminderRoutes from "./routes/QuizReminderRoutes.js";
 import postRoutes from "./routes/postRoutes.js";
 import communityRoutes from "./routes/CommunityRoutes.js";
 import chatRoomRoutes from "./routes/chatRoomRoutes.js";
+import surveyRoutes from "./routes/surveyRoutes.js";
+import rateLimiter from "./middleware/ratelimiter.js";
 
 dotenv.config();
 
@@ -37,6 +39,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(rateLimiter); 
 
 // Routes
 app.use("/api/auth", authRoutes);
@@ -49,6 +52,7 @@ app.use("/api/posts", postRoutes);
 app.use("/api/reminders", quizReminderRoutes);
 app.use("/api/community", communityRoutes);
 app.use("/api/chat", chatRoomRoutes);
+app.use("/api/survey", surveyRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

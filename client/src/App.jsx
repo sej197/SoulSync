@@ -24,6 +24,10 @@ import Helplines from './pages/Helplines';
 import CommunityExplore from './pages/CommunityExplore';
 import CommunityLanding from './pages/CommunityLanding';
 import CommunityPage from './pages/CommunityPage';
+import NotFound from './pages/NotFound';
+import RateLimited from './pages/RateLimited';
+import Survey from './pages/Survey';
+import NavigationSetter from './components/NavigationSetter';
 
 function App() {
   console.log("[App] Rendering. Time:", new Date().toLocaleTimeString());
@@ -31,10 +35,13 @@ function App() {
 
   return (
     <Router>
+      <NavigationSetter />
       <Routes>
 
         <Route element={<AuthLayout><Login /></AuthLayout>} path="/login" />
         <Route element={<AuthLayout><Signup /></AuthLayout>} path="/signup" />
+        <Route path="/survey" element={<ProtectedRoute><Survey /></ProtectedRoute>} />
+        <Route path="/rate-limited" element={<RateLimited />} />
 
         <Route
           element={
@@ -62,6 +69,7 @@ function App() {
                   <Route path="/depression-quiz" element={<ProtectedRoute><DepressionQuiz /></ProtectedRoute>} />
                   <Route path="/sleep-quiz" element={<ProtectedRoute><SleepQuiz /></ProtectedRoute>} />
                   <Route path="/stress-quiz" element={<ProtectedRoute><StressQuiz /></ProtectedRoute>} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </main>
               <Footer />

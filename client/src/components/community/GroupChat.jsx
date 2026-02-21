@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext, useCallback } from 'react';
 import {
-    Send, Loader2, X, AlertTriangle, ShieldAlert, Users, Trash2, ChevronDown
+    Send, Loader2, X, AlertTriangle, ShieldAlert, Users, Trash2, ChevronDown, TriangleAlert
 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { AuthContext } from '../../context/AuthContext';
@@ -91,7 +91,7 @@ export default function GroupChat({ communityId, communityName, userBanned }) {
         });
 
         socket.on('message-flagged', (data) => {
-            toast.error(data.message, { duration: 6000, icon: '⚠️' });
+            toast.error(data.message, { duration: 6000, icon: <TriangleAlert size={16} className="text-amber-500" /> });
         });
 
         socket.on('error', (data) => {

@@ -109,6 +109,10 @@ const userSchema = new mongoose.Schema(
     is_banned: {
       type: Boolean,
       default: false
+    },
+    surveyCompleted: {
+      type: Boolean,
+      default: false
     }
   });
 

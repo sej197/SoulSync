@@ -4,6 +4,8 @@ import { useState, useRef } from 'react';
 import toast from 'react-hot-toast';
 import './dashboard.css';
 import ChatbotList from '../components/chatbot/ChatbotList';
+import EmotionDetector from '../components/EmotionDetector';
+import MoodMismatchBanner from '../components/MoodMismatchBanner';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { fetchUserChats, createChat } from '../lib/chatbotapi';
 
@@ -11,7 +13,9 @@ export default function BotDashboard() {
     const navigate = useNavigate();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [ques, setQues] = useState("");
+    const [mismatchMessage, setMismatchMessage] = useState(null);
     const location = useLocation();
+    const faceEmotionRef = useRef('neutral');
     const isMainDashboard = location.pathname === "/chatbot";
 
     const queryClient = useQueryClient();
@@ -60,6 +64,8 @@ export default function BotDashboard() {
 
     return (
         <div className={`dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
+            <MoodMismatchBanner message={mismatchMessage} onDismiss={() => setMismatchMessage(null)} />
+            <EmotionDetector onEmotionDetected={(e) => { faceEmotionRef.current = e; }} />
             {/* Mobile Toggle Button */}
             <button className="mobile-toggle" onClick={toggleSidebar}>
                 {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
@@ -124,7 +130,7 @@ export default function BotDashboard() {
                         </div>
                     </div>
                 )}
-                <Outlet />
+                <Outlet context={{ faceEmotionRef, setMismatchMessage }} />
             </div>
         </div>
     );

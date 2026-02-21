@@ -30,7 +30,6 @@ import NotFound from './pages/NotFound';
 import RateLimited from './pages/RateLimited';
 import Survey from './pages/Survey';
 import NavigationSetter from './components/NavigationSetter';
-import EmotionDetector from './components/EmotionDetector';
 
 function App() {
   console.log("[App] Rendering. Time:", new Date().toLocaleTimeString());
@@ -50,7 +49,6 @@ function App() {
           element={
             <div className="min-h-screen flex flex-col font-sans bg-base-100">
               <Navbar />
-              <EmotionDetector/>
               <SurveyBanner />
               <main className="flex-grow">
                 <Routes>
@@ -60,9 +58,9 @@ function App() {
                     <Route path=":id" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                     <Route path="new" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                   </Route>
-                  <Route path="/communities" element={<ProtectedRoute><CommunityLanding/></ProtectedRoute>} />
-                  <Route path="/communities/explore" element={<ProtectedRoute><CommunityExplore/></ProtectedRoute>} />
-                  <Route path="/communities/:communityId" element={<ProtectedRoute><CommunityPage/></ProtectedRoute>} />
+                  <Route path="/communities" element={<ProtectedRoute><CommunityLanding /></ProtectedRoute>} />
+                  <Route path="/communities/explore" element={<ProtectedRoute><CommunityExplore /></ProtectedRoute>} />
+                  <Route path="/communities/:communityId" element={<ProtectedRoute><CommunityPage /></ProtectedRoute>} />
                   <Route path="/daily-quiz" element={<ProtectedRoute><DailyQuiz /></ProtectedRoute>} />
                   <Route path="/journal" element={<ProtectedRoute><Journal /></ProtectedRoute>} />
                   <Route path="/helplines" element={<ProtectedRoute><Helplines /></ProtectedRoute>} />

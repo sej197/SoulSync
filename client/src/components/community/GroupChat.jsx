@@ -69,45 +69,57 @@ export default function GroupChat({ communityId, communityName, userBanned }) {
     useEffect(() => {
         const socket = connectSocket();
 
-        socket.on('connect', () => {
+        const onConnect = () => {
             joinRoom(communityId);
-        });
+        };
+
+        const onNewMessage = (msg) => {
+            setMessages(prev => [...prev, msg]);
+            // Auto-scroll if user is at bottom
+            if (isAtBottomRef.current) {
+                setTimeout(() => scrollToBottom(), 50);
+            }
+        };
+
+        const onDeleteMessage = ({ messageId }) => {
+            setMessages(prev => prev.filter(m => m._id !== messageId));
+        };
+
+        const onOnlineCount = (count) => {
+            setOnlineCount(count);
+        };
+
+        const onMessageFlagged = (data) => {
+            toast.error(data.message, { duration: 6000, icon: <TriangleAlert size={16} className="text-amber-500" /> });
+        };
+
+        const onError = (data) => {
+            toast.error(data.message);
+        };
+
+        socket.on('connect', onConnect);
+        socket.on('new-message', onNewMessage);
+        socket.on('delete-message', onDeleteMessage);
+        socket.on('online-count', onOnlineCount);
+        socket.on('message-flagged', onMessageFlagged);
+        socket.on('error', onError);
 
         // If already connected, join immediately
         if (socket.connected) {
             joinRoom(communityId);
         }
 
-        socket.on('new-message', (msg) => {
-            setMessages(prev => [...prev, msg]);
-            // Auto-scroll if user is at bottom
-            if (isAtBottomRef.current) {
-                setTimeout(() => scrollToBottom(), 50);
-            }
-        });
-
-        socket.on('online-count', (count) => {
-            setOnlineCount(count);
-        });
-
-        socket.on('message-flagged', (data) => {
-            toast.error(data.message, { duration: 6000, icon: <TriangleAlert size={16} className="text-amber-500" /> });
-        });
-
-        socket.on('error', (data) => {
-            toast.error(data.message);
-        });
-
         // Load initial messages
         loadMessages(1);
 
         return () => {
             leaveRoom(communityId);
-            socket.off('new-message');
-            socket.off('online-count');
-            socket.off('message-flagged');
-            socket.off('error');
-            socket.off('connect');
+            socket.off('connect', onConnect);
+            socket.off('new-message', onNewMessage);
+            socket.off('delete-message', onDeleteMessage);
+            socket.off('online-count', onOnlineCount);
+            socket.off('message-flagged', onMessageFlagged);
+            socket.off('error', onError);
         };
     }, [communityId, loadMessages]);
 

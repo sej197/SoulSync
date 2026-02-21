@@ -15,6 +15,13 @@ const defaultDailyQuiz = JSON.parse(
   readFileSync(join(__dirname, "../../data/dailyCheckinQuiz.json"), "utf-8")
 );
 
+// Load the full question pool for adaptive quiz
+const allQuizRaw = readFileSync(join(__dirname, "../../data/all_quiz.json"), "utf-8");
+// Strip JS-style line comments before parsing
+const allQuizPool = JSON.parse(
+  allQuizRaw.split("\n").filter(l => !l.trim().startsWith("//")).join("\n")
+);
+
 // Helper function to calculate streak
 const calculateStreak = async (userId) => {
   try {
@@ -634,7 +641,9 @@ export const getAdaptiveQuiz = async (req, res) => {
     const elevated = Object.entries(categoryScores)
       .filter(([, v]) => v >= ADAPTATION_THRESHOLD)
       .map(([k, v]) => `${k}=${v.toFixed(2)}`);
-    console.log(`[AdaptiveQuiz] Elevated categories: ${elevated.join(", ")}. Requesting LLM-generated questions.`);
+    console.log(`[AdaptiveQuiz] Elevated categories: ${elevated.join(", ")}. Picking follow-up questions from pool.`);
+
+    const today = new Date().toISOString().split("T")[0];
 
     try {
       const response = await fetch(
@@ -645,6 +654,8 @@ export const getAdaptiveQuiz = async (req, res) => {
           body: JSON.stringify({
             category_scores: categoryScores,
             base_questions: defaultDailyQuiz.questions,
+            user_id: userId,
+            today: today,
           }),
         }
       );

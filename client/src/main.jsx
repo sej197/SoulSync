@@ -8,12 +8,11 @@ import { setupAllInterceptors } from './lib/axiosInterceptors';
 import authapi from './lib/authapi';
 import chatbotapi from './lib/chatbotapi';
 import journalapi from './lib/journalapi';
-import chatRoomApi from './lib/chatRoomApi';
 import communityApi from './lib/communityApi';
 import postApi from './lib/postApi';
 
 // Register 429 interceptors on all axios instances
-setupAllInterceptors([authapi, chatbotapi, journalapi, chatRoomApi, communityApi, postApi]);
+setupAllInterceptors([authapi, chatbotapi, journalapi, communityApi, postApi]);
 
 const queryClient = new QueryClient();
 import { Toaster } from 'react-hot-toast';

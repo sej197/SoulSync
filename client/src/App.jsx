@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from './context/AuthContext';
+import SurveyBanner from './components/SurveyBanner';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import AuthLayout from './components/layout/AuthLayout';
@@ -47,6 +49,7 @@ function App() {
           element={
             <div className="min-h-screen flex flex-col font-sans bg-base-100">
               <Navbar />
+              <SurveyBanner />
               <main className="flex-grow">
                 <Routes>
                   <Route path="/" element={<Home />} />

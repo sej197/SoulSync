@@ -218,47 +218,47 @@ export default function Daily({ dailyData, onRefresh, userId }) {
   }, []);
 
   useEffect(() => {
-  const fetchXGBoost = async () => {
-    try {
-      // Step 1: Get recent risks from monthlyInsights
-      const insightsRes = await fetch(
-        `http://localhost:5000/api/risk/monthlyInsights/${userId}`
-      );
-      const insightsData = await insightsRes.json();
+    const fetchXGBoost = async () => {
+      try {
+        // Step 1: Get recent risks from monthlyInsights
+        const insightsRes = await fetch(
+          `http://localhost:5000/api/risk/monthlyInsights/${userId}`
+        );
+        const insightsData = await insightsRes.json();
 
-      // Extract last 7 overall scores as recent_risks
-      const recentRisks = (insightsData.chart_data ?? [])
-        .slice(-7)
-        .map((d) => parseFloat(((d.overall / 100) * 10).toFixed(2))); // convert 0-100 → 0-10
+        // Extract last 7 overall scores as recent_risks
+        const recentRisks = (insightsData.chart_data ?? [])
+          .slice(-7)
+          .map((d) => parseFloat(((d.overall / 100) * 10).toFixed(2))); // convert 0-100 → 0-10
 
-      if (recentRisks.length < 3) return;
+        if (recentRisks.length < 3) return;
 
-      // Step 2: Hit recommendations API with recent_risks
-      const recRes = await fetch("http://localhost:8000/api/recommendations", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: userId,
-          risk_score: dailyData?.score ?? 5,
-          risk_level: getRiskLevel(dailyData?.score ?? 50),
-          trend: dailyData?.pattern_analysis?.velocity_interpretation?.toLowerCase() ?? "stable",
-          top_factors: dailyData?.top_factors ?? [],
-          recent_risks: recentRisks,
-        }),
-      });
+        // Step 2: Hit recommendations API with recent_risks
+        const recRes = await fetch("http://localhost:8000/api/recommendations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            user_id: userId,
+            risk_score: dailyData?.score ?? 5,
+            risk_level: getRiskLevel(dailyData?.score ?? 50),
+            trend: dailyData?.pattern_analysis?.velocity_interpretation?.toLowerCase() ?? "stable",
+            top_factors: dailyData?.top_factors ?? [],
+            recent_risks: recentRisks,
+          }),
+        });
 
-      const recData = await recRes.json();
+        const recData = await recRes.json();
 
-      if (recData.xgboost_prediction) {
-        setXgboostPrediction(recData.xgboost_prediction);
+        if (recData.xgboost_prediction) {
+          setXgboostPrediction(recData.xgboost_prediction);
+        }
+      } catch (err) {
+        console.error("XGBoost fetch failed:", err);
       }
-    } catch (err) {
-      console.error("XGBoost fetch failed:", err);
-    }
-  };
+    };
 
-  if (userId) fetchXGBoost();
-}, [userId]);
+    if (userId) fetchXGBoost();
+  }, [userId]);
 
   const dayName = new Date().toLocaleDateString("en-US", { weekday: "long" });
   const dateStr = new Date().toLocaleDateString("en-US", {
@@ -267,7 +267,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
   });
 
   const recommendations = dailyData.recommendations ?? [];
-  
+
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -804,8 +804,8 @@ export default function Daily({ dailyData, onRefresh, userId }) {
                           </span>
                           {i <
                             currentBreathing.pattern.split("-").length - 1 && (
-                            <span className="text-blue-300 text-xs">→</span>
-                          )}
+                              <span className="text-blue-300 text-xs">→</span>
+                            )}
                         </React.Fragment>
                       ))}
                     </div>

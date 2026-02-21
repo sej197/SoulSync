@@ -181,6 +181,22 @@ class XGBoostPredictor:
         coeffs = np.polyfit(x, series, 1)
         return float(coeffs[0])
 
+    def get_risk_weights(self):
+        """Load and return learned weights for risk components"""
+        try:
+            weight_file = self.model_dir.parent / "weight_models" / "global_weights_xgb.pkl"
+            
+            if not weight_file.exists():
+                print(f"Info: No global weight model found at {weight_file}", file=sys.stderr)
+                return None
+            
+            with open(weight_file, 'rb') as f:
+                data = pickle.load(f)
+                return data.get('weights')
+        except Exception as e:
+            print(f"Error loading global weights: {e}", file=sys.stderr)
+            return None
+
     def predict(self, user_id, days_ahead=7, recent_risks=None):
         """
         Predict future risk scores using XGBoost.

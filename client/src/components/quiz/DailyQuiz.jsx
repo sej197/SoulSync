@@ -9,9 +9,11 @@ const DailyQuiz = ({ userId }) => {
   const [finalScore, setFinalScore] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [visitedQuestions, setVisitedQuestions] = useState([0]);
   const [adaptations, setAdaptations] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [shakeError, setShakeError] = useState(false);
+  const [showValidation, setShowValidation] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // Fetch adaptive quiz on mount
   useEffect(() => {
@@ -37,6 +39,7 @@ const DailyQuiz = ({ userId }) => {
   }, []);
 
   const handleChange = (questionId, value, type) => {
+    setShowValidation(false);
     setAnswers((prev) => {
       const prevAnswer = prev[questionId] || [];
       if (type === "single_choice") {
@@ -52,7 +55,45 @@ const DailyQuiz = ({ userId }) => {
     });
   };
 
+  // Check whether the current question has been answered
+  const isCurrentAnswered = () => {
+    const q = quizData.questions[currentQuestion];
+    if (!q) return false;
+    if (q.type === "single_choice") {
+      return Array.isArray(answers[q.id]) && answers[q.id].length > 0;
+    }
+    if (q.type === "multiple_choice") {
+      return Array.isArray(answers[q.id]) && answers[q.id].length > 0;
+    }
+    if (q.type === "paragraph") {
+      return typeof answers[q.id] === "string" && answers[q.id].trim().length > 0;
+    }
+    return false;
+  };
+
+  // Check whether ALL questions have been answered
+  const allAnswered = () => {
+    return quizData.questions.every((q) => {
+      if (q.type === "single_choice") {
+        return Array.isArray(answers[q.id]) && answers[q.id].length > 0;
+      }
+      if (q.type === "multiple_choice") {
+        return Array.isArray(answers[q.id]) && answers[q.id].length > 0;
+      }
+      if (q.type === "paragraph") {
+        return typeof answers[q.id] === "string" && answers[q.id].trim().length > 0;
+      }
+      return false;
+    });
+  };
+
   const handleSubmit = async () => {
+    if (!allAnswered()) {
+      setShakeError(true);
+      setTimeout(() => setShakeError(false), 600);
+      return;
+    }
+    setSubmitting(true);
     try {
       const payload = quizData.questions.map((q) => ({
         questionId: q.id,
@@ -93,16 +134,16 @@ const DailyQuiz = ({ userId }) => {
       }
     } catch (error) {
       console.error("Error submitting quiz:", error);
+      setSubmitting(false);
     }
   };
 
-  const progress = (visitedQuestions.length / quizData.questions.length) * 100;
+  // Progress based on current question position (adjusts when going back)
+  const progress = (currentQuestion / quizData.questions.length) * 100;
 
   const goToQuestion = (index) => {
     setCurrentQuestion(index);
-    if (!visitedQuestions.includes(index)) {
-      setVisitedQuestions([...visitedQuestions, index]);
-    }
+    setShowValidation(false);
   };
 
   if (loading) {
@@ -190,6 +231,24 @@ const DailyQuiz = ({ userId }) => {
   }
 
   const q = quizData.questions[currentQuestion];
+  const currentAnswered = isCurrentAnswered();
+
+  if (submitting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F3E5F5]">
+        <div className="text-center space-y-6">
+          <div className="relative mx-auto w-20 h-20">
+            <div className="absolute inset-0 rounded-full border-4 border-[#E1BEE7]"></div>
+            <div className="absolute inset-0 rounded-full border-4 border-[#6A1B9A] border-t-transparent animate-spin"></div>
+          </div>
+          <div className="space-y-2">
+            <p className="text-[#3E2723] font-serif text-xl font-bold">Submitting your check-in...</p>
+            <p className="text-[#5D4037] text-sm font-medium opacity-70">Analysing your wellness responses 🌿</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -261,7 +320,7 @@ const DailyQuiz = ({ userId }) => {
           </div>
 
 
-          <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-8 border border-white/50 transform transition-all duration-500" style={{ animation: 'fadeInUp 0.5s ease-out' }}>
+          <div className={`bg-white rounded-3xl shadow-2xl p-6 md:p-8 border border-white/50 transform transition-all duration-500 ${shakeError ? 'animate-shake' : ''}`} style={{ animation: shakeError ? 'shake 0.5s ease-in-out' : 'fadeInUp 0.5s ease-out' }}>
 
             {q.category && (
               <div className="mb-4 flex items-center gap-2">
@@ -417,6 +476,17 @@ const DailyQuiz = ({ userId }) => {
               )}
             </div>
 
+            {/* Validation hint when trying to proceed without answering */}
+            {!currentAnswered && (
+              <div className="mb-4 flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg text-amber-700 text-xs font-medium">
+                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3a9 9 0 100 18 9 9 0 000-18z" />
+                </svg>
+                {q.type === "paragraph"
+                  ? "Please write your reflection before continuing"
+                  : "Please select an option before continuing"}
+              </div>
+            )}
 
             <div className="flex gap-4 justify-between items-center pt-4 border-t border-purple-100">
               <button
@@ -445,12 +515,22 @@ const DailyQuiz = ({ userId }) => {
 
               {currentQuestion < quizData.questions.length - 1 ? (
                 <button
-                  onClick={() =>
+                  onClick={() => {
+                    if (!currentAnswered) {
+                      setShakeError(true);
+                      setShowValidation(true);
+                      setTimeout(() => setShakeError(false), 600);
+                      return;
+                    }
                     goToQuestion(
                       Math.min(quizData.questions.length - 1, currentQuestion + 1)
-                    )
-                  }
-                  className="group flex items-center gap-2 px-6 py-2.5 bg-[#6A1B9A] hover:bg-[#4A148C] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm"
+                    );
+                  }}
+                  className={`group flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold shadow-lg transition-all text-sm ${
+                    currentAnswered
+                      ? "bg-[#6A1B9A] hover:bg-[#4A148C] text-white hover:shadow-xl transform hover:scale-105"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
                 >
                   Next
                   <svg
@@ -470,7 +550,12 @@ const DailyQuiz = ({ userId }) => {
               ) : (
                 <button
                   onClick={handleSubmit}
-                  className="group flex items-center gap-2 px-6 py-2.5 bg-[#6A1B9A] hover:bg-[#4A148C] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm"
+                  disabled={!allAnswered()}
+                  className={`group flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold shadow-lg transition-all text-sm ${
+                    allAnswered()
+                      ? "bg-[#6A1B9A] hover:bg-[#4A148C] text-white hover:shadow-xl transform hover:scale-105"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
                 >
                   <span>Submit Check-in</span>
                   <svg
@@ -526,6 +611,11 @@ const DailyQuiz = ({ userId }) => {
         @keyframes scaleIn {
           from { transform: scale(0); }
           to { transform: scale(1); }
+        }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+          20%, 40%, 60%, 80% { transform: translateX(4px); }
         }
       `}</style>
     </div>

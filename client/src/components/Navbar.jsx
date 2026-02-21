@@ -5,6 +5,7 @@ import { logoutUser } from '../lib/authapi';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { IoMdNotificationsOutline } from "react-icons/io";
 import StreakIndicator from './StreakIndicator';
+import logo from "../assets/logo.png"; 
 
 const Navbar = () => {
     const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
@@ -160,7 +161,7 @@ const Navbar = () => {
                         <li><Link to="/journal">Journal</Link></li>
                         <li><Link to="/insights">Insights</Link></li>
                         <li><Link to="/about">About Us</Link></li>
-                        <li><Link to="/chatbot">Chatbot</Link></li>
+                        <li><Link to="/chatbot">SyncAI</Link></li>
                         <li><Link to="/helplines">Helplines</Link></li>
                     </ul>
                 </div>
@@ -169,6 +170,11 @@ const Navbar = () => {
                     to="/"
                     className={`btn btn-ghost text-xl font-serif ${isScrolled ? 'text-bloom-primary' : 'text-bloom-primary'}`}
                 >
+                    <img
+                        src={logo}
+                        alt="SoulSync Logo"
+                        className="w-8 h-8 object-contain"
+                    />
                     SoulSync
                 </Link>
             </div>
@@ -221,7 +227,7 @@ const Navbar = () => {
                     <li><Link to="/journal">Journal</Link></li>
                     <li><Link to="/insights">Insights</Link></li>
                     <li><Link to="/about">About Us</Link></li>
-                    <li><Link to="/chatbot">Chatbot</Link></li>
+                    <li><Link to="/chatbot">SyncAI</Link></li>
                     <li><Link to="/helplines">Helplines</Link></li>
                 </ul>
             </div>

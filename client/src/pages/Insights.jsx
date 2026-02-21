@@ -146,7 +146,7 @@ export default function Insights() {
 
         {/* Content */}
         <div className="animate-fade-in">
-          {activeTab === 'daily' && <Daily dailyData={dailyData} onRefresh={fetchInsights} />}
+          {activeTab === 'daily' && <Daily dailyData={dailyData} onRefresh={fetchInsights} userId={userId} />}
           {activeTab === 'weekly' && <Weekly weeklyData={weeklyData} />}
           {activeTab === 'monthly' && <Monthly monthlyData={monthlyData} />}
         </div>

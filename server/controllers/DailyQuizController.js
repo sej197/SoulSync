@@ -302,6 +302,7 @@ export const submitDailyQuiz = async (req, res) => {
         stressScore: stress,
         sleepScore: sleep,
         depressionScore: depression,
+        paragraphScore,
         mentalHealthScore,
         socialScore,
         reflectionScore,
@@ -324,10 +325,8 @@ export const submitDailyQuiz = async (req, res) => {
       { upsert: true, new: true }
     );
 
-    // Update streak information
     const streakInfo = await updateStreakData(userId);
 
-    // Cache the quiz result
     await setCache(cacheKeys.dailyQuiz(userId, today), {
       message: "Daily quiz submitted successfully",
       score: quizScore,

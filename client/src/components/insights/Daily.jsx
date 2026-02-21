@@ -2,6 +2,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Siren, TriangleAlert, TrendingDown, Lightbulb, RefreshCw, Eye,
+  BarChart3, CircleCheck, Sprout, Info, Pin,
+  Target, Leaf, Heart, Waves, Flame,
+  Music, Handshake, Pencil, Coffee, CheckSquare, Mail,
+  Wind, Box, Smile, Sparkles
+} from "lucide-react";
+import {
   RadialBarChart,
   RadialBar,
   PolarAngleAxis,
@@ -95,22 +102,22 @@ const HELPLINES = [
 ];
 
 // ── Alert & insight helpers ────────────────────────────────────────────────
-const getAlertIcon = (type) => ({ CRITICAL: "🚨", URGENT: "⚠️", WARNING: "📉", EARLY_WARNING: "💡", RELAPSE_WARNING: "🔄", ATTENTION: "👀" }[type] ?? "📊");
+const getAlertIcon = (type) => ({ CRITICAL: <Siren size={24} className="text-red-500" />, URGENT: <TriangleAlert size={24} className="text-orange-500" />, WARNING: <TrendingDown size={24} className="text-amber-500" />, EARLY_WARNING: <Lightbulb size={24} className="text-yellow-500" />, RELAPSE_WARNING: <RefreshCw size={24} className="text-purple-500" />, ATTENTION: <Eye size={24} className="text-blue-500" /> }[type] ?? <BarChart3 size={24} className="text-slate-500" />);
 const getAlertStyle = (sev) => ({ critical: "bg-red-50 border-red-300", high: "bg-orange-50 border-orange-300", medium: "bg-amber-50 border-amber-300" }[sev] ?? "bg-blue-50 border-blue-300");
 const getInsightAccent = (t) => ({
-  POSITIVE: { bg: "bg-emerald-50", border: "border-emerald-200", strip: "bg-emerald-400", icon: "✅", tag: "Positive", tagColor: "text-emerald-600 bg-emerald-50" },
-  RECOVERY: { bg: "bg-teal-50", border: "border-teal-200", strip: "bg-teal-400", icon: "🌱", tag: "Recovery", tagColor: "text-teal-600 bg-teal-50" },
-  INFO: { bg: "bg-blue-50", border: "border-blue-200", strip: "bg-blue-400", icon: "ℹ️", tag: "Info", tagColor: "text-blue-600 bg-blue-50" },
-}[t] ?? { bg: "bg-gray-50", border: "border-gray-200", strip: "bg-gray-400", icon: "📌", tag: "Note", tagColor: "text-gray-600 bg-gray-50" });
+  POSITIVE: { bg: "bg-emerald-50", border: "border-emerald-200", strip: "bg-emerald-400", icon: <CircleCheck size={14} className="text-emerald-500" />, tag: "Positive", tagColor: "text-emerald-600 bg-emerald-50" },
+  RECOVERY: { bg: "bg-teal-50", border: "border-teal-200", strip: "bg-teal-400", icon: <Sprout size={14} className="text-teal-500" />, tag: "Recovery", tagColor: "text-teal-600 bg-teal-50" },
+  INFO: { bg: "bg-blue-50", border: "border-blue-200", strip: "bg-blue-400", icon: <Info size={14} className="text-blue-500" />, tag: "Info", tagColor: "text-blue-600 bg-blue-50" },
+}[t] ?? { bg: "bg-gray-50", border: "border-gray-200", strip: "bg-gray-400", icon: <Pin size={14} className="text-gray-500" />, tag: "Note", tagColor: "text-gray-600 bg-gray-50" });
 
 // ── Recommendation accent colors (cycle through) ──────────────────────────
 const REC_ACCENTS = [
-  { gradient: "from-purple-500 to-violet-500", lightBg: "hover:bg-purple-50/60", borderHover: "hover:border-purple-200", icon: "🎯" },
-  { gradient: "from-amber-500 to-orange-500", lightBg: "hover:bg-amber-50/60", borderHover: "hover:border-amber-200", icon: "💡" },
-  { gradient: "from-teal-500 to-emerald-500", lightBg: "hover:bg-teal-50/60", borderHover: "hover:border-teal-200", icon: "🌿" },
-  { gradient: "from-pink-500 to-rose-500", lightBg: "hover:bg-pink-50/60", borderHover: "hover:border-pink-200", icon: "💖" },
-  { gradient: "from-blue-500 to-indigo-500", lightBg: "hover:bg-blue-50/60", borderHover: "hover:border-blue-200", icon: "🌊" },
-  { gradient: "from-orange-500 to-red-400", lightBg: "hover:bg-orange-50/60", borderHover: "hover:border-orange-200", icon: "🔥" },
+  { gradient: "from-purple-500 to-violet-500", lightBg: "hover:bg-purple-50/60", borderHover: "hover:border-purple-200", icon: <Target size={16} className="text-purple-500" /> },
+  { gradient: "from-amber-500 to-orange-500", lightBg: "hover:bg-amber-50/60", borderHover: "hover:border-amber-200", icon: <Lightbulb size={16} className="text-amber-500" /> },
+  { gradient: "from-teal-500 to-emerald-500", lightBg: "hover:bg-teal-50/60", borderHover: "hover:border-teal-200", icon: <Leaf size={16} className="text-teal-500" /> },
+  { gradient: "from-pink-500 to-rose-500", lightBg: "hover:bg-pink-50/60", borderHover: "hover:border-pink-200", icon: <Heart size={16} className="text-pink-500" /> },
+  { gradient: "from-blue-500 to-indigo-500", lightBg: "hover:bg-blue-50/60", borderHover: "hover:border-blue-200", icon: <Waves size={16} className="text-blue-500" /> },
+  { gradient: "from-orange-500 to-red-400", lightBg: "hover:bg-orange-50/60", borderHover: "hover:border-orange-200", icon: <Flame size={16} className="text-orange-500" /> },
 ];
 
 // ──────────────────────────────────────────────────────────────────────────
@@ -137,20 +144,20 @@ export default function Daily({ dailyData, onRefresh }) {
 
   // ── Static wellness content ──────────────────────────────────────────────
   const funActivities = [
-    { title: "Dance Break", description: "Put on your favourite song and dance for 3 minutes", icon: "💃", duration: "3 min" },
-    { title: "Gratitude List", description: "Write down 3 things you're grateful for today", icon: "🙏", duration: "5 min" },
-    { title: "Plant Care", description: "Water a plant or spend 10 minutes in nature", icon: "🌿", duration: "10 min" },
-    { title: "Read & Relax", description: "Read a chapter of a book or an interesting article", icon: "📖", duration: "15 min" },
-    { title: "Doodle Time", description: "Draw freely for 5 minutes without judgment", icon: "✏️", duration: "5 min" },
-    { title: "Mindful Tea", description: "Make your favourite drink and enjoy it slowly", icon: "🍵", duration: "10 min" },
-    { title: "Small Win", description: "Complete one small task you've been putting off", icon: "✅", duration: "5 min" },
-    { title: "Connect", description: "Send a kind message to someone you care about", icon: "💌", duration: "2 min" },
+    { title: "Dance Break", description: "Put on your favourite song and dance for 3 minutes", icon: <Music size={20} className="text-pink-500" />, duration: "3 min" },
+    { title: "Gratitude List", description: "Write down 3 things you're grateful for today", icon: <Handshake size={20} className="text-amber-500" />, duration: "5 min" },
+    { title: "Plant Care", description: "Water a plant or spend 10 minutes in nature", icon: <Leaf size={20} className="text-emerald-500" />, duration: "10 min" },
+    { title: "Read & Relax", description: "Read a chapter of a book or an interesting article", icon: <Eye size={20} className="text-indigo-500" />, duration: "15 min" },
+    { title: "Doodle Time", description: "Draw freely for 5 minutes without judgment", icon: <Pencil size={20} className="text-slate-500" />, duration: "5 min" },
+    { title: "Mindful Tea", description: "Make your favourite drink and enjoy it slowly", icon: <Coffee size={20} className="text-orange-500" />, duration: "10 min" },
+    { title: "Small Win", description: "Complete one small task you've been putting off", icon: <CheckSquare size={20} className="text-emerald-500" />, duration: "5 min" },
+    { title: "Connect", description: "Send a kind message to someone you care about", icon: <Mail size={20} className="text-rose-500" />, duration: "2 min" },
   ];
 
   const breathingExercises = [
-    { icon: "🌊", name: "Ocean Breathing", pattern: "4-4-4", description: "Inhale 4, hold 4, exhale 4", duration: "2 min" },
-    { icon: "📦", name: "Box Breathing", pattern: "4-4-4-4", description: "Inhale 4, hold 4, exhale 4, hold 4", duration: "3 min" },
-    { icon: "😌", name: "4-7-8 Technique", pattern: "4-7-8", description: "Inhale 4, hold 7, exhale 8", duration: "2 min" },
+    { icon: <Waves size={20} className="text-blue-500" />, name: "Ocean Breathing", pattern: "4-4-4", description: "Inhale 4, hold 4, exhale 4", duration: "2 min" },
+    { icon: <Box size={20} className="text-teal-500" />, name: "Box Breathing", pattern: "4-4-4-4", description: "Inhale 4, hold 4, exhale 4, hold 4", duration: "3 min" },
+    { icon: <Smile size={20} className="text-amber-500" />, name: "4-7-8 Technique", pattern: "4-7-8", description: "Inhale 4, hold 7, exhale 8", duration: "2 min" },
   ];
 
   const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
@@ -359,7 +366,7 @@ export default function Daily({ dailyData, onRefresh }) {
               <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-teal-100 to-transparent rounded-tl-full opacity-40" />
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-5">
-                  <span className="p-2 bg-teal-100 rounded-xl text-teal-600 text-lg border border-teal-200">✨</span>
+                  <span className="p-2 bg-teal-100 rounded-xl text-teal-600 text-lg border border-teal-200"><Sparkles size={18} /></span>
                   <h3 className="text-[#4A148C] font-bold font-serif text-lg">Today's Insights</h3>
                 </div>
                 <div className="space-y-3">

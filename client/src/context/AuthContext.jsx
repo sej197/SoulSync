@@ -20,8 +20,11 @@ export const AuthProvider = ({ children }) => {
             setIsLoggedIn(false);
         }
     }catch(error){
-        console.error("Error fetching auth status", error);
-        toast.error("Error fetching authentication status");
+        // Don't toast on 429 — the axios interceptor handles the redirect
+        if (error.response?.status !== 429) {
+          console.error("Error fetching auth status", error);
+          toast.error("Error fetching authentication status");
+        }
     }finally{
         setLoading(false);
     }

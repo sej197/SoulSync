@@ -34,3 +34,5 @@ export const approveRequestApi = (communityId, userId) => {
 export const rejectRequestApi = (communityId, userId) => {
     return API.post(`/${communityId}/reject/${userId}`);
 };
+
+export default API;

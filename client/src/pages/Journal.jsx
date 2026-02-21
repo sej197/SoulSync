@@ -7,7 +7,7 @@ import Underline from '@tiptap/extension-underline';
 import {
   Bold, Italic, Underline as UnderlineIcon, List, ListOrdered,
   ChevronLeft, ChevronRight, BookOpen, PenLine, Trash2, Save,
-  Undo, Redo, Lock, Sparkles, Heart
+  Undo, Redo, Lock, Feather, Heart, Sparkles, Pencil, Moon, CalendarDays, Star, BookMarked
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import {
@@ -257,7 +257,7 @@ export default function Journal() {
     const text = editor?.getHTML();
     const plainText = editor?.getText()?.trim();
     if (!plainText) {
-      toast.error('Write something first! ✏️');
+      toast.error('Write something first!');
       return;
     }
 
@@ -266,18 +266,18 @@ export default function Journal() {
       if (existingEntry) {
         const data = await updateJournalEntry(existingEntry._id, text, subject);
         setExistingEntry(data.entry);
-        toast.success('Updated! ✨');
+        toast.success('Updated!');
       } else {
         const data = await createJournalEntry(text, subject);
         setExistingEntry(data.entry);
-        toast.success('Saved! 💕');
+        toast.success('Saved!');
 
         // Show badge notifications
         if (data.newlyAwarded && data.newlyAwarded.length > 0) {
           data.newlyAwarded.forEach(badge => {
-            toast.success(`New Badge Earned: ${badge.name}! 🏆`, {
+            toast.success(`New Badge Earned: ${badge.name}!`, {
               duration: 5000,
-              icon: '🎉',
+              icon: <Star size={16} className="text-amber-500" />,
             });
           });
         }
@@ -297,7 +297,7 @@ export default function Journal() {
       setExistingEntry(null);
       setSubject('');
       if (editor) editor.commands.setContent('');
-      toast.success('Deleted 🗑️');
+      toast.success('Deleted');
       loadCalendarDates(activeMonth);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete');
@@ -344,12 +344,12 @@ export default function Journal() {
         <div className="journal-page-header flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
           <div>
             <h1 className="text-3xl text-[#4a5568] flex items-center gap-3" style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700 }}>
-              <Sparkles className="text-[#8fb5a3]" size={28} />
+              <Feather className="text-[#8fb5a3]" size={24} />
               My Diary
               <Heart className="text-[#8fb5a3] fill-[#8fb5a3] opacity-40" size={16} />
             </h1>
             <p className="text-sm text-[#7c8a7e] mt-1" style={{ fontFamily: "'Quicksand', sans-serif" }}>
-              your cozy corner to pour your thoughts out ✦
+              your cozy corner to pour your thoughts out
             </p>
           </div>
 
@@ -375,7 +375,7 @@ export default function Journal() {
         <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
           {/* ── Left: Calendar ── */}
           <div className="journal-calendar-panel h-fit lg:sticky lg:top-24">
-            <h3>🌸 Calendar</h3>
+            <h3><CalendarDays size={14} className="inline -mt-0.5 mr-1 text-[#8fb5a3]" /> Calendar</h3>
             <Calendar
               value={selectedDate}
               onChange={handleDateClick}
@@ -407,12 +407,12 @@ export default function Journal() {
                     </div>
                     {isToday && existingEntry && (
                       <span className="diary-status-tag editing">
-                        ✏️ Editing
+                        <Pencil size={10} className="inline -mt-0.5 mr-0.5" /> Editing
                       </span>
                     )}
                     {isToday && !existingEntry && (
                       <span className="diary-status-tag today">
-                        ✨ Today
+                        <Sparkles size={10} className="inline -mt-0.5 mr-0.5" /> Today
                       </span>
                     )}
                     {isPastDay && existingEntry && (
@@ -424,7 +424,7 @@ export default function Journal() {
                   <input
                     type="text"
                     className="diary-subject-input"
-                    placeholder={isPastDay ? '' : "Give it a title... ☁"}
+                    placeholder={isPastDay ? '' : "Give it a title..."}
                     value={subject}
                     onChange={(e) => !isPastDay && setSubject(e.target.value)}
                     readOnly={isPastDay}
@@ -435,7 +435,7 @@ export default function Journal() {
                 {isPastDay && existingEntry && (
                   <div className="diary-readonly-notice">
                     <Lock size={13} />
-                    This is a past entry — it's sealed in time, no edits allowed ✦
+                    This is a past entry — it's sealed in time, no edits allowed
                   </div>
                 )}
 
@@ -454,7 +454,7 @@ export default function Journal() {
                   ) : isPastDay && !existingEntry ? (
                     /* Past day with no entry */
                     <div className="diary-empty-state">
-                      <div className="empty-icon">🌙</div>
+                      <div className="empty-icon"><Moon size={28} className="text-[#8fb5a3]" /></div>
                       <h4>No entry for this day</h4>
                       <p>You didn't write anything on this day. That's okay — every day is a fresh page!</p>
                     </div>
@@ -473,7 +473,7 @@ export default function Journal() {
                         disabled={saving}
                       >
                         <Save size={14} className="inline mr-1.5 -mt-0.5" />
-                        {saving ? 'Saving...' : existingEntry ? 'Update ✨' : 'Save 💕'}
+                        {saving ? 'Saving...' : existingEntry ? 'Update' : 'Save'}
                       </button>
                       {existingEntry && (
                         <button
@@ -500,9 +500,9 @@ export default function Journal() {
                   <div className="diary-book">
                     <BindingDots />
                     <div className="diary-empty-state">
-                      <div className="empty-icon">📖</div>
+                      <div className="empty-icon"><BookMarked size={28} className="text-[#8fb5a3]" /></div>
                       <h4>No entries yet!</h4>
-                      <p>Switch to Write mode and start your diary today ✦</p>
+                      <p>Switch to Write mode and start your diary today</p>
                     </div>
                   </div>
                 ) : currentEntry ? (

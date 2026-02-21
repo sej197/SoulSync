@@ -12,3 +12,5 @@ export const fetchChatMessages = (communityId, page = 1, limit = 50) => {
 export const deleteChatMessage = (communityId, messageId) => {
     return API.delete(`/${communityId}/messages/${messageId}`);
 };
+
+export default API;

@@ -127,11 +127,12 @@ const createJournalEntry = async (req, res) => {
         });
 
         let sentimentScore = 0;
+        const plainText = text.replace(/<[^>]*>/g, ' ').trim();
 
         try {
             const response = await axios.post(
                 `${process.env.PYTHON_SERVER}/sentiment/analyze`,
-                { text }
+                { text: plainText }
             );
             sentimentScore = response.data.paragraphScore ?? 0;
         } catch (error) {
@@ -228,10 +229,11 @@ const updateJournalEntry = async (req, res) => {
 
         // Re-analyze sentiment for updated text
         let sentimentScore = entry.sentimentScore || 0;
+        const plainText = text.replace(/<[^>]*>/g, ' ').trim();
         try {
             const response = await axios.post(
                 `${process.env.PYTHON_SERVER}/sentiment/analyze`,
-                { text }
+                { text: plainText }
             );
             sentimentScore = response.data.paragraphScore ?? 0;
         } catch (error) {

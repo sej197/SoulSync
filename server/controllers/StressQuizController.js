@@ -2,38 +2,71 @@ import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, invalidateQuizCache, invalidateRiskCache, cacheKeys } from "../utils/cacheUtils.js";
 import { checkAndAwardBadges } from "../utils/badgeUtils.js";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename3 = fileURLToPath(import.meta.url);
+const __dirname3 = dirname(__filename3);
+
+// Load the full question pool to look up options for position-based scoring
+const allQuizRaw = readFileSync(join(__dirname3, "../../data/all_quiz.json"), "utf-8");
+const allQuizPool = JSON.parse(
+  allQuizRaw.split("\n").filter(l => !l.trim().startsWith("//")).join("\n")
+);
+
+// Build a map of question text → options for quick lookup
+const stressQuestionOptionsMap = {};
+allQuizPool.questions
+  .filter(q => q.category === "stress")
+  .forEach(q => {
+    stressQuestionOptionsMap[q.question] = q.options;
+  });
 
 const submitStressQuiz = async (req, res) => {
   try {
     const userId = req.userId;
-    const { answers } = req.body;
-    const today = new Date().toISOString().split("T")[0]
+    const { answers, questions } = req.body;
+    const today = new Date().toISOString().split("T")[0];
 
     if (!answers || answers.length === 0)
       return res.status(400).json({ message: "At least one answer is required" });
 
-    const questionScores = {
-      1: { "Very low": 0, "Low": 0.25, "Moderate": 0.5, "High": 0.75, "Extreme": 1 },
-      2: { "Work or studies": 0.5, "Family": 0.5, "Money": 0.75, "Health": 0.75, "Time pressure": 0.5 },
-      3: { "Never": 0, "Rarely": 0.25, "Sometimes": 0.5, "Often": 0.75, "Always": 1 },
-      4: { "Not at all": 0, "Slightly": 0.25, "Somewhat": 0.5, "Mostly": 0.75, "Completely": 1 },
-      5: { "None": 0, "Mild": 0.25, "Moderate": 0.5, "Severe": 0.75, "Extremely severe": 1 },
-      6: { "Never": 1, "Rarely": 0.75, "Sometimes": 0.5, "Often": 0.25, "Always": 0 },
-      7: { "Very poorly": 1, "Poorly": 0.75, "Okay": 0.5, "Well": 0.25, "Very well": 0 },
-      8: { "Not at all": 0, "Slightly": 0.25, "Somewhat": 0.5, "Mostly": 0.75, "Completely": 1 },
-      9: { "Never": 0, "Rarely": 0.25, "Sometimes": 0.5, "Often": 0.75, "Always": 1 },
-      10: { "None": 0, "Low": 0.25, "Moderate": 0.5, "High": 0.75, "Extreme": 1 }
-    };
-
+    // Position-based scoring: score = selectedIndex / (options.length - 1)
     let totalScore = 0;
-    answers.forEach(ans => {
-      const qId = ans.questionId;
-      const val = ans.answer;
-      if (questionScores[qId] && questionScores[qId][val] !== undefined)
-        totalScore += questionScores[qId][val];
-    });
+    let validCount = 0;
 
-    const stressScore = +(totalScore / answers.length).toFixed(2);
+    for (const ans of answers) {
+      let options = null;
+      if (questions && Array.isArray(questions)) {
+        const q = questions.find(q => q.id === ans.questionId);
+        if (q) options = q.options;
+      }
+      if (!options) {
+        options = Object.values(stressQuestionOptionsMap)[ans.questionId - 1];
+      }
+
+      if (!options || !ans.answer) {
+        console.warn("Could not find options for question:", ans.questionId);
+        continue;
+      }
+
+      const selectedIndex = options.indexOf(ans.answer);
+      if (selectedIndex === -1) {
+        console.warn("Answer not found in options:", ans.answer);
+        continue;
+      }
+
+      const score = options.length > 1 ? selectedIndex / (options.length - 1) : 0;
+      totalScore += score;
+      validCount++;
+    }
+
+    if (validCount === 0) {
+      return res.status(400).json({ message: "No valid answers provided" });
+    }
+
+    const stressScore = +(totalScore / validCount).toFixed(2);
 
     const transformedAnswers = answers.map(a => ({
       questionId: a.questionId,

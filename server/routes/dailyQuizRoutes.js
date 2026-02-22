@@ -5,7 +5,8 @@ import submitDailyQuiz, {
   getStreakLeaderboard, 
   checkQuizEligibility, 
   getStreakStats,
-  getAdaptiveQuiz
+  getAdaptiveQuiz,
+  getCategoryQuiz
 } from "../controllers/DailyQuizController.js";
 import authenticateToken  from "../middleware/authmiddleware.js";
 import submitAnxietyQuiz from "../controllers/AnxietyQuizController.js"
@@ -22,6 +23,9 @@ router.post("/submit-stressquiz", authenticateToken, submitStressQuiz)
 
 // Adaptive quiz route — returns personalised quiz based on previous scores
 router.get("/adaptive-quiz", authenticateToken, getAdaptiveQuiz)
+
+// Category quiz route — returns 10 random questions for a specific category
+router.get("/category-quiz/:category", authenticateToken, getCategoryQuiz)
 
 // Streak related routes
 router.get("/streak", authenticateToken, getStreakInfo)

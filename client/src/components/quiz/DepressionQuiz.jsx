@@ -1,18 +1,40 @@
 // src/components/quiz/DepressionQuiz.jsx
-import React, { useState } from "react";
-import depressionQuizData from "./depressionQuiz.json";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
 const DepressionQuiz = ({ userId }) => {
-  const [quizData] = useState(depressionQuizData);
+  const [quizData, setQuizData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [answers, setAnswers] = useState({});
   const [finalScore, setFinalScore] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [visitedQuestions, setVisitedQuestions] = useState([0]);
+  const [showValidation, setShowValidation] = useState(false);
+  const [shakeError, setShakeError] = useState(false);
+
+  // Fetch 10 random depression questions from the API
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const res = await axios.get(
+          `${import.meta.env.VITE_BASE_URL}/api/quiz/category-quiz/depression`,
+          { withCredentials: true }
+        );
+        setQuizData(res.data);
+      } catch (error) {
+        console.error("Error fetching depression quiz:", error);
+        toast.error("Failed to load quiz questions");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuestions();
+  }, []);
 
   const handleChange = (questionId, value, type) => {
+    setShowValidation(false);
     setAnswers((prev) => {
       if (type === "single_choice") {
         return { ...prev, [questionId]: [value] };
@@ -21,7 +43,20 @@ const DepressionQuiz = ({ userId }) => {
     });
   };
 
+  const isCurrentAnswered = () => {
+    if (!quizData) return false;
+    const q = quizData.questions[currentQuestion];
+    return answers[q.id] && answers[q.id].length > 0;
+  };
+
+  const allAnswered = () => {
+    if (!quizData) return false;
+    return quizData.questions.every(q => answers[q.id] && answers[q.id].length > 0);
+  };
+
   const handleSubmit = async () => {
+    if (!allAnswered()) return;
+    setSubmitting(true);
     try {
       const payload = quizData.questions.map((q) => ({
         questionId: q.id,
@@ -30,7 +65,7 @@ const DepressionQuiz = ({ userId }) => {
 
       const res = await axios.post(
         `${import.meta.env.VITE_BASE_URL}/api/quiz/submit-depressionquiz`,
-        { answers: payload },
+        { answers: payload, questions: quizData.questions },
         { withCredentials: true }
       );
 
@@ -48,17 +83,64 @@ const DepressionQuiz = ({ userId }) => {
       }
     } catch (error) {
       console.error("Error submitting depression quiz:", error);
+      toast.error("Failed to submit quiz");
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const progress = (visitedQuestions.length / quizData.questions.length) * 100;
+  const progress = quizData ? ((currentQuestion + 1) / quizData.questions.length) * 100 : 0;
 
   const goToQuestion = (index) => {
+    setShowValidation(false);
     setCurrentQuestion(index);
-    if (!visitedQuestions.includes(index)) {
-      setVisitedQuestions([...visitedQuestions, index]);
-    }
   };
+
+  const handleNext = () => {
+    if (!isCurrentAnswered()) {
+      setShowValidation(true);
+      setShakeError(true);
+      setTimeout(() => setShakeError(false), 500);
+      return;
+    }
+    setShowValidation(false);
+    setCurrentQuestion(Math.min(quizData.questions.length - 1, currentQuestion + 1));
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F3E5F5]">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-4 border-[#6A1B9A] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-[#5D4037] font-medium">Loading mood assessment...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!quizData || !quizData.questions || quizData.questions.length === 0) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F3E5F5]">
+        <div className="text-center space-y-4">
+          <p className="text-[#5D4037] font-medium">No questions available. Please try again later.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Submitting loader
+  if (submitting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F3E5F5]">
+        <div className="text-center space-y-4">
+          <div className="w-14 h-14 border-4 border-[#6A1B9A] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="text-[#5D4037] font-medium text-lg">Submitting your assessment...</p>
+          <p className="text-[#8D6E63] text-sm">Analysing your mood responses 💙</p>
+        </div>
+      </div>
+    );
+  }
 
   if (submitted) {
     return (
@@ -229,7 +311,10 @@ const DepressionQuiz = ({ userId }) => {
             </div>
 
             {/* Navigation */}
-            <div className="flex gap-4 justify-between items-center pt-4 border-t border-purple-100">
+            <div className="flex gap-4 justify-between items-center pt-4 border-t border-purple-100 relative">
+              {showValidation && (
+                <p className="text-red-500 text-xs font-medium absolute -top-2">⚠️ Please select an answer before continuing</p>
+              )}
               <button
                 onClick={() => goToQuestion(Math.max(0, currentQuestion - 1))}
                 disabled={currentQuestion === 0}
@@ -256,12 +341,12 @@ const DepressionQuiz = ({ userId }) => {
 
               {currentQuestion < quizData.questions.length - 1 ? (
                 <button
-                  onClick={() =>
-                    goToQuestion(
-                      Math.min(quizData.questions.length - 1, currentQuestion + 1)
-                    )
-                  }
-                  className="group flex items-center gap-2 px-6 py-2.5 bg-[#6A1B9A] hover:bg-[#4A148C] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm"
+                  onClick={handleNext}
+                  className={`group flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold shadow-lg transition-all text-sm ${
+                    isCurrentAnswered()
+                      ? "bg-[#6A1B9A] hover:bg-[#4A148C] text-white hover:shadow-xl transform hover:scale-105"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  } ${shakeError ? "animate-shake" : ""}`}
                 >
                   Next
                   <svg
@@ -281,7 +366,12 @@ const DepressionQuiz = ({ userId }) => {
               ) : (
                 <button
                   onClick={handleSubmit}
-                  className="group flex items-center gap-2 px-6 py-2.5 bg-[#6A1B9A] hover:bg-[#4A148C] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all text-sm"
+                  disabled={!allAnswered()}
+                  className={`group flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold shadow-lg transition-all text-sm ${
+                    allAnswered()
+                      ? "bg-[#6A1B9A] hover:bg-[#4A148C] text-white hover:shadow-xl transform hover:scale-105"
+                      : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  }`}
                 >
                   <span>Submit Assessment</span>
                   <svg
@@ -338,6 +428,14 @@ const DepressionQuiz = ({ userId }) => {
           from { transform: scale(0); }
           to { transform: scale(1); }
         }
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          20% { transform: translateX(-6px); }
+          40% { transform: translateX(6px); }
+          60% { transform: translateX(-4px); }
+          80% { transform: translateX(4px); }
+        }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
       `}</style>
     </div>
   );

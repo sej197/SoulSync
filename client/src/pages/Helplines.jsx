@@ -46,8 +46,8 @@ export default function Helplines() {
 
     const helplines = [
         {
-            name: "Vandrevala Foundation",
-            number: "1860 266 2345",
+            name: "Asks Foundation",
+            number: "+91 8793 088814  ",
             type: "Mental Health Support",
             hours: "24/7 Available",
             description: "Crisis intervention and emotional support for individuals in distress.",
@@ -56,8 +56,8 @@ export default function Helplines() {
             textColor: "text-[#0277BD]"
         },
         {
-            name: "NIMHANS Helpline",
-            number: "080 46110007",
+            name: "Calida Rehab",
+            number: "+91 8956044718",
             type: "Govt. Institution",
             hours: "24/7 Available",
             description: "Psychosocial support and mental health services by trained professionals.",
@@ -66,44 +66,14 @@ export default function Helplines() {
             textColor: "text-[#00695C]"
         },
         {
-            name: "AASRA Helpline",
-            number: "9820466726",
+            name: "Declutter",
+            number: "+91 99983 23884",
             type: "Crisis Intervention",
             hours: "24/7 Available",
             description: "Confidential emotional support for people who are suicidal or in despair.",
             icon: AlertCircle,
             color: "bg-[#FFF3E0]",
             textColor: "text-[#EF6C00]"
-        },
-        {
-            name: "iCall (TISS)",
-            number: "9152987821",
-            type: "Counseling Service",
-            hours: "Mon-Sat: 10AM-8PM",
-            description: "Counseling services provided by the Tata Institute of Social Sciences.",
-            icon: HelpCircle,
-            color: "bg-[#F3E5F5]",
-            textColor: "text-[#8E24AA]"
-        },
-        {
-            name: "Kiran Helpline",
-            number: "1800-599-0019",
-            type: "Ministry of Social Justice",
-            hours: "24/7 Available",
-            description: "Mental health rehabilitation helpline for screening and first aid.",
-            icon: Phone,
-            color: "bg-[#FBE9E7]",
-            textColor: "text-[#D84315]"
-        },
-        {
-            name: "Sangath (Adveka)",
-            number: "011-41192929",
-            type: "Psychological Support",
-            hours: "10AM-6PM Daily",
-            description: "Inclusive mental health services and community-based interventions.",
-            icon: MessageCircle,
-            color: "bg-[#FFFDE7]",
-            textColor: "text-[#FBC02D]"
         }
     ];
 

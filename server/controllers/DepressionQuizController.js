@@ -2,66 +2,72 @@ import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, invalidateQuizCache, invalidateRiskCache, cacheKeys } from "../utils/cacheUtils.js";
 import { checkAndAwardBadges } from "../utils/badgeUtils.js";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename4 = fileURLToPath(import.meta.url);
+const __dirname4 = dirname(__filename4);
+
+// Load the full question pool to look up options for position-based scoring
+const allQuizRaw = readFileSync(join(__dirname4, "../../data/all_quiz.json"), "utf-8");
+const allQuizPool = JSON.parse(
+  allQuizRaw.split("\n").filter(l => !l.trim().startsWith("//")).join("\n")
+);
+
+// Build a map of question text → options for quick lookup
+const depressionQuestionOptionsMap = {};
+allQuizPool.questions
+  .filter(q => q.category === "depression")
+  .forEach(q => {
+    depressionQuestionOptionsMap[q.question] = q.options;
+  });
 
 const submitDepressionQuiz = async (req, res) => {
     try {
         const userId = req.userId;
-        const { answers } = req.body;
-        const today = new Date().toISOString().split("T")[0]
+        const { answers, questions } = req.body;
+        const today = new Date().toISOString().split("T")[0];
 
-        const optionScores = {
-            "Not at all": 0,
-            "Slightly": 0.25,
-            "Moderately": 0.5,
-            "Very low": 0.75,
-            "Extremely low": 1,
-
-            "No": 0,
-            "A little": 0.25,
-            "Somewhat": 0.5,
-            "Mostly": 0.75,
-            "Completely": 1,
-
-            "Normal": 0,
-            "Slightly low": 0.25,
-            "Moderate": 0.5,
-            "Low": 0.75,
-            "Very low": 1,
-
-            "Not at all": 0,
-            "Sometimes": 0.5,
-            "Often": 0.75,
-            "Always": 1,
-
-            "Very motivated": 0,
-            "Somewhat motivated": 0.25,
-            "Neutral": 0.5,
-            "Low motivation": 0.75,
-            "No motivation": 1,
-
-            "Very hopeful": 0,
-            "Somewhat hopeful": 0.25,
-            "Neutral": 0.5,
-            "Low hope": 0.75,
-            "No hope at all": 1,
-
-            "Very good": 0,
-            "Good": 0.25,
-            "Okay": 0.5,
-            "Low": 0.75,
-            "Very low": 1
-        };
-
-        let totalScore = 0;
-        let questionCount = 0;
-
-        for (let i = 0; i < answers.length; i++) {
-            const userAnswer = answers[i].answer;
-            totalScore += optionScores[userAnswer] || 0;
-            questionCount++;
+        if (!answers || answers.length === 0) {
+            return res.status(400).json({ message: "At least one answer is required" });
         }
 
-        const depressionScore = Number((totalScore / questionCount).toFixed(2));
+        // Position-based scoring: score = selectedIndex / (options.length - 1)
+        let totalScore = 0;
+        let validCount = 0;
+
+        for (const ans of answers) {
+            let options = null;
+            if (questions && Array.isArray(questions)) {
+                const q = questions.find(q => q.id === ans.questionId);
+                if (q) options = q.options;
+            }
+            if (!options) {
+                options = Object.values(depressionQuestionOptionsMap)[ans.questionId - 1];
+            }
+
+            if (!options || !ans.answer) {
+                console.warn("Could not find options for question:", ans.questionId);
+                continue;
+            }
+
+            const selectedIndex = options.indexOf(ans.answer);
+            if (selectedIndex === -1) {
+                console.warn("Answer not found in options:", ans.answer);
+                continue;
+            }
+
+            const score = options.length > 1 ? selectedIndex / (options.length - 1) : 0;
+            totalScore += score;
+            validCount++;
+        }
+
+        if (validCount === 0) {
+            return res.status(400).json({ message: "No valid answers provided" });
+        }
+
+        const depressionScore = Number((totalScore / validCount).toFixed(2));
 
         const transformedAnswers = answers.map(a => ({
             questionId: a.questionId,
@@ -77,7 +83,7 @@ const submitDepressionQuiz = async (req, res) => {
                 depressionScore
             },
             finalScore: depressionScore,
-        })
+        });
 
         await RiskScore.findOneAndUpdate(
             { user: userId, date: today },
@@ -107,7 +113,7 @@ const submitDepressionQuiz = async (req, res) => {
             message: "depression quiz submitted successfully",
             depressionScore,
             newlyAwarded
-        })
+        });
     } catch (error) {
         console.error("Error submitting depression quiz:", error);
         res.status(500).json({

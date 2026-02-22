@@ -1,13 +1,13 @@
 export const RISK_WEIGHTS = {
-  depression_quiz_score: 0.006,
-  anxiety_quiz_score: 0.022,
-  stress_quiz_score: 0.218,
-  sleep_quiz_score: 0.317,
-  journal_score: 0.083,
-  chatbot_score: 0.137,
-  quiz_score: 0.055,
-  community_score: 0.115,
-  disengagement_score: 0.046
+  depression_quiz_score: 0.4008,
+  anxiety_quiz_score: 0.1157,
+  stress_quiz_score: 0.0564,
+  sleep_quiz_score: 0.0653,
+  disengagement_score: 0.0444,
+  journal_score: 0.0726,
+  chatbot_score: 0.1529,
+  quiz_score: 0.0474,
+  community_score: 0.0444,
 };
 
 export const RISK_LABELS = [

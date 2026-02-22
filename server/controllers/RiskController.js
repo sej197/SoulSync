@@ -37,18 +37,17 @@ const calculateProxyFromDailyQuiz = (dailyQuizScores) => {
     return { stress: null, sleep: null, depression: null, anxiety: null };
 
   const {
-    mentalHealthScore = 0,
     stressScore = 0,
     sleepScore = 0,
-    socialScore = 0,
-    reflectionScore = 0,
+    depressionScore = 0,
+    anxietyScore = 0,
   } = dailyQuizScores;
 
   return {
     stress: stressScore,
     sleep: sleepScore,
-    depression: (1 - mentalHealthScore) * 0.5 + (1 - socialScore) * 0.3 + (1 - reflectionScore) * 0.2,
-    anxiety: (1 - socialScore) * 0.4 + stressScore * 0.4 + (1 - reflectionScore) * 0.2,
+    depression: depressionScore,
+    anxiety: anxietyScore,
   };
 };
 

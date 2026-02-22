@@ -1,9 +1,3 @@
-"""
-XGBoost Prediction Service
-Loads trained models and provides prediction interface
-Replaces ARIMA for risk forecasting
-"""
-
 import pickle
 import numpy as np
 from pathlib import Path
@@ -79,15 +73,9 @@ class XGBoostPredictor:
     def predict_from_input(self, recent_risks: list, days_ahead: int = 7):
         """
         Predict future risk scores directly from recent_risks input.
-        Trains a lightweight model on-the-fly — no stored model needed.
-        Used as fallback when no stored model exists for the user.
-
-        Args:
-            recent_risks: List of recent risk scores (minimum 3 values)
-            days_ahead: Number of days to predict
-
-        Returns:
-            List of prediction dicts, or None if failed
+        Strategically tries:
+        1. Loading a pre-trained 'global_forecast_xgb' model (most robust)
+        2. Training a lightweight model on-the-fly (fallback)
         """
         try:
             if len(recent_risks) < 3:
@@ -95,69 +83,70 @@ class XGBoostPredictor:
                 return None
 
             risks = np.array(recent_risks, dtype=float)
+            
+            # --- Try Global Pre-trained Model First ---
+            global_model_path = self.model_dir / "global_forecast_xgb.pkl"
+            model = None
+            if global_model_path.exists():
+                try:
+                    with open(global_model_path, 'rb') as f:
+                        model = pickle.load(f)
+                    print(f"✅ Using pre-trained Global Forecast Model")
+                except Exception as e:
+                    print(f"Warning: Failed to load global model: {e}", file=sys.stderr)
 
-            # Build training samples from the input window
-            X, y = [], []
-            for i in range(2, len(risks)):
-                window = risks[max(0, i-7):i]
-                features = [
-                    risks[i-1],                          # lag_1
-                    risks[i-2] if i >= 2 else risks[0],  # lag_2
-                    risks[i-3] if i >= 3 else risks[0],  # lag_3
-                    risks[i-4] if i >= 4 else risks[0],  # lag_4
-                    risks[i-5] if i >= 5 else risks[0],  # lag_5
-                    risks[i-6] if i >= 6 else risks[0],  # lag_6
-                    risks[i-7] if i >= 7 else risks[0],  # lag_7
-                    np.mean(risks[max(0, i-3):i]),        # rolling_mean_3
-                    np.mean(window),                      # rolling_mean_7
-                    np.std(risks[max(0, i-3):i]) if i >= 3 else 0,  # rolling_std_3
-                    np.std(window) if len(window) > 1 else 0,        # rolling_std_7
-                    self._trend(window),                  # trend_7
-                    datetime.now().weekday()              # day_of_week (approx)
-                ]
-                X.append(features)
-                y.append(risks[i])
-
-            X = np.array(X)
-            y = np.array(y)
-
-            # Train a quick lightweight XGBoost on this input
-            model = XGBRegressor(
-                n_estimators=50,
-                max_depth=3,
-                learning_rate=0.1,
-                random_state=42,
-                verbosity=0
-            )
-            model.fit(X, y)
+            # --- Fallback to on-the-fly training if global model missing ---
+            if model is None:
+                print("⚠️ Global model missing, training on-the-fly fallback...")
+                X, y = [], []
+                for i in range(2, len(risks)):
+                    window = risks[max(0, i-7):i]
+                    features = [
+                        risks[i-1], risks[i-2] if i >= 2 else risks[0],
+                        risks[i-3] if i >= 3 else risks[0], risks[i-4] if i >= 4 else risks[0],
+                        risks[i-5] if i >= 5 else risks[0], risks[i-6] if i >= 6 else risks[0],
+                        risks[i-7] if i >= 7 else risks[0],
+                        np.mean(risks[max(0, i-3):i]), np.mean(window),
+                        np.std(risks[max(0, i-3):i]) if i >= 3 else 0,
+                        np.std(window) if len(window) > 1 else 0,
+                        self._trend(window), datetime.now().weekday()
+                    ]
+                    X.append(features)
+                    y.append(risks[i])
+                
+                model = XGBRegressor(n_estimators=50, max_depth=3).fit(np.array(X), np.array(y))
 
             # Iteratively predict future days
             predictions = []
             current_values = list(risks)
 
             for day in range(days_ahead):
-                window = current_values[-7:] if len(current_values) >= 7 else current_values
+                # Ensure input exactly matching training features
+                last_7 = current_values[-7:] if len(current_values) >= 7 else current_values
                 cv = current_values
+                
+                # Check if model is the global one (expects 7 inputs) or on-the-fly (expects 13)
+                if hasattr(model, 'n_features_in_') and model.n_features_in_ == 7:
+                    # Global model only takes the last 7 risks
+                    inp = np.array(last_7[-7:]).reshape(1, -1)
+                    if inp.shape[1] < 7:
+                        inp = np.pad(inp, ((0,0), (7-inp.shape[1], 0)), 'edge')
+                    pred = model.predict(inp)[0]
+                else:
+                    # Fallback model takes engineered features
+                    feat = [
+                        cv[-1], cv[-2] if len(cv) >= 2 else cv[0],
+                        cv[-3] if len(cv) >= 3 else cv[0], cv[-4] if len(cv) >= 4 else cv[0],
+                        cv[-5] if len(cv) >= 5 else cv[0], cv[-6] if len(cv) >= 6 else cv[0],
+                        cv[-7] if len(cv) >= 7 else cv[0],
+                        np.mean(cv[-3:]), np.mean(last_7),
+                        np.std(cv[-3:]) if len(cv) >= 3 else 0,
+                        np.std(last_7) if len(last_7) > 1 else 0,
+                        self._trend(last_7), (datetime.now() + timedelta(days=day + 1)).weekday()
+                    ]
+                    pred = model.predict(np.array(feat).reshape(1, -1))[0]
 
-                features = [
-                    cv[-1],
-                    cv[-2] if len(cv) >= 2 else cv[0],
-                    cv[-3] if len(cv) >= 3 else cv[0],
-                    cv[-4] if len(cv) >= 4 else cv[0],
-                    cv[-5] if len(cv) >= 5 else cv[0],
-                    cv[-6] if len(cv) >= 6 else cv[0],
-                    cv[-7] if len(cv) >= 7 else cv[0],
-                    np.mean(cv[-3:]),
-                    np.mean(window),
-                    np.std(cv[-3:]) if len(cv) >= 3 else 0,
-                    np.std(window) if len(window) > 1 else 0,
-                    self._trend(window),
-                    (datetime.now() + timedelta(days=day + 1)).weekday()
-                ]
-
-                pred = model.predict(np.array(features).reshape(1, -1))[0]
                 pred = float(np.clip(pred, 0, 10))
-
                 future_date = datetime.now() + timedelta(days=day + 1)
                 predictions.append({
                     'date': future_date.strftime('%Y-%m-%d'),
@@ -170,6 +159,7 @@ class XGBoostPredictor:
 
         except Exception as e:
             print(f"predict_from_input failed: {e}", file=sys.stderr)
+            import traceback; traceback.print_exc()
             return None
 
     def _trend(self, series):

@@ -2,11 +2,31 @@ import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, invalidateQuizCache, invalidateRiskCache, cacheKeys } from "../utils/cacheUtils.js";
 import { checkAndAwardBadges } from "../utils/badgeUtils.js";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Load the full question pool to look up options for position-based scoring
+const allQuizRaw = readFileSync(join(__dirname, "../../data/all_quiz.json"), "utf-8");
+const allQuizPool = JSON.parse(
+  allQuizRaw.split("\n").filter(l => !l.trim().startsWith("//")).join("\n")
+);
+
+// Build a map of question text → options for quick lookup
+const questionOptionsMap = {};
+allQuizPool.questions
+  .filter(q => q.category === "anxiety")
+  .forEach(q => {
+    questionOptionsMap[q.question] = q.options;
+  });
 
 const submitAnxietyQuiz = async (req, res) => {
   try {
     const userId = req.userId;
-    const { answers } = req.body;
+    const { answers, questions } = req.body;
 
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized user" });
@@ -20,75 +40,34 @@ const submitAnxietyQuiz = async (req, res) => {
 
     const today = new Date().toISOString().split("T")[0];
 
-    const optionScores = {
-      "Not at all": 0,
-      "Rarely": 0.25,
-      "Sometimes": 0.5,
-      "Often": 0.75,
-      "Almost all the time": 1,
-
-      "No symptoms": 0,
-      "Very mild": 0.25,
-      "Mild": 0.5,
-      "Strong": 0.75,
-      "Very strong": 1,
-
-      "Very easy": 0,
-      "Easy": 0.25,
-      "Moderate": 0.5,
-      "Hard": 0.75,
-      "Very hard": 1,
-
-      "Completely relaxed": 0,
-      "Slightly restless": 0.25,
-      "Moderately restless": 0.5,
-      "Very restless": 0.75,
-      "Extremely restless": 1,
-
-      "A little": 0.25,
-      "Somewhat": 0.5,
-      "Very much": 0.75,
-      "Extremely overwhelming": 1,
-
-      "Slightly": 0.25,
-      "A lot": 0.75,
-      "Constantly": 1,
-
-      "Very little": 0.25,
-      "Somewhat affected": 0.5,
-      "A lot affected": 0.75,
-      "Completely affected": 1,
-
-      "Fully relaxed": 0,
-      "Slightly tense": 0.25,
-      "Moderately tense": 0.5,
-      "Very tense": 0.75,
-      "Extremely tense": 1,
-
-      "Very effective": 0,
-      "Mostly effective": 0.25,
-      "Somewhat effective": 0.5,
-      "Barely effective": 0.75,
-      "Not effective at all": 1,
-
-      "Very calm": 0,
-      "Mostly calm": 0.25,
-      "Moderately anxious": 0.5,
-      "Highly anxious": 0.75,
-      "Extremely anxious": 1
-    };
-
+    // Position-based scoring: score = selectedIndex / (options.length - 1)
     let totalScore = 0;
     let validCount = 0;
 
     for (const ans of answers) {
-      const score = optionScores[ans.answer];
+      // Find the options list for this question from the submitted questions or from the pool
+      let options = null;
+      if (questions && Array.isArray(questions)) {
+        const q = questions.find(q => q.id === ans.questionId);
+        if (q) options = q.options;
+      }
+      if (!options) {
+        // Fallback: look up by question text if available, or use flat index
+        options = Object.values(questionOptionsMap)[ans.questionId - 1];
+      }
 
-      if (typeof score !== "number") {
-        console.warn("Invalid answer option:", ans.answer);
+      if (!options || !ans.answer) {
+        console.warn("Could not find options for question:", ans.questionId);
         continue;
       }
 
+      const selectedIndex = options.indexOf(ans.answer);
+      if (selectedIndex === -1) {
+        console.warn("Answer not found in options:", ans.answer);
+        continue;
+      }
+
+      const score = options.length > 1 ? selectedIndex / (options.length - 1) : 0;
       totalScore += score;
       validCount++;
     }

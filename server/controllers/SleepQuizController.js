@@ -2,80 +2,75 @@ import DailyQuiz from "../models/DailyQuiz.js";
 import RiskScore from "../models/RiskScore.js";
 import { setCache, invalidateQuizCache, invalidateRiskCache, cacheKeys } from "../utils/cacheUtils.js";
 import { checkAndAwardBadges } from "../utils/badgeUtils.js";
+import { readFileSync } from "fs";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+const __filename2 = fileURLToPath(import.meta.url);
+const __dirname2 = dirname(__filename2);
+
+// Load the full question pool to look up options for position-based scoring
+const allQuizRaw = readFileSync(join(__dirname2, "../../data/all_quiz.json"), "utf-8");
+const allQuizPool = JSON.parse(
+  allQuizRaw.split("\n").filter(l => !l.trim().startsWith("//")).join("\n")
+);
+
+// Build a map of question text → options for quick lookup
+const sleepQuestionOptionsMap = {};
+allQuizPool.questions
+  .filter(q => q.category === "sleep")
+  .forEach(q => {
+    sleepQuestionOptionsMap[q.question] = q.options;
+  });
 
 const submitSleepQuiz = async (req, res) => {
     try {
         const userId = req.userId;
-        const { answers } = req.body;
+        const { answers, questions } = req.body;
 
         if (!answers || answers.length === 0) {
             return res.status(400).json({
                 message: "atleast one answer is required"
-            })
+            });
         }
 
-        const today = new Date().toISOString().split("T")[0]
+        const today = new Date().toISOString().split("T")[0];
 
-        const optionScores = {
-            "Very well": 0,
-            "Well": 0.25,
-            "Okay": 0.5,
-            "Poor": 0.75,
-            "Very poor": 1,
-
-            "Less than 4 hrs": 1,
-            "4–5 hrs": 0.75,
-            "5–6 hrs": 0.5,
-            "6–7 hrs": 0.25,
-            "More than 7 hrs": 0,
-
-            "Not at all": 0,
-            "Once": 0.25,
-            "Twice": 0.5,
-            "Three times": 0.75,
-            "Multiple times": 1,
-
-            "Fully rested": 0,
-            "Mostly rested": 0.25,
-            "Somewhat rested": 0.5,
-            "Slightly rested": 0.75,
-            "Not at all": 1,
-
-            "Never": 0,
-            "Rarely": 0.25,
-            "Sometimes": 0.5,
-            "Often": 0.75,
-            "Always": 1,
-
-            "None": 0,
-            "Mild": 0.25,
-            "Moderate": 0.5,
-            "Severe": 0.75,
-            "Extremely severe": 1,
-
-            "Very consistent": 0,
-            "Mostly consistent": 0.25,
-            "Somewhat consistent": 0.5,
-            "Rarely consistent": 0.75,
-            "Not consistent at all": 1,
-
-            "Excellent": 0,
-            "Good": 0.25,
-            "Average": 0.5,
-            "Poor": 0.75,
-            "Very poor": 1
-        };
-
+        // Position-based scoring: score = selectedIndex / (options.length - 1)
         let totalScore = 0;
-        let questionCount = 0;
+        let validCount = 0;
 
-        for (let i = 0; i < answers.length; i++) {
-            const userAnswer = answers[i].answer;
-            totalScore += optionScores[userAnswer] || 0;
-            questionCount++;
+        for (const ans of answers) {
+            let options = null;
+            if (questions && Array.isArray(questions)) {
+                const q = questions.find(q => q.id === ans.questionId);
+                if (q) options = q.options;
+            }
+            if (!options) {
+                options = Object.values(sleepQuestionOptionsMap)[ans.questionId - 1];
+            }
+
+            if (!options || !ans.answer) {
+                console.warn("Could not find options for question:", ans.questionId);
+                continue;
+            }
+
+            const selectedIndex = options.indexOf(ans.answer);
+            if (selectedIndex === -1) {
+                console.warn("Answer not found in options:", ans.answer);
+                continue;
+            }
+
+            const score = options.length > 1 ? selectedIndex / (options.length - 1) : 0;
+            totalScore += score;
+            validCount++;
         }
 
-        const sleepScore = Number((totalScore / questionCount).toFixed(2));
+        if (validCount === 0) {
+            return res.status(400).json({ message: "No valid answers provided" });
+        }
+
+        const sleepScore = Number((totalScore / validCount).toFixed(2));
 
         const transformedAnswers = answers.map(a => ({
             questionId: a.questionId,

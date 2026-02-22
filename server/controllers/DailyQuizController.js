@@ -697,4 +697,43 @@ export const getAdaptiveQuiz = async (req, res) => {
   }
 };
 
+// Get 10 random questions for a specific category quiz (anxiety, sleep, stress, depression)
+export const getCategoryQuiz = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const validCategories = ["anxiety", "sleep", "stress", "depression"];
+
+    if (!validCategories.includes(category)) {
+      return res.status(400).json({ message: `Invalid category. Must be one of: ${validCategories.join(", ")}` });
+    }
+
+    // Filter questions by category from the pool
+    const categoryQuestions = allQuizPool.questions.filter(
+      (q) => q.category === category
+    );
+
+    if (categoryQuestions.length === 0) {
+      return res.status(404).json({ message: `No questions found for category: ${category}` });
+    }
+
+    // Shuffle and pick 10 (or fewer if pool is smaller)
+    const shuffled = [...categoryQuestions].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 10);
+
+    // Re-assign sequential IDs (1-10) so frontend doesn't depend on pool IDs
+    const questions = selected.map((q, idx) => ({
+      ...q,
+      id: idx + 1,
+    }));
+
+    return res.status(200).json({
+      quizType: category,
+      questions,
+    });
+  } catch (error) {
+    console.error("Error fetching category quiz:", error);
+    res.status(500).json({ message: "Error fetching category quiz", error: error.message });
+  }
+};
+
 export default submitDailyQuiz;

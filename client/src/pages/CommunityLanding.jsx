@@ -45,7 +45,7 @@ export default function CommunityLanding() {
                         </p>
                         <div className="w-24 h-2 bg-[#CE93D8] rounded-full mx-auto lg:mx-0 opacity-60" />
                         <button
-                            onClick={() => navigate('/')}
+                            onClick={() => navigate('/communities/explore')}
                             className="inline-flex items-center gap-3 px-8 py-4 bg-[#7B1FA2] text-white rounded-2xl font-bold text-lg hover:bg-[#6A1B9A] transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-1"
                         >
                             <Users size={22} />

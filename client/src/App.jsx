@@ -10,6 +10,9 @@ import About from './pages/About';
 import ChatPage from './components/chatbot/ChatPage';
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
+import ForgotPassword from './components/auth/ForgotPassword';
+import ResetPassword from './components/auth/ResetPassword';
+import VerifyAccount from './components/auth/VerifyAccount';
 import Insights from './pages/Insights';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Home from './pages/Home';
@@ -42,6 +45,8 @@ function App() {
 
         <Route element={<AuthLayout><Login /></AuthLayout>} path="/login" />
         <Route element={<AuthLayout><Signup /></AuthLayout>} path="/signup" />
+        <Route element={<AuthLayout><ForgotPassword /></AuthLayout>} path="/forgot-password" />
+        <Route element={<AuthLayout><ResetPassword /></AuthLayout>} path="/reset-password" />
         <Route path="/survey" element={<ProtectedRoute><Survey /></ProtectedRoute>} />
         <Route path="/rate-limited" element={<RateLimited />} />
 
@@ -67,6 +72,7 @@ function App() {
                   <Route path="/insights" element={<Insights />} />
                   <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                   <Route path="/profile/edit" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+                  <Route path="/verify-account" element={<ProtectedRoute><VerifyAccount /></ProtectedRoute>} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="/anxiety-quiz" element={<ProtectedRoute><AnxietyQuiz /></ProtectedRoute>} />
                   <Route path="/depression-quiz" element={<ProtectedRoute><DepressionQuiz /></ProtectedRoute>} />

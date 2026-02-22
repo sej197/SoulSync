@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { User, Mail, MapPin, Calendar, Edit2, Camera, Bell, Phone } from 'lucide-react';
+import { User, Mail, MapPin, Calendar, Edit2, Camera, Bell, Phone, ShieldCheck, ShieldAlert } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
 import { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Badge from '../components/profile/Badge';
 import { BADGE_DEFINITIONS } from '../utils/badgeDefinitions';
 import StreakStats from '../components/StreakStats';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+import { sendOtp } from '../lib/authapi';
 
 const Profile = () => {
     const { user } = useContext(AuthContext);
     const [loadingNotify, setLoadingNotify] = useState(false);
+    const navigate = useNavigate();
 
     const handleNotifyContacts = async () => {
         if (!user?.emergency_contacts || user.emergency_contacts.length === 0) {
@@ -28,6 +30,16 @@ const Profile = () => {
             toast.error(errorMsg);
         } finally {
             setLoadingNotify(false);
+        }
+    };
+
+    const handleVerifyEmail = async () => {
+        try {
+            await sendOtp();
+            toast.success('Verification code sent to your email!');
+            navigate('/verify-account');
+        } catch (error) {
+            toast.error(error.response?.data?.message || 'Failed to send verification code');
         }
     };
 
@@ -84,9 +96,20 @@ const Profile = () => {
                         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
                             <div>
                                 <h1 className="text-4xl font-serif font-bold text-[#3E2723]">{user.name || 'User'}</h1>
-                                <p className="text-[#5D4037] font-medium flex items-center gap-2 mt-2 opacity-80">
-                                    <Mail className="w-4 h-4 text-[#EF6C00]" /> {user.email}
-                                </p>
+                                <div className="flex items-center gap-3">
+                                    <p className="text-[#5D4037] font-medium flex items-center gap-2 mt-2 opacity-80">
+                                        <Mail className="w-4 h-4 text-[#EF6C00]" /> {user.email}
+                                    </p>
+                                    {user.isAccountVerified ? (
+                                        <span className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider border border-green-200">
+                                            <ShieldCheck size={10} /> Verified
+                                        </span>
+                                    ) : (
+                                        <span className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider border border-amber-200">
+                                            <ShieldAlert size={10} /> Unverified
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <Link
                                 to="/profile/edit"
@@ -107,8 +130,8 @@ const Profile = () => {
                                     <div className="p-4 bg-base-200 rounded-xl">
                                         <p className="text-sm opacity-70 mb-2">Current Risk Level</p>
                                         <p className={`text-2xl font-bold ${user.current_risk?.level === 'LOW' ? 'text-success' :
-                                                user.current_risk?.level === 'MODERATE' ? 'text-warning' :
-                                                    user.current_risk?.level === 'HIGH' ? 'text-error' : 'text-base-content'
+                                            user.current_risk?.level === 'MODERATE' ? 'text-warning' :
+                                                user.current_risk?.level === 'HIGH' ? 'text-error' : 'text-base-content'
                                             }`}>
                                             {user.current_risk?.level || 'N/A'}
                                         </p>
@@ -184,6 +207,16 @@ const Profile = () => {
                                             </span>
                                             <span className="text-lg">{user.contact || 'Not set'}</span>
                                         </li>
+                                        {!user.isAccountVerified && (
+                                            <li className="pt-2">
+                                                <button
+                                                    onClick={handleVerifyEmail}
+                                                    className="w-full py-2.5 px-4 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2"
+                                                >
+                                                    <ShieldCheck className="w-4 h-4" /> Verify Email
+                                                </button>
+                                            </li>
+                                        )}
                                     </ul>
                                 </div>
 
@@ -207,11 +240,10 @@ const Profile = () => {
                                 <button
                                     onClick={handleNotifyContacts}
                                     disabled={loadingNotify || !user.emergency_contacts?.length}
-                                    className={`w-full py-3 px-6 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
-                                        user.emergency_contacts?.length
-                                            ? 'bg-[#D32F2F] hover:bg-[#B71C1C] text-white shadow-lg shadow-red-300'
-                                            : 'bg-gray-300 text-gray-600 cursor-not-allowed'
-                                    }`}
+                                    className={`w-full py-3 px-6 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${user.emergency_contacts?.length
+                                        ? 'bg-[#D32F2F] hover:bg-[#B71C1C] text-white shadow-lg shadow-red-300'
+                                        : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                                        }`}
                                 >
                                     <Bell className="w-5 h-5" />
                                     {loadingNotify ? 'Notifying...' : 'Notify Emergency Contacts'}

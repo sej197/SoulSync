@@ -292,11 +292,18 @@ export default function Journal() {
 
       // Mood mismatch check — compare face emotion with text sentiment
       const score = data?.entry?.sentimentScore;
+      console.log("[Journal] Save successful. Face Emotion:", faceEmotionRef.current, "Sentiment Score:", score);
+
       const mismatchMsg = getMoodMismatchMessage(faceEmotionRef.current, score);
       if (mismatchMsg) {
+        console.log("[Journal] Mood mismatch detected:", mismatchMsg);
         setMismatchMessage(mismatchMsg);
+      } else {
+        console.log("[Journal] No mood mismatch detected.");
+        setMismatchMessage(null);
       }
     } catch (err) {
+      console.error("[Journal] Save error:", err);
       toast.error(err.response?.data?.message || 'Failed to save');
     }
     setSaving(false);

@@ -86,9 +86,9 @@ const register = async (req, res) => {
         return res.json({
             message: "User registered successfully!"
         })
-    }catch(error){
+    } catch (error) {
         console.error("Error during registration process", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -150,9 +150,9 @@ const login = async (req, res) => {
         return res.json({
             message: "Login successful"
         });
-    }catch(error){
+    } catch (error) {
         console.error("Error during login process", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -171,9 +171,9 @@ const logout = async (req, res) => {
         return res.json({
             message: "Logout successful"
         });
-    }catch(error){
+    } catch (error) {
         console.error("Error during logout", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -189,7 +189,7 @@ const isAuthenticated = async (req, res) => {
         const cachedUser = await getCache(cacheKeys.user(req.userId));
         if (cachedUser) {
             // Validate cached communities have names (not raw IDs)
-            const communitiesValid = !cachedUser.communities?.length || 
+            const communitiesValid = !cachedUser.communities?.length ||
                 (typeof cachedUser.communities[0] === 'object' && cachedUser.communities[0]?.name);
             if (communitiesValid) {
                 return res.json({
@@ -235,10 +235,10 @@ const isAuthenticated = async (req, res) => {
             isAuthenticated: true,
             user: userData
         });
-        
-    }catch(error){
+
+    } catch (error) {
         console.error("Error checking authentication status", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
@@ -288,10 +288,152 @@ const updateProfile = async (req, res) => {
             user: userData
         });
 
-    }catch(error){
+    } catch (error) {
         console.error("Error updating profile", error);
-        res.status(500).json({message: "Server error"});
+        res.status(500).json({ message: "Server error" });
     }
 }
 
-export { register, logout, login, isAuthenticated, updateProfile };
+const sendOtp = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const user = await User.findById(userId);
+        if (user.isAccountVerified) {
+            return res.status(400).json({ message: "Account already verified" });
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        user.verifyOtp = otp;
+        user.verifyOtpExpiry = Date.now() + 10 * 60 * 1000;
+        await user.save();
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: 'Account Verification OTP',
+            text: `Your OTP for account verification is: ${otp}. It is valid for 10 minutes.`
+        }
+        await transporter.sendMail(mailOptions);
+        return res.json({ message: "Verification email sent" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+        console.error("Error sending verification email:", error);
+    }
+}
+
+const verifyOtp = async (req, res) => {
+    const { otp } = req.body;
+    const userId = req.userId;
+    if (!otp) {
+        return res.status(400).json({ message: "Please provide OTP" });
+    }
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(400).json({ message: "Invalid user" });
+        }
+        if (user.verifyOtp === ' ' || user.verifyOtp !== otp) {
+            return res.status(400).json({ message: "Invalid OTP" });
+        }
+        if (user.verifyOtpExpiry < Date.now()) {
+            return res.status(400).json({ message: "OTP has expired" });
+        }
+        user.isAccountVerified = true;
+        user.verifyOtp = '';
+        user.verifyOtpExpiry = 0;
+        await user.save();
+
+        // Invalidate cache
+        await invalidateUserCache(userId);
+
+        return res.json({
+            message: "Account verified successfully"
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error"
+        });
+        console.error("Error during OTP verification:", error);
+    }
+}
+
+
+const sendPasswordResetOtp = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({
+                message: "Please provide email"
+            });
+        }
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({
+                message: "User not found"
+            });
+        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        user.resetOtp = otp;
+        user.resetOtpExpiry = Date.now() + 10 * 60 * 1000;
+        await user.save();
+        const mailOptions = {
+            from: process.env.SENDER_EMAIL,
+            to: user.email,
+            subject: 'Password Reset OTP',
+            text: `Your OTP for password reset is: ${otp}. It is valid for 10 minutes.`
+        }
+        await transporter.sendMail(mailOptions);
+        return res.json({
+            message: "Password reset email sent"
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error"
+        });
+        console.error("Error sending password reset email:", error);
+    }
+}
+
+const resetPassword = async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+    if (!email || !otp || !newPassword) {
+        return res.status(400).json({
+            message: "Please provide all required fields"
+        });
+    }
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({
+                message: "User not found"
+            });
+        }
+        if (user.resetOtp === '' || user.resetOtp !== otp) {
+            return res.status(400).json({
+                message: "Invalid OTP"
+            });
+        }
+        if (user.resetOtpExpiry < Date.now()) {
+            return res.status(400).json({
+                message: "OTP has expired"
+            });
+        }
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        user.resetOtp = '';
+        user.resetOtpExpiry = 0;
+        await user.save();
+
+        // Invalidate cache
+        await invalidateUserCache(user._id);
+
+        return res.json({
+            message: "Password reset successful"
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Server error"
+        });
+        console.error("Error during password reset:", error);
+    }
+}
+
+export { register, logout, login, isAuthenticated, updateProfile, sendOtp, verifyOtp, sendPasswordResetOtp, resetPassword };

@@ -84,12 +84,16 @@ export default function Newprompt({ chatId }) {
 
                 // Mood mismatch check
                 if (data.sentimentScore != null) {
-                    const mismatchMsg = getMoodMismatchMessage(faceEmotionRef.current, data.sentimentScore);
+                    console.log("[Newprompt] Mismatch check (New Chat). Face:", faceEmotionRef?.current, "Text Sentiment:", data.sentimentScore);
+                    const mismatchMsg = getMoodMismatchMessage(faceEmotionRef?.current, data.sentimentScore);
                     if (mismatchMsg) {
+                        console.log("[Newprompt] Mismatch detected:", mismatchMsg);
                         setMismatchMessage(mismatchMsg);
+                    } else {
+                        console.log("[Newprompt] No mismatch detected.");
+                        setMismatchMessage(null);
                     }
                 }
-
                 // Show badge notifications
                 if (data.newlyAwarded && data.newlyAwarded.length > 0) {
                     data.newlyAwarded.forEach(badge => {
@@ -118,9 +122,14 @@ export default function Newprompt({ chatId }) {
 
             // Mood mismatch check
             if (data.sentimentScore != null) {
-                const mismatchMsg = getMoodMismatchMessage(faceEmotionRef.current, data.sentimentScore);
+                console.log("[Newprompt] Mismatch check (Update Chat). Face:", faceEmotionRef?.current, "Text Sentiment:", data.sentimentScore);
+                const mismatchMsg = getMoodMismatchMessage(faceEmotionRef?.current, data.sentimentScore);
                 if (mismatchMsg) {
+                    console.log("[Newprompt] Mismatch detected:", mismatchMsg);
                     setMismatchMessage(mismatchMsg);
+                } else {
+                    console.log("[Newprompt] No mismatch detected.");
+                    setMismatchMessage(null);
                 }
             }
 

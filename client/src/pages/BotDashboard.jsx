@@ -65,7 +65,10 @@ export default function BotDashboard() {
     return (
         <div className={`dashboard-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
             <MoodMismatchBanner message={mismatchMessage} onDismiss={() => setMismatchMessage(null)} />
-            <EmotionDetector onEmotionDetected={(e) => { faceEmotionRef.current = e; }} />
+            <EmotionDetector onEmotionDetected={(e) => {
+                console.log("[BotDashboard] Emotion signal:", e);
+                faceEmotionRef.current = e;
+            }} />
             {/* Mobile Toggle Button */}
             <button className="mobile-toggle" onClick={toggleSidebar}>
                 {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}

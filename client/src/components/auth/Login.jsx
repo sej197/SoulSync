@@ -19,21 +19,21 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    if(!email || !password){
+    if (!email || !password) {
       toast.error("Please fill in all fields");
       setLoading(false);
       return;
     }
-    try{
+    try {
       await loginUser(email, password);
       toast.success("Login successful");
       await getAuthStatus();
       navigate("/");
-    }catch(error){
+    } catch (error) {
       const errorMessage = error.response?.data?.message || 'An error occurred';
       toast.error(errorMessage);
       console.error(error);
-    }finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -89,6 +89,11 @@ const Login = () => {
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+            <div className="flex justify-end mt-1">
+              <Link to="/forgot-password" title="Go to Forgot Password" className="text-xs text-bloom-primary hover:underline font-medium">
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           <button
@@ -102,8 +107,8 @@ const Login = () => {
 
         <p className="text-center mt-8 text-bloom-muted dark:text-gray-400 text-sm">
           Don't have an account?{' '}
-          <Link 
-            to="/signup" 
+          <Link
+            to="/signup"
             className="text-bloom-primary dark:text-bloom-primary font-medium hover:text-bloom-primary/80 dark:hover:text-bloom-primary/80 transition-colors"
           >
             Create account

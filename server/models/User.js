@@ -113,7 +113,27 @@ const userSchema = new mongoose.Schema(
     surveyCompleted: {
       type: Boolean,
       default: false
-    }
+    },
+    verifyOtp: {
+      type:String,
+      default: ''
+    },
+    verifyOtpExpiry: {
+      type:Number, 
+      default: 0
+    },
+    isAccountVerified: {
+      type:Boolean, 
+      default:false
+    },
+    resetOtp: {
+      type:String, 
+      default: ''
+    },
+    resetOtpExpiry: {
+      type:Number, 
+      default: 0
+    },
   });
 
 export default mongoose.model("User", userSchema);

@@ -30,4 +30,24 @@ export const updateProfile = async (updateData) => {
     return res.data;
 };
 
+export const sendOtp = async () => {
+    const res = await authapi.post('/send-otp');
+    return res.data;
+};
+
+export const verifyOtp = async (otp) => {
+    const res = await authapi.post('/verify-otp', { otp });
+    return res.data;
+};
+
+export const sendResetOtp = async (email) => {
+    const res = await authapi.post('/send-reset-otp', { email });
+    return res.data;
+};
+
+export const resetPassword = async (email, otp, newPassword) => {
+    const res = await authapi.post('/reset-password', { email, otp, newPassword });
+    return res.data;
+};
+
 export default authapi;

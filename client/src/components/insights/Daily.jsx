@@ -320,7 +320,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
               </h3>
 
               <div className="relative w-48 h-48 sm:w-64 sm:h-64 mx-auto mb-8">
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                   <RadialBarChart
                     cx="50%"
                     cy="50%"

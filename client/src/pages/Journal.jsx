@@ -124,8 +124,9 @@ export default function Journal() {
 
 
   const [subject, setSubject] = useState('');
-  const [existingEntry, setExistingEntry] = useState(null);
+  const [editingEntry, setEditingEntry] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [todayEntries, setTodayEntries] = useState([]);
 
 
   const [entries, setEntries] = useState([]);
@@ -193,25 +194,30 @@ export default function Journal() {
     try {
       const dateStr = toLocalDateStr(date);
       const data = await fetchJournalByDate(dateStr);
-      if (data.entries && data.entries.length > 0) {
-        const entry = data.entries[0];
-        setExistingEntry(entry);
-        if (dateIsToday) {
-          // Keep editor fresh with placeholder for today
-          setSubject('');
-          if (editor) editor.commands.setContent('');
-        } else {
-          // Show existing entry read-only for past days
-          setSubject(entry.subject || '');
-          if (editor) editor.commands.setContent(entry.text || '');
-        }
-      } else {
-        setExistingEntry(null);
+      const dayEntries = data.entries || [];
+
+      if (dateIsToday) {
+        setTodayEntries(dayEntries);
+        // Always start with a blank editor for a new entry
+        setEditingEntry(null);
         setSubject('');
         if (editor) editor.commands.setContent('');
+      } else {
+        setTodayEntries(dayEntries);
+        if (dayEntries.length > 0) {
+          const entry = dayEntries[0];
+          setEditingEntry(entry);
+          setSubject(entry.subject || '');
+          if (editor) editor.commands.setContent(entry.text || '');
+        } else {
+          setEditingEntry(null);
+          setSubject('');
+          if (editor) editor.commands.setContent('');
+        }
       }
     } catch {
-      setExistingEntry(null);
+      setTodayEntries([]);
+      setEditingEntry(null);
       setSubject('');
       if (editor) editor.commands.setContent('');
     }
@@ -269,13 +275,18 @@ export default function Journal() {
     setSaving(true);
     try {
       let data;
-      if (existingEntry) {
-        data = await updateJournalEntry(existingEntry._id, text, subject);
-        setExistingEntry(data.entry);
+      if (editingEntry) {
+        data = await updateJournalEntry(editingEntry._id, text, subject);
+        setTodayEntries(prev => prev.map(e => e._id === editingEntry._id ? data.entry : e));
+        setEditingEntry(null);
+        setSubject('');
+        if (editor) editor.commands.setContent('');
         toast.success('Updated!');
       } else {
         data = await createJournalEntry(text, subject);
-        setExistingEntry(data.entry);
+        setTodayEntries(prev => [data.entry, ...prev]);
+        setSubject('');
+        if (editor) editor.commands.setContent('');
         toast.success('Saved!');
 
         // Show badge notifications
@@ -310,18 +321,34 @@ export default function Journal() {
   };
 
 
-  const handleDelete = async () => {
-    if (!existingEntry || isPastDay) return;
+  const handleDelete = async (entryToDelete) => {
+    const entry = entryToDelete || editingEntry;
+    if (!entry) return;
     try {
-      await deleteJournalEntry(existingEntry._id);
-      setExistingEntry(null);
-      setSubject('');
-      if (editor) editor.commands.setContent('');
+      await deleteJournalEntry(entry._id);
+      setTodayEntries(prev => prev.filter(e => e._id !== entry._id));
+      if (editingEntry?._id === entry._id) {
+        setEditingEntry(null);
+        setSubject('');
+        if (editor) editor.commands.setContent('');
+      }
       toast.success('Deleted');
       loadCalendarDates(activeMonth);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete');
     }
+  };
+
+  const handleEditEntry = (entry) => {
+    setEditingEntry(entry);
+    setSubject(entry.subject || '');
+    if (editor) editor.commands.setContent(entry.text || '');
+  };
+
+  const handleCancelEdit = () => {
+    setEditingEntry(null);
+    setSubject('');
+    if (editor) editor.commands.setContent('');
   };
 
 
@@ -419,7 +446,8 @@ export default function Journal() {
           <div className="diary-container">
             {mode === 'write' ? (
               /* ── WRITE MODE ── */
-              <div className="diary-book diary-page-enter" key={selectedDate.toISOString()}>
+              <div>
+              <div className="diary-book diary-page-enter" key={editingEntry?._id || selectedDate.toISOString()}>
                 <BindingDots />
 
                 <div className="diary-header">
@@ -427,17 +455,17 @@ export default function Journal() {
                     <div className="diary-date">
                       {formatDisplayDate(selectedDate)}
                     </div>
-                    {isToday && existingEntry && (
+                    {isToday && editingEntry && (
                       <span className="diary-status-tag editing">
                         <Pencil size={10} className="inline -mt-0.5 mr-0.5" /> Editing
                       </span>
                     )}
-                    {isToday && !existingEntry && (
+                    {isToday && !editingEntry && (
                       <span className="diary-status-tag today">
-                        <Sparkles size={10} className="inline -mt-0.5 mr-0.5" /> Today
+                        <Sparkles size={10} className="inline -mt-0.5 mr-0.5" /> New Entry
                       </span>
                     )}
-                    {isPastDay && existingEntry && (
+                    {isPastDay && editingEntry && (
                       <span className="diary-status-tag readonly">
                         <Lock size={10} /> Read only
                       </span>
@@ -454,7 +482,7 @@ export default function Journal() {
                 </div>
 
                 {/* Read-only notice for past days */}
-                {isPastDay && existingEntry && (
+                {isPastDay && editingEntry && (
                   <div className="diary-readonly-notice">
                     <Lock size={13} />
                     This is a past entry — it's sealed in time, no edits allowed
@@ -473,12 +501,30 @@ export default function Journal() {
                     <div className="diary-empty-state">
                       <span className="loading loading-spinner loading-md text-[#8fb5a3]"></span>
                     </div>
-                  ) : isPastDay && !existingEntry ? (
-                    /* Past day with no entry */
+                  ) : isPastDay && todayEntries.length === 0 ? (
+                    /* Past day with no entries */
                     <div className="diary-empty-state">
                       <div className="empty-icon"><Moon size={28} className="text-[#8fb5a3]" /></div>
                       <h4>No entry for this day</h4>
                       <p>You didn't write anything on this day. That's okay — every day is a fresh page!</p>
+                    </div>
+                  ) : isPastDay && todayEntries.length > 0 ? (
+                    /* Past day — show all entries read-only */
+                    <div className="space-y-4 p-2">
+                      {todayEntries.map((entry, idx) => (
+                        <div key={entry._id} className="border-b border-[#e8e0d4] pb-4 last:border-b-0 last:pb-0">
+                          {entry.subject && (
+                            <p className="text-sm font-bold text-[#4a5568] mb-1" style={{ fontFamily: "'Quicksand', sans-serif" }}>{entry.subject}</p>
+                          )}
+                          <div
+                            className="diary-read-text text-sm"
+                            dangerouslySetInnerHTML={{ __html: entry.text }}
+                          />
+                          <span className="text-[10px] text-[#a0a8a2] mt-1 block">
+                            {new Date(entry.entryTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   ) : (
                     <EditorContent editor={editor} />
@@ -495,20 +541,85 @@ export default function Journal() {
                         disabled={saving}
                       >
                         <Save size={14} className="inline mr-1.5 -mt-0.5" />
-                        {saving ? 'Saving...' : existingEntry ? 'Update' : 'Save'}
+                        {saving ? 'Saving...' : editingEntry ? 'Update' : 'Save'}
                       </button>
-                      {existingEntry && (
-                        <button
-                          className="diary-delete-btn"
-                          onClick={handleDelete}
-                        >
-                          <Trash2 size={13} className="inline mr-1 -mt-0.5" />
-                          Delete
-                        </button>
+                      {editingEntry && (
+                        <>
+                          <button
+                            className="diary-delete-btn"
+                            onClick={() => handleDelete(editingEntry)}
+                          >
+                            <Trash2 size={13} className="inline mr-1 -mt-0.5" />
+                            Delete
+                          </button>
+                          <button
+                            className="diary-delete-btn"
+                            onClick={handleCancelEdit}
+                            style={{ opacity: 0.7 }}
+                          >
+                            Cancel
+                          </button>
+                        </>
                       )}
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* Today's previous entries */}
+              {isToday && todayEntries.length > 0 && (
+                <div className="mt-4 space-y-3">
+                  <h4 className="text-sm font-semibold text-[#7c8a7e] flex items-center gap-1.5" style={{ fontFamily: "'Quicksand', sans-serif" }}>
+                    <BookOpen size={14} className="text-[#8fb5a3]" />
+                    Today's Entries ({todayEntries.length})
+                  </h4>
+                  {todayEntries.map((entry) => (
+                    <div
+                      key={entry._id}
+                      className={`rounded-2xl border p-4 transition-all ${editingEntry?._id === entry._id
+                        ? 'border-[#8fb5a3] bg-[#f0f7f4] shadow-sm'
+                        : 'border-[#e8e0d4] bg-white/80 hover:border-[#c5d4c0]'
+                      }`}
+                      style={{ fontFamily: "'Quicksand', sans-serif" }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          {entry.subject && (
+                            <p className="text-sm font-bold text-[#4a5568] mb-1 truncate">{entry.subject}</p>
+                          )}
+                          <p className="text-xs text-[#7c8a7e] line-clamp-2"
+                            dangerouslySetInnerHTML={{ __html: entry.text }}
+                          />
+                          <span className="text-[10px] text-[#a0a8a2] mt-1 block">
+                            {new Date(entry.entryTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => handleEditEntry(entry)}
+                            className="p-1.5 rounded-lg hover:bg-[#e8f5e9] text-[#7c8a7e] hover:text-[#4a5568] transition-colors"
+                            title="Edit"
+                          >
+                            <Pencil size={13} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(entry)}
+                            className="p-1.5 rounded-lg hover:bg-red-50 text-[#7c8a7e] hover:text-red-500 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Past day entries list */}
+              {isPastDay && todayEntries.length === 0 && !editingEntry && !loadingDate && (
+                <div />
+              )}
               </div>
             ) : (
               /* ── READ / FLIP MODE ── */

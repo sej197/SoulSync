@@ -208,7 +208,7 @@ export default function Monthly({ monthlyData }) {
           <p className="text-xs text-slate-400 mb-8">Your wellness journey over the past month</p>
 
           <div className="h-[350px] w-full">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
               {viewMode === 'weekly' ? (
                 <BarChart data={normalizedWeeklyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
@@ -327,7 +327,7 @@ export default function Monthly({ monthlyData }) {
                 <h3 className="text-2xl font-serif font-bold text-[#4A148C] mb-2">How Different Areas Evolved</h3>
                 <p className="text-xs text-slate-400 mb-8">Track how each area of your wellbeing changed over the month</p>
                 <div className="h-[300px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
+                  <ResponsiveContainer width="100%" height="100%" minWidth={1} minHeight={1}>
                     <LineChart data={normalizedChartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
                       <XAxis

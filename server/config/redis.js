@@ -1,8 +1,7 @@
 import { createClient } from "redis";
 
 const redisClient = createClient({
-  url: process.env.UPSTASH_REDIS_REST_URL || "redis://localhost:6379",
-  password: process.env.UPSTASH_REDIS_REST_TOKEN || undefined,
+  url: process.env.UPSTASH_REDIS_URL || "redis://localhost:6379",
 });
 
 let redisConnected = false;

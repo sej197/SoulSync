@@ -140,6 +140,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
   const [currentTip, setCurrentTip] = useState(null);
   const [expandedRec, setExpandedRec] = useState(null);
   const [xgboostPrediction, setXgboostPrediction] = useState([]);
+  const [xgboostLoading, setXgboostLoading] = useState(false);
 
   const getWellnessLabel = (score) => {
     if (score <= 2.5)
@@ -219,6 +220,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
 
   useEffect(() => {
     const fetchXGBoost = async () => {
+      setXgboostLoading(true);
       try {
         // Step 1: Get recent risks from monthlyInsights
         const insightsRes = await fetch(
@@ -254,6 +256,8 @@ export default function Daily({ dailyData, onRefresh, userId }) {
         }
       } catch (err) {
         console.error("XGBoost fetch failed:", err);
+      } finally {
+        setXgboostLoading(false);
       }
     };
 
@@ -305,7 +309,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
       <div className="grid lg:grid-cols-2 gap-6">
         {/* ── LEFT — Risk Score ─────────────────────────────────────────── */}
         <div className="flex flex-col gap-6">
-          <div className="group bg-gradient-to-br from-white to-purple-50 rounded-[2.5rem] p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden flex-1">
+          <div className="group bg-gradient-to-br from-white to-purple-50 rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden flex-1">
             <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-purple-200 to-transparent rounded-bl-full opacity-30 group-hover:scale-110 transition-transform duration-700" />
             <div className="relative z-10 text-center">
               <h2 className="text-[#7B1FA2] font-bold tracking-wide uppercase text-xs mb-2 bg-purple-50 inline-block px-3 py-1 rounded-full border border-purple-200">
@@ -315,7 +319,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
                 Daily Wellness Score
               </h3>
 
-              <div className="relative w-64 h-64 mx-auto mb-8">
+              <div className="relative w-48 h-48 sm:w-64 sm:h-64 mx-auto mb-8">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadialBarChart
                     cx="50%"
@@ -646,8 +650,15 @@ export default function Daily({ dailyData, onRefresh, userId }) {
             </div>
 
             {/* ── Enhanced AI Forecast Visibility ── */}
-            {xgboostPrediction && xgboostPrediction.length > 0 && (
-              <div className="bg-gradient-to-br from-white via-purple-50/20 to-white rounded-[2.5rem] p-8 md:p-10 border-2 border-purple-100/40 shadow-xl relative overflow-hidden group">
+            {xgboostLoading && (
+              <div className="flex items-center justify-center py-12">
+                <span className="loading loading-spinner loading-lg text-purple-400"></span>
+                <span className="ml-3 text-sm text-slate-500">Generating AI forecast...</span>
+              </div>
+            )}
+
+            {!xgboostLoading && xgboostPrediction && xgboostPrediction.length > 0 && (
+              <div className="bg-gradient-to-br from-white via-purple-50/20 to-white rounded-[2.5rem] p-5 sm:p-8 md:p-10 border-2 border-purple-100/40 shadow-xl relative overflow-hidden group">
                 {/* Decorative Background Blob */}
                 <div className="absolute top-0 right-0 w-48 h-48 bg-purple-200/20 rounded-full blur-3xl -mr-24 -mt-24 group-hover:bg-purple-300/30 transition-all duration-700" />
 
@@ -677,7 +688,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
                   </div>
 
                   {/* Prediction Grid */}
-                  <div className="grid grid-cols-4 md:grid-cols-7 gap-4">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 sm:gap-4">
                     {xgboostPrediction.slice(0, 7).map((p, i) => {
                       const { label, emoji, bar, pill } = getWellnessLabel(p.predicted_risk);
                       const dayName = new Date(p.date).toLocaleDateString("en-US", { weekday: "short" });

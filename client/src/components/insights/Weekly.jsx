@@ -100,7 +100,7 @@ export default function Weekly({ weeklyData }) {
       {/* Stats Overview — Friendly labels, no raw scores */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* How you're doing */}
-        <div className="group bg-gradient-to-br from-white to-purple-50 rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden flex flex-col justify-between h-44">
+        <div className="group bg-gradient-to-br from-white to-purple-50 rounded-[2.5rem] p-5 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden flex flex-col justify-between min-h-[11rem]">
           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-purple-200 to-transparent rounded-bl-full opacity-30 group-hover:scale-110 transition-transform duration-700"></div>
           <div className="relative z-10 flex justify-between items-start">
             <div>
@@ -117,7 +117,7 @@ export default function Weekly({ weeklyData }) {
         </div>
 
         {/* Trend */}
-        <div className="group bg-gradient-to-br from-white to-teal-50 rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-teal-100 relative overflow-hidden flex flex-col justify-between h-44">
+        <div className="group bg-gradient-to-br from-white to-teal-50 rounded-[2.5rem] p-5 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-teal-100 relative overflow-hidden flex flex-col justify-between min-h-[11rem]">
           <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-teal-200 to-transparent rounded-br-full opacity-30 group-hover:scale-110 transition-transform duration-700"></div>
           <div className="relative z-10 flex justify-between items-start">
             <div>
@@ -128,7 +128,7 @@ export default function Weekly({ weeklyData }) {
                   {weeklyData.summary.trend}
                 </span>
               </div>
-              <p className="text-xs text-slate-500 leading-relaxed max-w-[180px]">{trendInfo.msg}</p>
+              <p className="text-xs text-slate-500 leading-relaxed">{trendInfo.msg}</p>
             </div>
             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-teal-100/50 ${getTrendColor(weeklyData.summary.trend)}`}>
               {weeklyData.summary.trend === 'improving' ? <TrendingDown className="w-6 h-6" /> : <TrendingUp className="w-6 h-6" />}
@@ -137,7 +137,7 @@ export default function Weekly({ weeklyData }) {
         </div>
 
         {/* Consistency */}
-        <div className="group bg-gradient-to-br from-white to-amber-50 rounded-[2.5rem] p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-amber-100 relative overflow-hidden flex flex-col justify-between h-44">
+        <div className="group bg-gradient-to-br from-white to-amber-50 rounded-[2.5rem] p-5 sm:p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-amber-100 relative overflow-hidden flex flex-col justify-between min-h-[11rem]">
           <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-amber-200 to-transparent rounded-tl-full opacity-30 group-hover:scale-110 transition-transform duration-700"></div>
           <div className="relative z-10 flex justify-between items-start">
             <div>
@@ -155,7 +155,7 @@ export default function Weekly({ weeklyData }) {
       </div>
 
       {/* Overall Trend Chart — always visible */}
-      <div className="group bg-white/80 rounded-[2.5rem] p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden">
+      <div className="group bg-white/80 rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-purple-100 to-transparent rounded-bl-full opacity-40 group-hover:scale-110 transition-transform duration-700"></div>
         <div className="relative z-10">
           <h3 className="text-2xl font-serif font-bold text-[#4A148C] mb-2">Your Week's Flow</h3>
@@ -199,12 +199,12 @@ export default function Weekly({ weeklyData }) {
       </div>
 
       {/* Daily Snapshots — Friendly labels */}
-      <div className="group bg-white/90 rounded-[2.5rem] p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden">
+      <div className="group bg-white/90 rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-purple-400 via-pink-400 to-teal-400"></div>
         <div className="relative z-10">
           <h3 className="text-2xl font-serif font-bold text-[#4A148C] mb-2">Daily Snapshots</h3>
           <p className="text-xs text-slate-400 mb-8">A gentle look at how each day went</p>
-          <div className="grid grid-cols-7 gap-3">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-3">
             {normalizedChartData.map((day) => {
               const dayInfo = getWellnessLabel(day.overall);
               return (

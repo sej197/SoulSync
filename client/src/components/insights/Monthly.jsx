@@ -121,9 +121,9 @@ export default function Monthly({ monthlyData }) {
       )}
 
       {/* Stats Grid — Friendly labels, no raw scores */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {/* Overall Wellness */}
-        <div className="group bg-gradient-to-br from-white to-purple-50 rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
+        <div className="group bg-gradient-to-br from-white to-purple-50 rounded-[2rem] p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden flex flex-col items-center justify-center text-center min-h-[11rem]">
           <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-purple-200 to-transparent rounded-bl-full opacity-30 group-hover:scale-110 transition-transform duration-700"></div>
           <div className="relative z-10">
             <div className="w-12 h-12 rounded-2xl bg-purple-100 text-[#7B1FA2] flex items-center justify-center mb-3 mx-auto shadow-sm">
@@ -138,7 +138,7 @@ export default function Monthly({ monthlyData }) {
         </div>
 
         {/* Trend */}
-        <div className="group bg-gradient-to-br from-white to-teal-50 rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-teal-100 relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
+        <div className="group bg-gradient-to-br from-white to-teal-50 rounded-[2rem] p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-teal-100 relative overflow-hidden flex flex-col items-center justify-center text-center min-h-[11rem]">
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-teal-200 to-transparent rounded-tr-full opacity-30 group-hover:scale-110 transition-transform duration-700"></div>
           <div className="relative z-10">
             <div className={`w-12 h-12 rounded-2xl bg-teal-100/50 flex items-center justify-center mb-3 mx-auto shadow-sm ${getTrendColor(monthlyData.summary.trend)}`}>
@@ -152,7 +152,7 @@ export default function Monthly({ monthlyData }) {
         </div>
 
         {/* Tracked Days */}
-        <div className="group bg-gradient-to-br from-white to-amber-50 rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-amber-100 relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
+        <div className="group bg-gradient-to-br from-white to-amber-50 rounded-[2rem] p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-amber-100 relative overflow-hidden flex flex-col items-center justify-center text-center min-h-[11rem]">
           <div className="absolute top-0 left-0 w-24 h-24 bg-gradient-to-br from-amber-200 to-transparent rounded-br-full opacity-30 group-hover:scale-110 transition-transform duration-700"></div>
           <div className="relative z-10">
             <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center mb-3 mx-auto shadow-sm text-[#FFA000]">
@@ -165,7 +165,7 @@ export default function Monthly({ monthlyData }) {
         </div>
 
         {/* Consistency */}
-        <div className="group bg-gradient-to-br from-white to-teal-50 rounded-[2rem] p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-teal-100 relative overflow-hidden flex flex-col items-center justify-center text-center h-48">
+        <div className="group bg-gradient-to-br from-white to-teal-50 rounded-[2rem] p-4 sm:p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-teal-100 relative overflow-hidden flex flex-col items-center justify-center text-center min-h-[11rem]">
           <div className="absolute bottom-0 right-0 w-24 h-24 bg-gradient-to-tl from-teal-200 to-transparent rounded-tl-full opacity-30 group-hover:scale-110 transition-transform duration-700"></div>
           <div className="relative z-10">
             <div className="w-12 h-12 rounded-2xl bg-teal-100/50 text-emerald-600 flex items-center justify-center mb-3 mx-auto shadow-sm">
@@ -198,7 +198,7 @@ export default function Monthly({ monthlyData }) {
       </div>
 
       {/* Main Overall Chart — always visible */}
-      <div className="group bg-white/80 rounded-[2.5rem] p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden">
+      <div className="group bg-white/80 rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-48 h-48 bg-gradient-to-bl from-purple-100 to-transparent rounded-bl-full opacity-40 group-hover:scale-110 transition-transform duration-700"></div>
 
         <div className="relative z-10">
@@ -320,7 +320,7 @@ export default function Monthly({ monthlyData }) {
             </div>
 
             {/* Category Trends Chart */}
-            <div className="group bg-white/80 rounded-[2.5rem] p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden">
+            <div className="group bg-white/80 rounded-[2.5rem] p-5 sm:p-8 md:p-10 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border border-purple-100 relative overflow-hidden">
               <div className="absolute bottom-0 left-0 w-48 h-48 bg-gradient-to-tr from-purple-100 to-transparent rounded-tr-full opacity-40 group-hover:scale-110 transition-transform duration-700"></div>
 
               <div className="relative z-10">

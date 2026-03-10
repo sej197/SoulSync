@@ -34,7 +34,7 @@ const SoulSyncLogo = ({ size = 'lg' }) => {
 
 const AuthLayout = ({ children }) => {
   return (
-    <div className="h-screen flex flex-col lg:flex-row bg-bloom-cream dark:bg-gray-950 font-sans overflow-hidden">
+    <div className="min-h-screen lg:h-screen flex flex-col lg:flex-row bg-bloom-cream dark:bg-gray-950 font-sans lg:overflow-hidden">
 
       {/* ── Left Branding Panel ── */}
       <div className="hidden lg:flex lg:w-[45%] xl:w-[42%] relative overflow-hidden flex-col items-center justify-center"
@@ -70,13 +70,13 @@ const AuthLayout = ({ children }) => {
       </div>
 
       {/* ── Right Form Panel ── */}
-      <div className="flex-1 flex items-center justify-center px-4 py-8 lg:py-6 relative overflow-y-auto">
+      <div className="flex-1 flex flex-col justify-center px-4 py-6 sm:py-8 lg:py-6 relative lg:overflow-y-auto">
         {/* Subtle background accents for right side */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-bloom-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-bloom-secondary/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2 pointer-events-none" />
 
         {/* Mobile logo (shown on small screens) */}
-        <div className="absolute top-6 left-6 lg:hidden z-20">
+        <div className="mb-4 lg:hidden">
           <Link to="/" className="flex items-center gap-2">
             <SoulSyncLogo size="sm" />
             <span className="text-lg font-serif font-bold text-bloom-primary dark:text-white">
@@ -85,7 +85,7 @@ const AuthLayout = ({ children }) => {
           </Link>
         </div>
 
-        <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl relative z-10">
+        <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl relative z-10 mx-auto">
           {children}
         </div>
       </div>

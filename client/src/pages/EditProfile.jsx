@@ -106,13 +106,9 @@ const EditProfile = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-base-100">
-        <div className="text-center">
-          <div className="inline-block animate-spin">
-            <div className="w-12 h-12 border-4 border-bloom-primary border-t-transparent rounded-full"></div>
-          </div>
-          <p className="mt-4 text-bloom-muted">Loading...</p>
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-base-100 gap-3">
+        <span className="loading loading-spinner loading-lg text-purple-400"></span>
+        <span className="text-sm text-gray-500">Loading...</span>
       </div>
     );
   }
@@ -314,7 +310,7 @@ const EditProfile = () => {
                 disabled={loading}
                 className="flex-1 bg-bloom-primary hover:bg-bloom-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-3 px-6 rounded-lg shadow-lg shadow-bloom-primary/30 transition-all duration-200 transform hover:-translate-y-0.5 flex items-center justify-center gap-2"
               >
-                <Save className="w-5 h-5" />
+                {loading ? <span className="loading loading-spinner loading-sm"></span> : <Save className="w-5 h-5" />}
                 {loading ? 'Saving...' : 'Save Changes'}
               </button>
 

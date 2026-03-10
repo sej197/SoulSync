@@ -187,7 +187,7 @@ export default function Helplines() {
                                 disabled={loadingNotify}
                                 className="w-full py-4 px-6 rounded-2xl bg-[#D32F2F] hover:bg-[#B71C1C] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-lg flex items-center justify-center gap-3 shadow-lg shadow-red-300 transition-all transform hover:-translate-y-1"
                             >
-                                <Bell size={24} />
+                                {loadingNotify ? <span className="loading loading-spinner loading-md"></span> : <Bell size={24} />}
                                 {loadingNotify ? 'Notifying...' : 'Notify Emergency Contacts'}
                             </button>
 

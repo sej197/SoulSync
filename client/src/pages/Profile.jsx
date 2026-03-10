@@ -46,7 +46,12 @@ const Profile = () => {
 
     // Fallback/Loading state if user is not yet loaded
     if (!user) {
-        return <div className="min-h-screen flex items-center justify-center bg-base-100 text-primary">Loading Profile...</div>;
+        return (
+            <div className="min-h-screen flex flex-col items-center justify-center bg-base-100 gap-3">
+                <span className="loading loading-spinner loading-lg text-purple-400"></span>
+                <span className="text-sm text-gray-500">Loading Profile...</span>
+            </div>
+        );
     }
 
     return (
@@ -246,7 +251,7 @@ const Profile = () => {
                                         : 'bg-gray-300 text-gray-600 cursor-not-allowed'
                                         }`}
                                 >
-                                    <Bell className="w-5 h-5" />
+                                    {loadingNotify ? <span className="loading loading-spinner loading-sm"></span> : <Bell className="w-5 h-5" />}
                                     {loadingNotify ? 'Notifying...' : 'Notify Emergency Contacts'}
                                 </button>
                             </div>

@@ -143,7 +143,7 @@ const Navbar = () => {
                         </svg>
                     </div>
 
-                    <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+                    <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[100] p-2 shadow bg-base-100 rounded-box w-52">
                         <li><Link to="/communities">Community Chat</Link></li>
                         <li>
                             <details>
@@ -234,7 +234,7 @@ const Navbar = () => {
             </div>
 
             {/* RIGHT SIDE */}
-            <div className="navbar-end flex items-center gap-3">
+            <div className="navbar-end flex items-center gap-4">
                 {isLoggedIn && <StreakIndicator />}
 
                 {isLoggedIn && (
@@ -261,7 +261,7 @@ const Navbar = () => {
 
                         <ul
                             tabIndex={0}
-                            className="menu menu-sm dropdown-content mt-3 z-[1] p-3 w-64
+                            className="menu menu-sm dropdown-content mt-3 z-[100] p-3 w-64
                               bg-white dark:bg-gray-800
                               shadow-xl shadow-black/10 dark:shadow-black/30
                               backdrop-blur-md rounded-2xl

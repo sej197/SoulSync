@@ -81,7 +81,15 @@ export default function BotDashboard() {
                         <X size={24} />
                     </button>
                 </div>
-                <ChatbotList chats={chatsData?.chats || []} />
+                {isLoading ? (
+                    <div className="flex items-center justify-center py-10">
+                        <span className="loading loading-spinner loading-md text-purple-400"></span>
+                    </div>
+                ) : error ? (
+                    <div className="text-center text-red-400 py-6 text-sm">Failed to load chats</div>
+                ) : (
+                    <ChatbotList chats={chatsData?.chats || []} />
+                )}
             </div>
 
             {/* Overlay for mobile sidebar */}

@@ -74,14 +74,14 @@ const Signup = () => {
   };
 
   return (
-    <div className="w-full pt-6 lg:pt-0">
-      <div className="bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-2xl shadow-soft dark:shadow-gray-900/50 transition-colors duration-200">
+    <div className="w-full">
+      <div className="bg-white dark:bg-gray-800 p-4 sm:p-5 md:p-6 rounded-2xl shadow-soft dark:shadow-gray-900/50 transition-colors duration-200">
         <div className="text-center mb-3">
           <h2 className="text-xl font-serif font-bold text-bloom-primary dark:text-white mb-0.5">Create Account</h2>
           <p className="text-bloom-muted dark:text-gray-400 text-xs">Start your mindfulness journey today</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-2.5">
+        <form onSubmit={handleSubmit} className="space-y-2">
           {/* Email */}
           <div>
             <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-0.5">Email</label>
@@ -90,7 +90,7 @@ const Signup = () => {
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+              className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
               placeholder="name@example.com"
               required
             />
@@ -98,7 +98,7 @@ const Signup = () => {
 
           
           {/* Username & Age */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
             <div>
               <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-0.5">Username</label>
               <input
@@ -106,7 +106,7 @@ const Signup = () => {
                 name="username"
                 value={formData.username}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+                className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                 placeholder="Choose a username"
                 required
               />
@@ -118,7 +118,7 @@ const Signup = () => {
                 name="age"
                 value={formData.age}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+                className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                 placeholder="18"
                 min="13"
                 max="100"
@@ -127,14 +127,14 @@ const Signup = () => {
           </div>
 
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
             <div>
               <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-0.5">Gender</label>
               <select
                 name="gender"
                 value={formData.gender}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+                className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                 required
               >
                 <option value="">Select your gender</option>
@@ -152,7 +152,7 @@ const Signup = () => {
                 name="contact"
                 value={formData.contact}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+                className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                 placeholder="10-digit phone number"
                 maxLength="10"
                 pattern="\d{10}"
@@ -162,30 +162,30 @@ const Signup = () => {
           </div>
 
           
-          <div className="bg-bloom-secondary/10 dark:bg-gray-700/40 p-2.5 rounded-xl border border-bloom-secondary/20 dark:border-gray-600">
+          <div className="bg-bloom-secondary/10 dark:bg-gray-700/40 p-2 sm:p-2.5 rounded-xl border border-bloom-secondary/20 dark:border-gray-600">
             <h3 className="text-xs font-semibold text-bloom-dark dark:text-gray-100 mb-1.5">Emergency Contacts</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
               <div>
-                <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-0.5">Emergency Contact 1</label>
+                <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-0.5">Contact 1</label>
                 <input
                   type="tel"
                   name="emergencyContact1"
                   value={formData.emergencyContact1}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+                  className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                   placeholder="Contact number or name"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-0.5">Emergency Contact 2 <span className="text-gray-400 dark:text-gray-500 text-xs">(optional)</span></label>
+                <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-0.5">Contact 2 <span className="text-gray-400 dark:text-gray-500 text-xs">(opt.)</span></label>
                 <input
                   type="tel"
                   name="emergencyContact2"
                   value={formData.emergencyContact2}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+                  className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                   placeholder="Contact number or name"
                 />
               </div>
@@ -193,7 +193,7 @@ const Signup = () => {
           </div>
 
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-2 gap-2 sm:gap-2.5">
             <div>
               <label className="block text-xs font-medium text-bloom-primary dark:text-gray-200 mb-0.5">Password</label>
               <input
@@ -201,7 +201,7 @@ const Signup = () => {
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+                className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                 placeholder="Create a password"
                 required
               />
@@ -215,7 +215,7 @@ const Signup = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
+                className="w-full px-3 py-1.5 sm:py-2 rounded-xl bg-bloom-cream dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-bloom-primary dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-bloom-primary dark:focus:border-bloom-primary focus:ring-2 focus:ring-bloom-primary/20 dark:focus:ring-bloom-primary/30 outline-none transition-all text-sm"
                 placeholder="Confirm your password"
                 required
               />

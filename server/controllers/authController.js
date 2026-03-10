@@ -84,7 +84,8 @@ const register = async (req, res) => {
         }, 7200); // 2 hours
 
         return res.json({
-            message: "User registered successfully!"
+            message: "User registered successfully!",
+            token
         })
     } catch (error) {
         console.error("Error during registration process", error);
@@ -148,7 +149,8 @@ const login = async (req, res) => {
         }, 7200);
 
         return res.json({
-            message: "Login successful"
+            message: "Login successful",
+            token
         });
     } catch (error) {
         console.error("Error during login process", error);

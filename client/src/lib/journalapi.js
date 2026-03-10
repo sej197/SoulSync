@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { API_BASE_URL } from './apiConfig';
+import { attachToken } from './tokenManager';
 
 const journalapi = axios.create({
     baseURL: `${API_BASE_URL}/api/journal`,
     withCredentials: true
 });
+journalapi.interceptors.request.use(attachToken);
 
 export const fetchJournalEntries = async (page = 1, limit = 10) => {
     const res = await journalapi.get(`/?page=${page}&limit=${limit}`);

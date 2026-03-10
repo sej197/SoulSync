@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { API_BASE_URL } from './apiConfig';
+import { attachToken } from './tokenManager';
 
 const chatbotapi = axios.create({
     baseURL: `${API_BASE_URL}/api/chatbot`,
     withCredentials: true
 });
+chatbotapi.interceptors.request.use(attachToken);
 
 export const fetchUserChats = async () => {
     console.log("[chatbotapi] fetchUserChats called");

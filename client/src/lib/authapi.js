@@ -1,23 +1,28 @@
 import axios from 'axios';
 import { API_BASE_URL } from './apiConfig';
+import { attachToken, saveToken, clearToken } from './tokenManager';
 
 const authapi = axios.create({
     baseURL: `${API_BASE_URL}/api/auth`,
     withCredentials: true
 });
+authapi.interceptors.request.use(attachToken);
 
 export const loginUser = async (email, password) => {
     const res = await authapi.post('/login', { email, password });
+    if (res.data.token) saveToken(res.data.token);
     return res.data;
 };
 
 export const registerUser = async (userData) => {
     const res = await authapi.post('/register', userData);
+    if (res.data.token) saveToken(res.data.token);
     return res.data;
 };
 
 export const logoutUser = async () => {
     const res = await authapi.post('/logout');
+    clearToken();
     return res.data;
 };
 

@@ -7,6 +7,7 @@ import { IoMdNotificationsOutline } from "react-icons/io";
 import StreakIndicator from './StreakIndicator';
 import logo from "../assets/logo.png";
 import { API_BASE_URL } from '../lib/apiConfig'; 
+import { authHeaders } from '../lib/tokenManager';
 
 const Navbar = () => {
     const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
@@ -40,6 +41,7 @@ const Navbar = () => {
             const res = await fetch(`${API_BASE_URL}/api/auth/is-authenticated`, {
                 method: "GET",
                 credentials: "include",
+                headers: authHeaders(),
             });
             const data = await res.json();
             if (data.isAuthenticated) return data.user.id;

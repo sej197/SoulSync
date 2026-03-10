@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import dailyQuizData from "./dailyCheckinQuiz.json";
 import axios from "axios";
 import { API_BASE_URL } from "../../lib/apiConfig";
+import { getToken } from "../../lib/tokenManager";
 
 const DailyQuiz = ({ userId }) => {
   const [quizData, setQuizData] = useState(dailyQuizData);
@@ -22,7 +23,7 @@ const DailyQuiz = ({ userId }) => {
         setLoading(true);
         const res = await axios.get(
           `${API_BASE_URL}/api/quiz/adaptive-quiz`,
-          { withCredentials: true }
+          { withCredentials: true, headers: { Authorization: `Bearer ${getToken()}` } }
         );
         if (res.data && res.data.questions && res.data.questions.length > 0) {
           setQuizData({ quizType: res.data.quizType, questions: res.data.questions });
@@ -117,7 +118,7 @@ const DailyQuiz = ({ userId }) => {
 
           answers: payload,
         },
-        { withCredentials: true }
+        { withCredentials: true, headers: { Authorization: `Bearer ${getToken()}` } }
       );
 
       setFinalScore(res.data.finalScore);

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../../lib/apiConfig";
+import { getToken } from "../../lib/tokenManager";
 
 const StressQuiz = ({ userId }) => {
   const [quizData, setQuizData] = useState(null);
@@ -20,7 +21,7 @@ const StressQuiz = ({ userId }) => {
       try {
         const res = await axios.get(
           `${API_BASE_URL}/api/quiz/category-quiz/stress`,
-          { withCredentials: true }
+          { withCredentials: true, headers: { Authorization: `Bearer ${getToken()}` } }
         );
         setQuizData(res.data);
       } catch (error) {
@@ -66,7 +67,7 @@ const StressQuiz = ({ userId }) => {
       const res = await axios.post(
         `${API_BASE_URL}/api/quiz/submit-stressquiz`,
         { answers: payload, questions: quizData.questions },
-        { withCredentials: true }
+        { withCredentials: true, headers: { Authorization: `Bearer ${getToken()}` } }
       );
 
       setFinalScore(res.data.stressScore);

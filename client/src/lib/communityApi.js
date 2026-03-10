@@ -1,10 +1,12 @@
 import axios from 'axios';
 import { API_BASE_URL } from './apiConfig';
+import { attachToken } from './tokenManager';
 
 const API = axios.create({
     baseURL: `${API_BASE_URL}/api/community`,
     withCredentials: true,  // sends cookie automatically
 });
+API.interceptors.request.use(attachToken);
 
 export const fetchCommunities = (search = '') => {
     return API.post('/get-communities', null, {

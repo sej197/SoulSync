@@ -9,6 +9,7 @@ import StreakStats from '../components/StreakStats';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { API_BASE_URL } from '../lib/apiConfig';
+import { getToken } from '../lib/tokenManager';
 import { sendOtp } from '../lib/authapi';
 
 const Profile = () => {
@@ -24,7 +25,7 @@ const Profile = () => {
 
         setLoadingNotify(true);
         try {
-            const response = await axios.post(`${API_BASE_URL}/api/notify/notify-contacts`, {}, { withCredentials: true });
+            const response = await axios.post(`${API_BASE_URL}/api/notify/notify-contacts`, {}, { withCredentials: true, headers: { Authorization: `Bearer ${getToken()}` } });
             toast.success(`Notifications sent to ${response.data.results?.length || 'emergency contacts'}!`);
         } catch (error) {
             const errorMsg = error.response?.data?.message || 'Failed to send notifications';

@@ -1,7 +1,13 @@
 import jwt from "jsonwebtoken";
 
 const userAuth = async(req, res, next) => {
-    const {token} = req.cookies;
+    let token = req.cookies?.token;
+    if (!token) {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1];
+        }
+    }
     if(!token){
         if(req.path == '/is-authenticated'){ //status check route so no token required
             return next();

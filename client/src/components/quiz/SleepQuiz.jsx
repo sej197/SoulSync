@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../../lib/apiConfig";
+import { getToken } from "../../lib/tokenManager";
 
 const SleepQuiz = ({ userId }) => {
   const [quizData, setQuizData] = useState(null);
@@ -21,7 +22,7 @@ const SleepQuiz = ({ userId }) => {
       try {
         const res = await axios.get(
           `${API_BASE_URL}/api/quiz/category-quiz/sleep`,
-          { withCredentials: true }
+          { withCredentials: true, headers: { Authorization: `Bearer ${getToken()}` } }
         );
         setQuizData(res.data);
       } catch (error) {
@@ -67,7 +68,7 @@ const SleepQuiz = ({ userId }) => {
       const res = await axios.post(
         `${API_BASE_URL}/api/quiz/submit-sleepquiz`,
         { answers: payload, questions: quizData.questions },
-        { withCredentials: true }
+        { withCredentials: true, headers: { Authorization: `Bearer ${getToken()}` } }
       );
 
       setFinalScore(res.data.sleepScore);

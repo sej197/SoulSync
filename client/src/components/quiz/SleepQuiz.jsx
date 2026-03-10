@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { API_BASE_URL } from "../../lib/apiConfig";
 
 const SleepQuiz = ({ userId }) => {
   const [quizData, setQuizData] = useState(null);
@@ -19,7 +20,7 @@ const SleepQuiz = ({ userId }) => {
     const fetchQuestions = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/quiz/category-quiz/sleep`,
+          `${API_BASE_URL}/api/quiz/category-quiz/sleep`,
           { withCredentials: true }
         );
         setQuizData(res.data);
@@ -64,7 +65,7 @@ const SleepQuiz = ({ userId }) => {
       }));
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/quiz/submit-sleepquiz`,
+        `${API_BASE_URL}/api/quiz/submit-sleepquiz`,
         { answers: payload, questions: quizData.questions },
         { withCredentials: true }
       );

@@ -27,10 +27,17 @@ app.use((req, res, next) => {
 });
 
 // Middlewares
-app.use(cors({
-  origin: "http://localhost:5173", 
-  credentials: true,
-}));
+if(process.env.NODE_ENV === "production"){
+  app.use(cors({
+    origin: "https://soul-sync-dun.vercel.app", 
+    credentials: true,
+  }));
+}else{
+  app.use(cors({
+    origin: "http://localhost:5173", 
+    credentials: true,
+  }));
+}
 app.use(express.json());
 app.use(cookieParser());
 app.use(rateLimiter); 

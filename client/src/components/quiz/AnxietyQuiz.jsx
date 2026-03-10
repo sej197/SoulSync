@@ -1,7 +1,7 @@
-// src/components/quiz/AnxietyQuiz.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { API_BASE_URL } from "../../lib/apiConfig";
 
 const AnxietyQuiz = ({ userId }) => {
   const [quizData, setQuizData] = useState(null);
@@ -19,7 +19,7 @@ const AnxietyQuiz = ({ userId }) => {
     const fetchQuestions = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/quiz/category-quiz/anxiety`,
+          `${API_BASE_URL}/api/quiz/category-quiz/anxiety`,
           { withCredentials: true }
         );
         setQuizData(res.data);
@@ -64,7 +64,7 @@ const AnxietyQuiz = ({ userId }) => {
       }));
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/quiz/submit-anxietyquiz`,
+        `${API_BASE_URL}/api/quiz/submit-anxietyquiz`,
         { answers: payload, questions: quizData.questions },
         { withCredentials: true }
       );

@@ -1,10 +1,8 @@
 import { createClient } from "redis";
 
 const redisClient = createClient({
-  socket: {
-    host: process.env.REDIS_HOST || "localhost",
-    port: process.env.REDIS_PORT || 6379,
-  },
+  url: process.env.UPSTASH_REDIS_REST_URL || "redis://localhost:6379",
+  password: process.env.UPSTASH_REDIS_REST_TOKEN || undefined,
 });
 
 let redisConnected = false;

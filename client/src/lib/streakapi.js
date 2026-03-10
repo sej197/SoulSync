@@ -1,8 +1,9 @@
 // Streak API calls
+import { API_BASE_URL } from './apiConfig';
 
 export const getStreakInfo = async () => {
   try {
-    const res = await fetch('/api/quiz/streak', {
+    const res = await fetch(`${API_BASE_URL}/api/quiz/streak`, {
       method: 'GET',
       credentials: 'include'
     });
@@ -16,7 +17,7 @@ export const getStreakInfo = async () => {
 
 export const checkQuizEligibility = async () => {
   try {
-    const res = await fetch('/api/quiz/streak/check-eligibility', {
+    const res = await fetch(`${API_BASE_URL}/api/quiz/streak/check-eligibility`, {
       method: 'GET',
       credentials: 'include'
     });
@@ -30,7 +31,7 @@ export const checkQuizEligibility = async () => {
 
 export const getStreakStats = async (days = 30) => {
   try {
-    const res = await fetch(`/api/quiz/streak/stats?days=${days}`, {
+    const res = await fetch(`${API_BASE_URL}/api/quiz/streak/stats?days=${days}`, {
       method: 'GET',
       credentials: 'include'
     });
@@ -44,7 +45,7 @@ export const getStreakStats = async (days = 30) => {
 
 export const getStreakLeaderboard = async (limit = 10, timeframe = 'current') => {
   try {
-    const res = await fetch(`/api/quiz/streak/leaderboard?limit=${limit}&timeframe=${timeframe}`, {
+    const res = await fetch(`${API_BASE_URL}/api/quiz/streak/leaderboard?limit=${limit}&timeframe=${timeframe}`, {
       method: 'GET',
       credentials: 'include'
     });

@@ -1,7 +1,7 @@
-// src/components/quiz/DailyQuiz.jsx
 import React, { useState, useEffect } from "react";
 import dailyQuizData from "./dailyCheckinQuiz.json";
 import axios from "axios";
+import { API_BASE_URL } from "../../lib/apiConfig";
 
 const DailyQuiz = ({ userId }) => {
   const [quizData, setQuizData] = useState(dailyQuizData);
@@ -21,7 +21,7 @@ const DailyQuiz = ({ userId }) => {
       try {
         setLoading(true);
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/quiz/adaptive-quiz`,
+          `${API_BASE_URL}/api/quiz/adaptive-quiz`,
           { withCredentials: true }
         );
         if (res.data && res.data.questions && res.data.questions.length > 0) {
@@ -112,7 +112,7 @@ const DailyQuiz = ({ userId }) => {
 
       // send to backend
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/quiz/submit-dailyquiz`,
+        `${API_BASE_URL}/api/quiz/submit-dailyquiz`,
         {
 
           answers: payload,

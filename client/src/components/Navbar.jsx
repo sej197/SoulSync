@@ -5,7 +5,8 @@ import { logoutUser } from '../lib/authapi';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { IoMdNotificationsOutline } from "react-icons/io";
 import StreakIndicator from './StreakIndicator';
-import logo from "../assets/logo.png"; 
+import logo from "../assets/logo.png";
+import { API_BASE_URL } from '../lib/apiConfig'; 
 
 const Navbar = () => {
     const VAPID_PUBLIC_KEY = import.meta.env.VITE_VAPID_PUBLIC_KEY;
@@ -36,7 +37,7 @@ const Navbar = () => {
 
     async function getCurrentUserId() {
         try {
-            const res = await fetch("/api/auth/is-authenticated", {
+            const res = await fetch(`${API_BASE_URL}/api/auth/is-authenticated`, {
                 method: "GET",
                 credentials: "include",
             });
@@ -79,7 +80,7 @@ const Navbar = () => {
             userVisibleOnly: true,
             applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
         });
-        await fetch(`/api/reminders/subscribe/${userId}`, {
+        await fetch(`${API_BASE_URL}/api/reminders/subscribe/${userId}`, {
             method: "POST",
             body: JSON.stringify(subscription),
             headers: { "Content-Type": "application/json" }

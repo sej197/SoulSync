@@ -1,7 +1,7 @@
-// src/components/quiz/DepressionQuiz.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { API_BASE_URL } from "../../lib/apiConfig";
 
 const DepressionQuiz = ({ userId }) => {
   const [quizData, setQuizData] = useState(null);
@@ -19,7 +19,7 @@ const DepressionQuiz = ({ userId }) => {
     const fetchQuestions = async () => {
       try {
         const res = await axios.get(
-          `${import.meta.env.VITE_BASE_URL}/api/quiz/category-quiz/depression`,
+          `${API_BASE_URL}/api/quiz/category-quiz/depression`,
           { withCredentials: true }
         );
         setQuizData(res.data);
@@ -64,7 +64,7 @@ const DepressionQuiz = ({ userId }) => {
       }));
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BASE_URL}/api/quiz/submit-depressionquiz`,
+        `${API_BASE_URL}/api/quiz/submit-depressionquiz`,
         { answers: payload, questions: quizData.questions },
         { withCredentials: true }
       );

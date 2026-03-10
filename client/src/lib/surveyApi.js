@@ -1,7 +1,8 @@
 import axios from "axios";
+import { API_BASE_URL } from './apiConfig';
 
 const surveyApi = axios.create({
-  baseURL: `/api/survey`,
+  baseURL: `${API_BASE_URL}/api/survey`,
   withCredentials: true,
 });
 

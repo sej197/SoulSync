@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_BASE_URL } from './apiConfig';
 
 const authapi = axios.create({
-    baseURL: `/api/auth`,
+    baseURL: `${API_BASE_URL}/api/auth`,
     withCredentials: true
 });
 

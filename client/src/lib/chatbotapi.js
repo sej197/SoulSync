@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_BASE_URL } from './apiConfig';
 
 const chatbotapi = axios.create({
-    baseURL: `/api/chatbot`,
+    baseURL: `${API_BASE_URL}/api/chatbot`,
     withCredentials: true
 });
 

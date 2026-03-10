@@ -1,6 +1,6 @@
-// src/components/insights/Daily.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { API_BASE_URL, PYTHON_API_BASE_URL } from "../../lib/apiConfig";
 import {
   Siren, TriangleAlert, TrendingDown, Lightbulb, RefreshCw, Eye,
   BarChart3, CircleCheck, Sprout, Info, Pin,
@@ -222,7 +222,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
       try {
         // Step 1: Get recent risks from monthlyInsights
         const insightsRes = await fetch(
-          `http://localhost:5000/api/risk/monthlyInsights/${userId}`
+          `${API_BASE_URL}/api/risk/monthlyInsights/${userId}`
         );
         const insightsData = await insightsRes.json();
 
@@ -234,7 +234,7 @@ export default function Daily({ dailyData, onRefresh, userId }) {
         if (recentRisks.length < 3) return;
 
         // Step 2: Hit recommendations API with recent_risks
-        const recRes = await fetch("http://localhost:8000/api/recommendations", {
+        const recRes = await fetch(`${PYTHON_API_BASE_URL}/api/recommendations`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

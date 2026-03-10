@@ -1,11 +1,12 @@
 import axios from 'axios';
+import { API_BASE_URL } from './apiConfig';
 
 const API = axios.create({
-    baseURL: '/api/posts',
+    baseURL: `${API_BASE_URL}/api/posts`,
     withCredentials: true,
 });
 
-// Posts
+
 export const fetchPosts = (communityId, page = 1) => {
     return API.get(`/${communityId}`, { params: { page } });
 };

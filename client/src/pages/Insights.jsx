@@ -1,13 +1,12 @@
-// src/pages/Insights.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
+import { API_BASE_URL } from '../lib/apiConfig';
 import Daily from '../components/insights/Daily';
 import Weekly from '../components/insights/Weekly';
 import Monthly from '../components/insights/Monthly';
 
 export default function Insights() {
   const { user } = useContext(AuthContext);
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
   const userId = user?.id;
 
   const [dailyData, setDailyData] = useState(null);
@@ -32,15 +31,15 @@ export default function Insights() {
     try {
       setLoading(true);
 
-      const resDaily = await fetch(`${BASE_URL}/api/risk/dailyInsights/${userId}`);
+      const resDaily = await fetch(`${API_BASE_URL}/api/risk/dailyInsights/${userId}`);
       const daily = await resDaily.json();
       setDailyData(daily.daily);
 
-      const resWeekly = await fetch(`${BASE_URL}/api/risk/weeklyInsights/${userId}`);
+      const resWeekly = await fetch(`${API_BASE_URL}/api/risk/weeklyInsights/${userId}`);
       const weekly = await resWeekly.json();
       setWeeklyData(weekly);
 
-      const resMonthly = await fetch(`${BASE_URL}/api/risk/monthlyInsights/${userId}`);
+      const resMonthly = await fetch(`${API_BASE_URL}/api/risk/monthlyInsights/${userId}`);
       const monthly = await resMonthly.json();
       setMonthlyData(monthly);
 

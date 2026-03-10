@@ -3,7 +3,6 @@ import Calendar from 'react-calendar';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Placeholder from '@tiptap/extension-placeholder';
-import Underline from '@tiptap/extension-underline';
 import {
   Bold, Italic, Underline as UnderlineIcon, List, ListOrdered,
   ChevronLeft, ChevronRight, BookOpen, PenLine, Trash2, Save,
@@ -147,7 +146,6 @@ export default function Journal() {
   const editor = useEditor({
     extensions: [
       StarterKit,
-      Underline,
       Placeholder.configure({
         placeholder: 'Dear diary, today I felt...',
       }),

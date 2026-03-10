@@ -15,7 +15,8 @@ import {
   CloudSun,
   Frown,
   Meh,
-  SmilePlus
+  SmilePlus,
+  Sparkles
 } from 'lucide-react';
 
 export default function Home() {
@@ -49,9 +50,22 @@ export default function Home() {
             50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
             100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
           }
+          @keyframes gentle-rise {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+          @keyframes soft-pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.05); opacity: 1; }
+          }
           .animate-float-slow { animation: float-slow 7s ease-in-out infinite; }
           .animate-float-medium { animation: float-medium 5s ease-in-out infinite; }
           .animate-morph { animation: morph 10s ease-in-out infinite; }
+          .animate-gentle-rise { animation: gentle-rise 0.9s ease-out both; }
+          .animate-gentle-rise-delay-1 { animation: gentle-rise 0.9s 0.15s ease-out both; }
+          .animate-gentle-rise-delay-2 { animation: gentle-rise 0.9s 0.3s ease-out both; }
+          .animate-gentle-rise-delay-3 { animation: gentle-rise 0.9s 0.45s ease-out both; }
+          .animate-soft-pulse { animation: soft-pulse 4s ease-in-out infinite; }
           
           .blob-shape {
             position: absolute;
@@ -102,27 +116,51 @@ export default function Home() {
       </div>
 
       {/* Hero Section */}
-      <div className="relative z-10 min-h-[90vh] flex flex-col items-center justify-center px-4 text-center">
-        <div className="max-w-4xl mx-auto space-y-8 mt-20 md:mt-0">
+      <div className="relative z-10 min-h-[85vh] flex flex-col items-center justify-center px-4 py-20 text-center">
+        <div className="max-w-5xl mx-auto">
 
-          <h1 className="text-5xl md:text-7xl font-bold font-serif text-[#3E2723] leading-[1.1] tracking-tight">
-            Find your <span className="text-[#EF6C00]">balance</span>,<br /> one breath at a time.
+          {/* Main heading */}
+          <h1 className="animate-gentle-rise-delay-1 text-5xl md:text-7xl lg:text-[5.25rem] font-bold font-serif text-[#3E2723] leading-[1.08] tracking-tight mb-8">
+            A calmer mind,{' '}
+            <br className="hidden sm:block" />
+            a <span className="relative inline-block">
+              <span className="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-[#EF6C00] via-[#FF8F00] to-[#FFB300]">happier</span>
+              <span className="absolute bottom-1 left-0 w-full h-3 bg-[#FFE0B2] rounded-full -z-0 opacity-60"></span>
+            </span> you.
           </h1>
 
-          <p className="text-xl md:text-2xl text-[#5D4037] max-w-2xl mx-auto font-medium leading-relaxed opacity-80">
-            Tools to help you
-            <span className="text-[#00695C] font-bold mx-1">reflect</span>,
-            <span className="text-[#EF6C00] font-bold mx-1">grow</span>, and
-            <span className="text-[#6A1B9A] font-bold mx-1">thrive</span>.
-            Science-backed, user-friendly, and always here for you.
+          {/* Subtitle */}
+          <p className="animate-gentle-rise-delay-2 text-lg md:text-xl text-[#6D4C41] max-w-2xl mx-auto leading-relaxed mb-10 font-medium">
+            Gentle tools to help you breathe, reflect, and grow — at your own
+            pace. Science-backed support that feels like a warm conversation.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-5 items-center justify-center pt-8">
-            <Link to="/signup" className="btn btn-lg h-16 px-12 rounded-full bg-[#EF6C00] hover:bg-[#E65100] text-white border-none text-xl shadow-[#FFCCBC] shadow-xl hover:shadow-2xl transition-all transform hover:-translate-y-1 flex items-center gap-2">
-              Get Started Free <ArrowRight className="w-6 h-6" />
+          {/* CTA */}
+          <div className="animate-gentle-rise-delay-3 flex flex-col items-center">
+            <Link
+              to="/signup"
+              className="group btn btn-lg h-[3.75rem] px-12 rounded-full bg-gradient-to-r from-[#EF6C00] to-[#FF8F00] hover:from-[#E65100] hover:to-[#EF6C00] text-white border-none text-lg font-bold shadow-lg shadow-orange-200/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 flex items-center gap-2"
+            >
+              Begin Your Journey
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
-          <p className="text-sm text-[#8D6E63] font-medium">No credit card required • Free forever plan available</p>
+
+          {/* Trust line */}
+          <p className="animate-gentle-rise-delay-3 mt-6 text-sm text-[#8D6E63] font-medium flex items-center justify-center gap-2">
+            <ShieldCheck size={15} className="text-emerald-500" />
+            Free forever • No credit card needed • Your data stays private
+          </p>
+
+          {/* Learn more link */}
+          <Link
+            to="/about"
+            className="animate-gentle-rise-delay-3 inline-flex items-center gap-2 mt-4 text-[#7B1FA2] font-bold hover:text-[#4A148C] transition-colors text-base group"
+          >
+            Learn more about SoulSync
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+
         </div>
       </div>
 

@@ -8,7 +8,7 @@ const SurveyBanner = () => {
   if (!isLoggedIn || !user || user.surveyCompleted) return null;
 
   return (
-    <div className="bg-gradient-to-r from-bloom-primary/90 to-bloom-primary text-white px-4 py-3 shadow-md">
+    <div className="sticky top-16 z-40 bg-gradient-to-r from-bloom-primary/90 to-bloom-primary text-white px-4 py-3 shadow-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-lg shrink-0">📋</span>

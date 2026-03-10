@@ -1,6 +1,6 @@
 services:
   server:
-    build: ./server
+    image: sej197/soulsync-server:latest
     container_name: soulsync-server
     ports:
       - "5000:5000"
@@ -12,16 +12,11 @@ services:
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - CLIENT_URL=http://localhost:5173
     volumes:
-      - ./server:/app
-      - /app/node_modules
       - ./data:/data
-    stdin_open: true
-    tty: true
 
   python:
-    build: ./python-server
+    image: sej197/soulsync-python:latest
     container_name: soulsync-python
     ports:
       - "8000:8000"
@@ -29,9 +24,10 @@ services:
       - ./python-server/.env
     volumes:
       - ./data:/data
+      - hf_cache:/root/.cache/huggingface
 
   client:
-    build: ./client
+    image: sej197/soulsync-client:latest
     container_name: soulsync-client
     ports:
       - "5173:5173"
@@ -39,11 +35,6 @@ services:
       - server
     environment:
       - VITE_API_URL=http://server:5000
-    stdin_open: true
-    tty: true
-    volumes:
-      - ./client:/app
-      - /app/node_modules
 
   redis:
     image: redis:7
@@ -56,3 +47,4 @@ services:
 
 volumes:
   redis_data:
+  hf_cache:
